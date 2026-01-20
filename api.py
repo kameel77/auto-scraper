@@ -7,7 +7,7 @@ from datetime import datetime
 
 # Import scraper parts for integration
 import asyncio
-from scraper.url_collector import collect_urls
+from scraper.url_collector import collect_offer_urls
 from scraper.offer_parser import parse_offer
 import logging
 
@@ -54,7 +54,12 @@ async def run_scraper_task(limit: Optional[int] = None):
     db = database.SessionLocal()
     try:
         logger.info("Starting background scrape task with snapshots...")
-        urls = await collect_urls(limit=limit)
+        urls = await collect_offer_urls()
+        
+        # Opcjonalny limit
+        if limit and limit < len(urls):
+            logger.info(f"Ograniczam do {limit} ofert")
+            urls = urls[:limit]
         
         for url in urls:
             try:

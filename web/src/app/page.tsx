@@ -3,7 +3,7 @@ import { getVehicles, getStats } from "@/lib/api";
 export default async function Home() {
   const [vehicles, stats] = await Promise.all([
     getVehicles().catch(() => []),
-    getStats().catch(() => ({ total_vehicles: 0, avg_price: 0, unique_brands: 0 }))
+    getStats().catch(() => ({ total_vehicles: 0, total_snapshots: 0, avg_price: 0, unique_brands: 0 }))
   ]);
 
   return (
@@ -39,7 +39,7 @@ export default async function Home() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
             {vehicles.map((car) => {
-              const firstImage = car.zdjecia?.split(" | ")[0];
+              const firstImage = car.latest_image;
               return (
                 <div key={car.id} className="group bg-white dark:bg-slate-900 rounded-[2rem] overflow-hidden shadow-2xl border border-slate-100 dark:border-slate-800/50 hover:border-indigo-500/30 transition-all duration-500 hover:-translate-y-2">
                   <div className="relative h-64 w-full overflow-hidden">
@@ -54,7 +54,7 @@ export default async function Home() {
                     )}
                     <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors duration-500" />
                     <div className="absolute top-6 right-6 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md px-4 py-2 rounded-2xl text-lg font-black shadow-2xl text-slate-900 dark:text-white">
-                      {car.cena_brutto_pln.toLocaleString()} <span className="text-sm font-bold text-indigo-600">zł</span>
+                      {car.latest_price?.toLocaleString()} <span className="text-sm font-bold text-indigo-600">zł</span>
                     </div>
                   </div>
 
@@ -73,7 +73,7 @@ export default async function Home() {
                       </div>
                       <div className="flex flex-col">
                         <span className="text-[10px] text-slate-400 uppercase font-black tracking-widest mb-1">Przebieg</span>
-                        <span className="font-extrabold text-slate-900 dark:text-slate-100">{car.przebieg_km.toLocaleString()} km</span>
+                        <span className="font-extrabold text-slate-900 dark:text-slate-100">{car.latest_mileage?.toLocaleString()} km</span>
                       </div>
                     </div>
 

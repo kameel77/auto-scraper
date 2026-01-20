@@ -38,8 +38,15 @@ System został przygotowany do pracy w architekturze kontenerowej zautomatyzowan
 
 ### 1. GitHub Actions & GHCR
 Po wypchnięciu kodu do repozytorium (`git push origin main`), GitHub Actions automatycznie zbuduje i wyśle dwa obrazy do GitHub Container Registry (GHCR):
-- `ghcr.io/twoj-user/twoje-repo-backend:latest`
-- `ghcr.io/twoj-user/twoje-repo-frontend:latest`
+- `ghcr.io/twoj-user/twoje-repo-backend:latest` (oraz `:main`)
+- `ghcr.io/twoj-user/twoje-repo-frontend:latest` (oraz `:main`)
+
+> [!IMPORTANT]
+> Obrazy w GHCR są domyślnie **Private**. Aby Coolify mógł je pobrać:
+> 1. Wejdź w profil na GitHub -> **Packages**.
+>   * Wybierz paczkę -> **Package Settings**.
+>   * Na dole w sekcji "Danger Zone" zmień **Visibility** na **Public**.
+> 2. Alternatywnie: Skonfiguruj w Coolify **Source** z użyciem GitHub Tokena.
 
 ### 2. Przygotowanie Bazy Danych
 1. W Coolify przejdź do **Resources** -> **New Resource** -> **Databases** -> **PostgreSQL**.

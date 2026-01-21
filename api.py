@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Depends, BackgroundTasks, HTTPException
-from fastapi.responses import StreamingResponse
+from fastapi.responses import StreamingResponse, FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from typing import List, Optional, Generator
@@ -12,6 +12,8 @@ from scraper.offer_parser import parse_offer
 import logging
 import json
 import os
+import csv
+import io
 import time
 
 logging.basicConfig(level=logging.INFO)
@@ -222,3 +224,49 @@ def get_stats(db: Session = Depends(database.get_db)):
         "avg_price": float(avg_price),
         "unique_brands": brands
     }
+
+@app.get("/export/csv")
+def export_csv(db: Session = Depends(database.get_db)):
+    vehicles = db.query(models.Vehicle).all()
+    
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["ID", "Marka", "Model", "Wersja", "Rok", "Cena", "Przebieg", "Lokalizacja", "URL"])
+    
+    for v in vehicles:
+        latest = db.query(models.VehicleSnapshot).filter(models.VehicleSnapshot.vehicle_id == v.id).order_by(models.VehicleSnapshot.scraped_at.desc()).first()
+        writer.writerow([
+            v.id,
+            v.marka or "",
+            v.model or "",
+            v.wersja or "",
+            v.rocznik or "",
+            latest.price if latest else "",
+            latest.mileage if latest else "",
+            v.dealer_address_line_2.split()[-1] if v.dealer_address_line_2 else "",
+            v.url
+        ])
+    
+    output.seek(0)
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=vehicles.csv"}
+    )
+
+@app.post("/admin/reset-db")
+def reset_db(background_tasks: BackgroundTasks, db: Session = Depends(database.get_db)):
+    background_tasks.add_task(_reset_db_task, db)
+    return {"message": "Database reset started"}
+
+def _reset_db_task(db: Session):
+    try:
+        db.query(models.VehicleSnapshot).delete()
+        db.query(models.Vehicle).delete()
+        db.commit()
+        logger.info("Database cleared successfully")
+    except Exception as e:
+        logger.error(f"Error clearing database: {e}")
+        db.rollback()
+    finally:
+        db.close()

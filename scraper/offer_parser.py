@@ -207,13 +207,8 @@ def _extract_nuxt_map(html: str) -> dict:
         for i, name in enumerate(var_names):
             if i < len(values):
                 val = values[i]
-                # Oczyść val
                 if (val.startswith('"') and val.endswith('"')) or (val.startswith("'") and val.endswith("'")):
                     val = val[1:-1]
-                    # Dekoduj unicode
-                    try:
-                        val = bytes(val, "utf-8").decode("unicode_escape")
-                    except: pass
                 elif val == "null": val = None
                 elif val == "true": val = True
                 elif val == "false": val = False
@@ -411,15 +406,10 @@ def _extract_location_from_json(html: str, nuxt_map: dict) -> dict:
         match = re.search(pattern, script_content)
         if match:
             val_raw = match.group(1).strip()
-            # Resolve z nuxt_map lub usuń cudzysłowy
             val = nuxt_map.get(val_raw, val_raw)
             if isinstance(val, str):
                 if (val.startswith('"') and val.endswith('"')) or (val.startswith("'") and val.endswith("'")):
                     val = val[1:-1]
-                    # Dekoduj unicode
-                    try:
-                        val = bytes(val, "utf-8").decode("unicode_escape")
-                    except: pass
             location[key] = val
         else:
             location[key] = None

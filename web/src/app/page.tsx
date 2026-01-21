@@ -1,6 +1,8 @@
 import { getVehicles, getStats } from "@/lib/api";
 import { ScrapeButton } from "@/components/ScrapeButton";
 
+export const revalidate = 0;
+
 export default async function Home() {
   const [vehicles, stats] = await Promise.all([
     getVehicles().catch(() => []),
@@ -20,6 +22,16 @@ export default async function Home() {
             </p>
           </div>
           <div className="flex gap-4 w-full sm:w-auto">
+            <a
+              href={`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/export/csv`}
+              target="_blank"
+              className="inline-flex items-center justify-center px-6 py-3 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-sm font-black rounded-xl transition-all border border-slate-200 dark:border-slate-700"
+            >
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              Export CSV
+            </a>
             <ScrapeButton />
             <div className="flex-1 sm:flex-none bg-white dark:bg-slate-900 px-6 py-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800">
               <p className="text-xs text-indigo-600 dark:text-indigo-400 uppercase font-bold tracking-widest mb-1">Pojazdy / Odczyty</p>
@@ -39,63 +51,71 @@ export default async function Home() {
             <p className="text-slate-500 text-lg font-medium">Brak danych w bazie. Uruchom scraper, aby zebrać oferty.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-            {vehicles.map((car) => {
-              const firstImage = car.latest_image;
-              return (
-                <div key={car.id} className="group bg-white dark:bg-slate-900 rounded-[2rem] overflow-hidden shadow-2xl border border-slate-100 dark:border-slate-800/50 hover:border-indigo-500/30 transition-all duration-500 hover:-translate-y-2">
-                  <div className="relative h-64 w-full overflow-hidden">
-                    {firstImage ? (
-                      <img
-                        src={firstImage}
-                        alt={`${car.marka} ${car.model}`}
-                        className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-700 ease-out"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-slate-200 flex items-center justify-center text-slate-400">Brak zdjęcia</div>
-                    )}
-                    <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors duration-500" />
-                    <div className="absolute top-6 right-6 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md px-4 py-2 rounded-2xl text-lg font-black shadow-2xl text-slate-900 dark:text-white">
-                      {car.latest_price?.toLocaleString()} <span className="text-sm font-bold text-indigo-600">zł</span>
-                    </div>
-                  </div>
-
-                  <div className="p-8">
-                    <div className="mb-6">
-                      <h3 className="text-2xl font-black text-slate-900 dark:text-white leading-none mb-2">
-                        {car.marka} {car.model}
-                      </h3>
-                      <p className="text-sm text-slate-400 font-bold uppercase tracking-tighter">{car.wersja || "Standard"}</p>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-6 bg-slate-50 dark:bg-slate-950/50 p-5 rounded-2xl mb-8">
-                      <div className="flex flex-col">
-                        <span className="text-[10px] text-slate-400 uppercase font-black tracking-widest mb-1">Rocznik</span>
-                        <span className="font-extrabold text-slate-900 dark:text-slate-100">{car.rocznik}</span>
-                      </div>
-                      <div className="flex flex-col">
-                        <span className="text-[10px] text-slate-400 uppercase font-black tracking-widest mb-1">Przebieg</span>
-                        <span className="font-extrabold text-slate-900 dark:text-slate-100">{car.latest_mileage?.toLocaleString()} km</span>
-                      </div>
-                    </div>
-
-                    <div className="flex justify-between items-center gap-4">
-                      <div className="flex flex-col min-w-0">
-                        <span className="text-[10px] text-slate-400 uppercase font-black tracking-widest mb-0.5">Lokalizacja</span>
-                        <span className="text-sm text-slate-600 dark:text-slate-400 font-bold truncate">{car.lokalizacja_miasto}</span>
-                      </div>
-                      <a
-                        href={car.url}
-                        target="_blank"
-                        className="inline-flex items-center justify-center px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-black rounded-xl transition-all shadow-lg shadow-indigo-500/20 active:scale-95 whitespace-nowrap"
-                      >
-                        PEŁNA OFERTA
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+          <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-xl border border-slate-100 dark:border-slate-800/50 overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-slate-50 dark:bg-slate-950/50 border-b border-slate-100 dark:border-slate-800">
+                  <tr className="text-left text-xs font-black text-slate-400 uppercase tracking-widest">
+                    <th className="px-6 py-4">Pojazd</th>
+                    <th className="px-6 py-4">Rok</th>
+                    <th className="px-6 py-4">Cena</th>
+                    <th className="px-6 py-4 hidden md:table-cell">Przebieg</th>
+                    <th className="px-6 py-4 hidden lg:table-cell">Lokalizacja</th>
+                    <th className="px-6 py-4"></th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                  {vehicles.map((car) => (
+                    <tr key={car.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-4">
+                          {car.latest_image ? (
+                            <img
+                              src={car.latest_image}
+                              alt={`${car.marka} ${car.model}`}
+                              className="w-16 h-12 object-cover rounded-lg"
+                            />
+                          ) : (
+                            <div className="w-16 h-12 bg-slate-100 dark:bg-slate-800 rounded-lg flex items-center justify-center text-slate-400 text-xs">
+                              Brak
+                            </div>
+                          )}
+                          <div>
+                            <p className="font-black text-slate-900 dark:text-white">
+                              {car.marka} {car.model}
+                            </p>
+                            <p className="text-xs text-slate-500 font-medium">{car.wersja || ""}</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 font-bold text-slate-700 dark:text-slate-300">
+                        {car.rocznik}
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="font-black text-indigo-600">
+                          {car.latest_price?.toLocaleString()} zł
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-slate-600 dark:text-slate-400 hidden md:table-cell">
+                        {car.latest_mileage?.toLocaleString()} km
+                      </td>
+                      <td className="px-6 py-4 text-slate-600 dark:text-slate-400 hidden lg:table-cell">
+                        {car.lokalizacja_miasto}
+                      </td>
+                      <td className="px-6 py-4">
+                        <a
+                          href={car.url}
+                          target="_blank"
+                          className="inline-flex items-center justify-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-black rounded-lg transition-all"
+                        >
+                          Oferta
+                        </a>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </div>

@@ -1,9 +1,40 @@
 import { getVehicles, getStats } from "@/lib/api";
 import { ScrapeButton } from "@/components/ScrapeButton";
+import { VehicleRow } from "@/components/VehicleRow";
 
 export const revalidate = 0;
 
 export default async function Home() {
+  const [vehicles, stats] = await Promise.all([
+    getVehicles().catch(() => []),
+    getStats().catch(() => ({ total_vehicles: 0, total_snapshots: 0, avg_price: 0, unique_brands: 0 }))
+  ]);
+
+  return (
+    <main className="min-h-screen bg-slate-50 dark:bg-slate-950 p-8 sm:p-12">
+      <div className="max-w-7xl mx-auto">
+        <header className="mb-12 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6">
+          <div className="space-y-2">
+            <h1 className="text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+              Auto-Scraper <span className="text-indigo-600">Dashboard</span>
+            </h1>
+            <p className="text-lg text-slate-500 font-medium tracking-wide">
+              Przeglądaj najnowsze oferty z Autopunkt wyselekcjonowane dla Ciebie.
+            </p>
+          </div>
+          <div className="flex gap-4 w-full sm:w-auto flex-wrap">
+            <a
+              href={`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/export/csv`}
+              target="_blank"
+              className="inline-flex items-center justify-center px-6 py-3 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-sm font-black rounded-xl transition-all border border-slate-200 dark:border-slate-700"
+            >
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              Export CSV
+            </a>
+            <ScrapeButton />
+            <div className="flex-1 sm:flex-none bg-white dark:bg-slate-900 px-6 py-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800">
   const [vehicles, stats] = await Promise.all([
     getVehicles().catch(() => []),
     getStats().catch(() => ({ total_vehicles: 0, total_snapshots: 0, avg_price: 0, unique_brands: 0 }))
@@ -66,52 +97,7 @@ export default async function Home() {
                 </thead>
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                   {vehicles.map((car) => (
-                    <tr key={car.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-4">
-                          {car.latest_image ? (
-                            <img
-                              src={car.latest_image}
-                              alt={`${car.marka} ${car.model}`}
-                              className="w-16 h-12 object-cover rounded-lg"
-                            />
-                          ) : (
-                            <div className="w-16 h-12 bg-slate-100 dark:bg-slate-800 rounded-lg flex items-center justify-center text-slate-400 text-xs">
-                              Brak
-                            </div>
-                          )}
-                          <div>
-                            <p className="font-black text-slate-900 dark:text-white">
-                              {car.marka} {car.model}
-                            </p>
-                            <p className="text-xs text-slate-500 font-medium">{car.wersja || ""}</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 font-bold text-slate-700 dark:text-slate-300">
-                        {car.rocznik}
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className="font-black text-indigo-600">
-                          {car.latest_price?.toLocaleString()} zł
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-slate-600 dark:text-slate-400 hidden md:table-cell">
-                        {car.latest_mileage?.toLocaleString()} km
-                      </td>
-                      <td className="px-6 py-4 text-slate-600 dark:text-slate-400 hidden lg:table-cell">
-                        {car.lokalizacja_miasto}
-                      </td>
-                      <td className="px-6 py-4">
-                        <a
-                          href={car.url}
-                          target="_blank"
-                          className="inline-flex items-center justify-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-black rounded-lg transition-all"
-                        >
-                          Oferta
-                        </a>
-                      </td>
-                    </tr>
+                    <VehicleRow key={car.id} car={car} />
                   ))}
                 </tbody>
               </table>

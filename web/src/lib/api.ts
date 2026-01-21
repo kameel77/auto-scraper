@@ -7,11 +7,16 @@ export interface Vehicle {
     rocznik: number;
     typ_nadwozia?: string;
     lokalizacja_miasto?: string;
-    // Latest snapshot data
     latest_price: number;
     latest_mileage: number;
     latest_image?: string;
     scraped_at: string;
+    equipment?: {
+        wyposazenie_technologia?: string;
+        wyposazenie_komfort?: string;
+        wyposazenie_bezpieczenstwo?: string;
+        wyposazenie_wyglad?: string;
+    };
 }
 
 export interface PriceTrend {

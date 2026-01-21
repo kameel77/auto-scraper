@@ -50,9 +50,28 @@ export function ScrapeButton() {
     }
   };
 
+  const handleReset = async () => {
+    if (!confirm("Czy na pewno chcesz wyczyścić bazę danych?")) return;
+    
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/admin/reset-db`, {
+        method: "POST",
+      });
+      if (res.ok) {
+        alert("Baza wyczyszczona!");
+        window.location.reload();
+      } else {
+        alert("Błąd podczas czyszczenia bazy");
+      }
+    } catch (error) {
+      console.error("Reset failed:", error);
+      alert("Nie udało się wyczyścić bazy");
+    }
+  };
+
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex gap-4 w-full sm:w-auto">
+      <div className="flex gap-4 w-full sm:w-auto flex-wrap">
         <div className="flex items-center gap-2 bg-white dark:bg-slate-900 px-4 py-2 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800">
           <label className="text-sm font-bold text-slate-600 dark:text-slate-400">Ilość ofert:</label>
           <input
@@ -72,6 +91,13 @@ export function ScrapeButton() {
           className="bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white px-6 py-2 rounded-xl font-black transition-all shadow-lg shadow-indigo-500/20 active:scale-95 whitespace-nowrap"
         >
           {loading ? "Przetwarzanie..." : "Uruchom Scraper"}
+        </button>
+        <button
+          onClick={handleReset}
+          disabled={loading}
+          className="bg-red-100 hover:bg-red-200 dark:bg-red-900/30 dark:hover:bg-red-900/50 text-red-600 dark:text-red-400 px-4 py-2 rounded-xl font-bold transition-all border border-red-200 dark:border-red-800"
+        >
+          Wyczyść bazę
         </button>
       </div>
 

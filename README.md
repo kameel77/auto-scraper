@@ -64,7 +64,30 @@ Po wypchnięciu kodu do repozytorium (`git push origin main`), GitHub Actions au
 2. Image: `ghcr.io/twoj-user/twoje-repo-frontend:latest`.
 3. W zakładce **Environment Variables** dodaj:
    - `NEXT_PUBLIC_API_URL`: Publiczny adres Twojego backendu (np. `https://api.twoja-domena.pl`).
+   - `FRONTEND_URL`: Adres frontend (np. `https://twoja-domena.pl`) - potrzebne dla CORS.
 4. Port: `3000`.
+
+### 5. Resetowanie Bazy Danych
+Jeśli chcesz wyczyścić bazę i zacząć od nowa:
+
+```bash
+# Opcja 1: przez API (zalecane)
+curl -X POST http://localhost:8000/admin/reset-db
+
+# Opcja 2: bezpośrednio w Pythonie (jeśli API nie działa)
+python3 -c "
+from database import SessionLocal
+import models
+db = SessionLocal()
+db.query(models.VehicleSnapshot).delete()
+db.query(models.Vehicle).delete()
+db.commit()
+db.close()
+print('Baza wyczyszczona!')
+"
+```
+
+Lub użyj przycisku **"Wyczyść bazę"** w dashboardzie (obok "Uruchom Scraper").
 
 ## 🛠 Instalacja i Uruchomienie Lokalne
 

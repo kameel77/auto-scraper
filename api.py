@@ -50,11 +50,11 @@ class VehicleSchema(BaseModel):
     rocznik: Optional[int]
     typ_nadwozia: Optional[str]
     lokalizacja_miasto: Optional[str]
-    # Latest snapshot data
     latest_price: Optional[int]
     latest_mileage: Optional[int]
     latest_image: Optional[str]
     scraped_at: Optional[datetime]
+    equipment: Optional[dict] = None
 
     class Config:
         from_attributes = True
@@ -201,7 +201,8 @@ def get_vehicles(
             "latest_price": latest.price if latest else None,
             "latest_mileage": latest.mileage if latest else None,
             "latest_image": latest.pictures.split(" | ")[0] if latest and latest.pictures else None,
-            "scraped_at": latest.scraped_at if latest else None
+            "scraped_at": latest.scraped_at if latest else None,
+            "equipment": latest.equipment_json if latest else None
         }
         result.append(v_dict)
     return result
@@ -231,10 +232,11 @@ def export_csv(db: Session = Depends(database.get_db)):
     
     output = io.StringIO()
     writer = csv.writer(output)
-    writer.writerow(["ID", "Marka", "Model", "Wersja", "Rok", "Cena", "Przebieg", "Lokalizacja", "URL"])
+    writer.writerow(["ID", "Marka", "Model", "Wersja", "Rok", "Cena", "Przebieg", "Lokalizacja", "URL", "Wyposazenie Technologia", "Wyposazenie Komfort", "Wyposazenie Bezpieczenstwo", "Wyposazenie Wyglad"])
     
     for v in vehicles:
         latest = db.query(models.VehicleSnapshot).filter(models.VehicleSnapshot.vehicle_id == v.id).order_by(models.VehicleSnapshot.scraped_at.desc()).first()
+        equipment = latest.equipment_json if latest else {}
         writer.writerow([
             v.id,
             v.marka or "",
@@ -244,7 +246,11 @@ def export_csv(db: Session = Depends(database.get_db)):
             latest.price if latest else "",
             latest.mileage if latest else "",
             v.dealer_address_line_2.split()[-1] if v.dealer_address_line_2 else "",
-            v.url
+            v.url,
+            equipment.get("wyposazenie_technologia", "") if equipment else "",
+            equipment.get("wyposazenie_komfort", "") if equipment else "",
+            equipment.get("wyposazenie_bezpieczenstwo", "") if equipment else "",
+            equipment.get("wyposazenie_wyglad", "") if equipment else "",
         ])
     
     output.seek(0)

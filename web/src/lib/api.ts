@@ -12,10 +12,10 @@ export interface Vehicle {
     latest_image?: string;
     scraped_at: string;
     equipment?: {
-        wyposazenie_technologia?: string;
-        wyposazenie_komfort?: string;
-        wyposazenie_bezpieczenstwo?: string;
-        wyposazenie_wyglad?: string;
+        technologia?: string;
+        komfort?: string;
+        bezpieczenstwo?: string;
+        wyglad?: string;
     };
 }
 

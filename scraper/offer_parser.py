@@ -325,12 +325,12 @@ def _extract_grouped_equipment(html: str) -> dict:
                         break
 
     result = {
-        "wyposazenie_technologia": " | ".join(groups_data["technologia"]) if groups_data["technologia"] else None,
-        "wyposazenie_komfort": " | ".join(groups_data["komfort"]) if groups_data["komfort"] else None,
-        "wyposazenie_bezpieczenstwo": " | ".join(groups_data["bezpieczenstwo"]) if groups_data["bezpieczenstwo"] else None,
-        "wyposazenie_wyglad": " | ".join(groups_data["wyglad"]) if groups_data["wyglad"] else None,
-        "dane_historia": " | ".join(groups_data["historia"]) if groups_data["historia"] else None,
-        "dane_finanse": " | ".join(groups_data["finanse"]) if groups_data["finanse"] else None,
+        "technologia": " | ".join(groups_data["technologia"]) if groups_data["technologia"] else None,
+        "komfort": " | ".join(groups_data["komfort"]) if groups_data["komfort"] else None,
+        "bezpieczenstwo": " | ".join(groups_data["bezpieczenstwo"]) if groups_data["bezpieczenstwo"] else None,
+        "wyglad": " | ".join(groups_data["wyglad"]) if groups_data["wyglad"] else None,
+        "historia": " | ".join(groups_data["historia"]) if groups_data["historia"] else None,
+        "finanse": " | ".join(groups_data["finanse"]) if groups_data["finanse"] else None,
     }
     
     logger.info(f"Equipment result: {result}")
@@ -558,26 +558,24 @@ def parse_offer(url: str) -> dict:
                 data["telefon"] = html_location.get("telefon")
         
         # === WYPOSAŻENIE POGRUPOWANE ===
-        data["wyposazenie_technologia"] = json_equipment.get("wyposazenie_technologia")
-        data["wyposazenie_komfort"] = json_equipment.get("wyposazenie_komfort")
-        data["wyposazenie_bezpieczenstwo"] = json_equipment.get("wyposazenie_bezpieczenstwo")
-        data["wyposazenie_wyglad"] = json_equipment.get("wyposazenie_wyglad")
-        data["dane_historia"] = json_equipment.get("dane_historia")
-        data["dane_finanse"] = json_equipment.get("dane_finanse")
+        data["technologia"] = json_equipment.get("technologia")
+        data["komfort"] = json_equipment.get("komfort")
+        data["bezpieczenstwo"] = json_equipment.get("bezpieczenstwo")
+        data["wyglad"] = json_equipment.get("wyglad")
+        data["historia"] = json_equipment.get("historia")
+        data["finanse"] = json_equipment.get("finanse")
         
         # HTML fallback - jeśli JSON nie ma wyposażenia, użyj starej metody
-        if not data["wyposazenie_technologia"] and not data["wyposazenie_komfort"]:
+        if not data["technologia"] and not data["komfort"]:
             logger.debug("Brak danych wyposażenia z JSON, używam HTML fallback")
             html_features = _extract_features_tags(soup)
-            # Stare wyposażenie jako "ogólne" - dodaj jako backup
             data["wyposazenie_inne"] = html_features.get("wyposazenie")
             data["tagi_oferty"] = html_features.get("tagi_oferty")
         else:
             data["wyposazenie_inne"] = None
-            # Tagi mogą być w HTML
             html_features = _extract_features_tags(soup)
             data["tagi_oferty"] = html_features.get("tagi_oferty")
-        
+
         # === ZDJĘCIA ===
         if json_images:
             # Filtruj tylko prawdziwe zdjęcia pojazdu (nie ikony, mapy, SVG)
@@ -688,9 +686,19 @@ def _extract_technical_data(soup: BeautifulSoup) -> dict:
         m1 = re.search(r"([\d\s]+)\s*\[?CM3\]?", poj_moc, re.I)
         m2 = re.search(r"([\d\s]+)\s*\[?KM\]?", poj_moc, re.I)
         if m1:
-            data["pojemnosc_cm3"] = int(m1.group(1).replace(" ", ""))
+            try:
+                val = m1.group(1).replace(" ", "").strip()
+                if val.isdigit():
+                    data["pojemnosc_cm3"] = int(val)
+            except (ValueError, AttributeError):
+                pass
         if m2:
-            data["moc_km"] = int(m2.group(1).replace(" ", ""))
+            try:
+                val = m2.group(1).replace(" ", "").strip()
+                if val.isdigit():
+                    data["moc_km"] = int(val)
+            except (ValueError, AttributeError):
+                pass
     
     return data
 

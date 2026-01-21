@@ -69,10 +69,10 @@ export function VehicleRow({ car }: { car: Vehicle }) {
         <tr className="bg-slate-50 dark:bg-slate-800/20">
           <td colSpan={6} className="px-6 py-4">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <EquipmentBadge title="Technologia" items={car.equipment.wyposazenie_technologia} />
-              <EquipmentBadge title="Komfort" items={car.equipment.wyposazenie_komfort} />
-              <EquipmentBadge title="Bezpieczeństwo" items={car.equipment.wyposazenie_bezpieczenstwo} />
-              <EquipmentBadge title="Wygląd" items={car.equipment.wyposazenie_wyglad} />
+              <EquipmentBadge title="Technologia" items={car.equipment.technologia} />
+              <EquipmentBadge title="Komfort" items={car.equipment.komfort} />
+              <EquipmentBadge title="Bezpieczeństwo" items={car.equipment.bezpieczenstwo} />
+              <EquipmentBadge title="Wygląd" items={car.equipment.wyglad} />
             </div>
           </td>
         </tr>

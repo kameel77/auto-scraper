@@ -105,10 +105,10 @@ async def run_scraper_task(limit: Optional[int] = None):
                     db.flush()
                 
                 equipment_json = {
-                    "technologia": data.get("wyposazenie_technologia"),
-                    "komfort": data.get("wyposazenie_komfort"),
-                    "bezpieczenstwo": data.get("wyposazenie_bezpieczenstwo"),
-                    "wyglad": data.get("wyposazenie_wyglad"),
+                    "technologia": data.get("technologia"),
+                    "komfort": data.get("komfort"),
+                    "bezpieczenstwo": data.get("bezpieczenstwo"),
+                    "wyglad": data.get("wyglad"),
                 }
                 
                 snapshot = models.VehicleSnapshot(
@@ -235,14 +235,19 @@ def export_csv(db: Session = Depends(database.get_db)):
     
     output = io.StringIO()
     writer = csv.writer(output)
-    writer.writerow(["ID", "Marka", "Model", "Wersja", "Rok", "Cena", "Przebieg", "Lokalizacja", "URL", "Wyposazenie Technologia", "Wyposazenie Komfort", "Wyposazenie Bezpieczenstwo", "Wyposazenie Wyglad"])
+    writer.writerow([
+        "ID", "Marka", "Model", "Wersja", "Rok", "Pierwsza rejestracja", "VIN",
+        "Paliwo", "Pojemność cm3", "Moc km", "Skrzynia biegów", "Napęd",
+        "Typ nadwozia", "Kolor", "Ilość drzwi",
+        "Cena", "Przebieg", "Zdjęcie główne", "Pozostałe zdjęcia",
+        "Lokalizacja", "URL",
+        "Wyposazenie Technologia", "Wyposazenie Komfort", "Wyposazenie Bezpieczenstwo", "Wyposazenie Wyglad"
+    ])
     
     for v in vehicles:
         latest = db.query(models.VehicleSnapshot).filter(models.VehicleSnapshot.vehicle_id == v.id).order_by(models.VehicleSnapshot.scraped_at.desc()).first()
         
         raw_equipment = latest.equipment_json if latest else {}
-        logger.info(f"Vehicle {v.id}: equipment_json type = {type(raw_equipment)}, value = {raw_equipment}")
-        
         if isinstance(raw_equipment, str):
             try:
                 equipment = json.loads(raw_equipment)
@@ -253,14 +258,30 @@ def export_csv(db: Session = Depends(database.get_db)):
         else:
             equipment = {}
         
+        all_pictures = latest.pictures if latest and latest.pictures else ""
+        main_image = all_pictures.split(" | ")[0] if all_pictures else ""
+        other_images = " | ".join(all_pictures.split(" | ")[1:]) if all_pictures else ""
+        
         writer.writerow([
             v.id,
             v.marka or "",
             v.model or "",
             v.wersja or "",
             v.rocznik or "",
+            v.pierwsza_rejestracja or "",
+            v.vin or "",
+            v.typ_silnika or "",
+            v.pojemnosc_cm3 or "",
+            v.moc_km or "",
+            v.skrzynia_biegow or "",
+            v.naped or "",
+            v.typ_nadwozia or "",
+            v.kolor or "",
+            v.ilosc_drzwi or "",
             latest.price if latest else "",
             latest.mileage if latest else "",
+            main_image,
+            other_images,
             v.dealer_address_line_2.split()[-1] if v.dealer_address_line_2 else "",
             v.url,
             equipment.get("technologia", "") if equipment else "",

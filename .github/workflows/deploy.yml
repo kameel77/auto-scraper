@@ -50,4 +50,4 @@ jobs:
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_FRONTEND }}:latest
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_FRONTEND }}:main
           build-args: |
-            NEXT_PUBLIC_API_URL=https://api.yourdomain.com
+            NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}

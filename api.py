@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Depends, BackgroundTasks, HTTPException
 from fastapi.responses import StreamingResponse
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from typing import List, Optional, Generator
 import models, database
@@ -10,6 +11,7 @@ from scraper.url_collector import collect_offer_urls
 from scraper.offer_parser import parse_offer
 import logging
 import json
+import os
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -17,6 +19,16 @@ logger = logging.getLogger(__name__)
 models.Base.metadata.create_all(bind=database.engine)
 
 app = FastAPI(title="Auto-Scraper API")
+
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[FRONTEND_URL, "http://*.sslip.io", "https://*.sslip.io"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 scrape_progress = {
     "status": "idle",

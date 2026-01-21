@@ -263,10 +263,10 @@ def export_csv(db: Session = Depends(database.get_db)):
             latest.mileage if latest else "",
             v.dealer_address_line_2.split()[-1] if v.dealer_address_line_2 else "",
             v.url,
-            equipment.get("wyposazenie_technologia", "") if equipment else "",
-            equipment.get("wyposazenie_komfort", "") if equipment else "",
-            equipment.get("wyposazenie_bezpieczenstwo", "") if equipment else "",
-            equipment.get("wyposazenie_wyglad", "") if equipment else "",
+            equipment.get("technologia", "") if equipment else "",
+            equipment.get("komfort", "") if equipment else "",
+            equipment.get("bezpieczenstwo", "") if equipment else "",
+            equipment.get("wyglad", "") if equipment else "",
         ])
     
     output.seek(0)

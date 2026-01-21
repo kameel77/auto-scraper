@@ -13,6 +13,7 @@ import logging
 import json
 import os
 import csv
+import json
 import io
 import time
 
@@ -230,13 +231,28 @@ def get_stats(db: Session = Depends(database.get_db)):
 def export_csv(db: Session = Depends(database.get_db)):
     vehicles = db.query(models.Vehicle).all()
     
+    logger.info(f"Exporting {len(vehicles)} vehicles to CSV")
+    
     output = io.StringIO()
     writer = csv.writer(output)
     writer.writerow(["ID", "Marka", "Model", "Wersja", "Rok", "Cena", "Przebieg", "Lokalizacja", "URL", "Wyposazenie Technologia", "Wyposazenie Komfort", "Wyposazenie Bezpieczenstwo", "Wyposazenie Wyglad"])
     
     for v in vehicles:
         latest = db.query(models.VehicleSnapshot).filter(models.VehicleSnapshot.vehicle_id == v.id).order_by(models.VehicleSnapshot.scraped_at.desc()).first()
-        equipment = latest.equipment_json if latest else {}
+        
+        raw_equipment = latest.equipment_json if latest else {}
+        logger.info(f"Vehicle {v.id}: equipment_json type = {type(raw_equipment)}, value = {raw_equipment}")
+        
+        if isinstance(raw_equipment, str):
+            try:
+                equipment = json.loads(raw_equipment)
+            except:
+                equipment = {}
+        elif isinstance(raw_equipment, dict):
+            equipment = raw_equipment
+        else:
+            equipment = {}
+        
         writer.writerow([
             v.id,
             v.marka or "",

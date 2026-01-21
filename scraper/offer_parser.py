@@ -299,13 +299,15 @@ def _extract_grouped_equipment(html: str) -> dict:
 
     pattern = r'\{id:(\d+),type:([^,]+),name:"([^"]+)",value:([^,]+),group:([^}]+)\}'
     
-    for match in re.finditer(pattern, html):
-        attr_name = match.group(3)
-        val_raw = match.group(4).strip()
-        group_raw = match.group(5).strip()
+    matches = re.findall(pattern, html)
+    logger.info(f"Found {len(matches)} equipment matches in HTML")
+    
+    for match in matches:
+        attr_name = match[2]
+        val_raw = match[3].strip()
+        group_raw = match[4].strip()
         
         val = nuxt_map.get(val_raw, val_raw)
-        # "1" to true, "0" to false
         is_enabled = val in [True, "1", "true", 1]
         
         if is_enabled:
@@ -314,15 +316,15 @@ def _extract_grouped_equipment(html: str) -> dict:
                 if (group_name.startswith('"') and group_name.endswith('"')) or (group_name.startswith("'") and group_name.endswith("'")):
                     group_name = group_name[1:-1]
                 
-                # Uproszczone usuwanie polskich znaków dla lepszego dopasowania
                 clean_group = group_name.lower().replace("ą", "a").replace("ć", "c").replace("ę", "e").replace("ł", "l").replace("ń", "n").replace("ó", "o").replace("ś", "s").replace("ź", "z").replace("ż", "z")
                 
                 for kw, cat in group_name_map.items():
                     if kw.lower() in clean_group:
                         groups_data[cat].append(attr_name)
+                        logger.info(f"Added equipment: {attr_name} -> {cat}")
                         break
 
-    return {
+    result = {
         "wyposazenie_technologia": " | ".join(groups_data["technologia"]) if groups_data["technologia"] else None,
         "wyposazenie_komfort": " | ".join(groups_data["komfort"]) if groups_data["komfort"] else None,
         "wyposazenie_bezpieczenstwo": " | ".join(groups_data["bezpieczenstwo"]) if groups_data["bezpieczenstwo"] else None,
@@ -330,6 +332,9 @@ def _extract_grouped_equipment(html: str) -> dict:
         "dane_historia": " | ".join(groups_data["historia"]) if groups_data["historia"] else None,
         "dane_finanse": " | ".join(groups_data["finanse"]) if groups_data["finanse"] else None,
     }
+    
+    logger.info(f"Equipment result: {result}")
+    return result
 
 
 def _extract_images_from_json(html: str) -> list[str]:

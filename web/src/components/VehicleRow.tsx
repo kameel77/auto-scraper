@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { type Vehicle } from "@/lib/api";
 
-function EquipmentBadge({ title, items }: { title: string; items: string | null }) {
+function EquipmentBadge({ title, items }: { title: string; items: string | null | undefined }) {
   if (!items) return null;
   return (
     <div className="mb-3">

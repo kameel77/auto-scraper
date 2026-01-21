@@ -1,4 +1,5 @@
 import { getVehicles, getStats } from "@/lib/api";
+import { ScrapeButton } from "@/components/ScrapeButton";
 
 export default async function Home() {
   const [vehicles, stats] = await Promise.all([
@@ -19,6 +20,7 @@ export default async function Home() {
             </p>
           </div>
           <div className="flex gap-4 w-full sm:w-auto">
+            <ScrapeButton />
             <div className="flex-1 sm:flex-none bg-white dark:bg-slate-900 px-6 py-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800">
               <p className="text-xs text-indigo-600 dark:text-indigo-400 uppercase font-bold tracking-widest mb-1">Pojazdy / Odczyty</p>
               <p className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">

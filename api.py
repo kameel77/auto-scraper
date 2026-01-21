@@ -1,23 +1,29 @@
 from fastapi import FastAPI, Depends, BackgroundTasks, HTTPException
+from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
-from typing import List, Optional
+from typing import List, Optional, Generator
 import models, database
 from pydantic import BaseModel
 from datetime import datetime
-
-# Import scraper parts for integration
 import asyncio
 from scraper.url_collector import collect_offer_urls
 from scraper.offer_parser import parse_offer
 import logging
+import json
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Initialize DB
 models.Base.metadata.create_all(bind=database.engine)
 
 app = FastAPI(title="Auto-Scraper API")
+
+scrape_progress = {
+    "status": "idle",
+    "current": 0,
+    "total": 0,
+    "message": ""
+}
 
 # Pydantic models for API responses
 class VehicleSchema(BaseModel):
@@ -49,31 +55,39 @@ class StatsSchema(BaseModel):
     avg_price: float
     unique_brands: int
 
-# Scraper worker function
 async def run_scraper_task(limit: Optional[int] = None):
+    global scrape_progress
     db = database.SessionLocal()
     try:
+        scrape_progress["status"] = "collecting"
+        scrape_progress["message"] = "Zbieranie URL-i ofert..."
+        scrape_progress["current"] = 0
+        scrape_progress["total"] = 0
+        
         logger.info("Starting background scrape task with snapshots...")
         urls = await collect_offer_urls()
         
-        # Opcjonalny limit
         if limit and limit < len(urls):
             logger.info(f"Ograniczam do {limit} ofert")
             urls = urls[:limit]
         
-        for url in urls:
+        scrape_progress["total"] = len(urls)
+        scrape_progress["status"] = "scraping"
+        
+        for i, url in enumerate(urls):
             try:
+                scrape_progress["current"] = i + 1
+                scrape_progress["message"] = f"Parsowanie oferty {i + 1} z {len(urls)}"
+                
                 data = parse_offer(url)
-                # 1. Get or Create Vehicle (Identity)
                 vehicle = db.query(models.Vehicle).filter(models.Vehicle.url == url).first()
                 if not vehicle:
                     model_keys = models.Vehicle.__table__.columns.keys()
                     vehicle_data = {k: v for k, v in data.items() if k in model_keys}
                     vehicle = models.Vehicle(**vehicle_data)
                     db.add(vehicle)
-                    db.flush() # Get ID
+                    db.flush()
                 
-                # 2. Add Snapshot (History)
                 equipment_json = {
                     "technologia": data.get("wyposazenie_technologia"),
                     "komfort": data.get("wyposazenie_komfort"),
@@ -98,10 +112,17 @@ async def run_scraper_task(limit: Optional[int] = None):
             except Exception as e:
                 logger.error(f"Error scraping {url}: {e}")
                 db.rollback()
-                
+        
+        scrape_progress["status"] = "complete"
+        scrape_progress["message"] = f"Zakończono! Zebrano {len(urls)} ofert"
+        logger.info("Scrape task finished.")
+        
+    except Exception as e:
+        scrape_progress["status"] = "error"
+        scrape_progress["message"] = f"Błąd: {str(e)}"
+        logger.error(f"Scrape task error: {e}")
     finally:
         db.close()
-        logger.info("Scrape task finished.")
 
 # API Endpoints
 @app.get("/")
@@ -109,9 +130,30 @@ def read_root():
     return {"message": "Auto-Scraper API with Trends is running"}
 
 @app.post("/scrape")
-async def trigger_scrape(background_tasks: BackgroundTasks, limit: Optional[int] = 10):
+async def trigger_scrape(background_tasks: BackgroundTasks, limit: Optional[int] = None):
+    global scrape_progress
+    scrape_progress = {"status": "idle", "current": 0, "total": 0, "message": ""}
     background_tasks.add_task(run_scraper_task, limit=limit)
-    return {"message": f"Historical scrape started in background (limit={limit})"}
+    return {"message": f"Historical scrape started in background" + (f" (limit={limit})" if limit else " (all offers)") }
+
+def generate_progress() -> Generator[str, None, None]:
+    global scrape_progress
+    while True:
+        data = json.dumps({
+            "status": scrape_progress["status"],
+            "message": scrape_progress["message"],
+            "current": scrape_progress["current"],
+            "total": scrape_progress["total"],
+            "collected": scrape_progress.get("collected", scrape_progress["current"])
+        })
+        yield f"data: {data}\n\n"
+        if scrape_progress["status"] in ("complete", "error"):
+            break
+        asyncio.sleep(0.5)
+
+@app.get("/scrape/progress")
+async def scrape_progress_endpoint():
+    return StreamingResponse(generate_progress(), media_type="text/event-stream")
 
 @app.get("/vehicles", response_model=List[VehicleSchema])
 def get_vehicles(

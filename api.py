@@ -12,6 +12,7 @@ from scraper.offer_parser import parse_offer
 import logging
 import json
 import os
+import time
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -161,7 +162,7 @@ def generate_progress() -> Generator[str, None, None]:
         yield f"data: {data}\n\n"
         if scrape_progress["status"] in ("complete", "error"):
             break
-        asyncio.sleep(0.5)
+        time.sleep(0.5)
 
 @app.get("/scrape/progress")
 async def scrape_progress_endpoint():

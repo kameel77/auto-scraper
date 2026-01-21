@@ -345,9 +345,12 @@ def export_car_scout_csv(db: Session = Depends(database.get_db)):
             equipment = {}
         
         all_pictures = latest.pictures if latest and latest.pictures else ""
-        main_image = all_pictures.split(" | ")[0] if all_pictures else ""
-        other_images = " | ".join(all_pictures.split(" | ")[1:]) if all_pictures else ""
-        image_count = len(all_pictures.split(" | ")) if all_pictures else 0
+        
+        picture_list = all_pictures.split(" | ") if all_pictures else []
+        vehicle_photos = [p for p in picture_list if "/uploads_pewne/" in p]
+        main_image = vehicle_photos[0] if vehicle_photos else ""
+        other_images = " | ".join(vehicle_photos[1:]) if len(vehicle_photos) > 1 else ""
+        all_pictures = " | ".join(vehicle_photos)
         
         price_display = f"{latest.price:,} PLN".replace(",", " ") if latest.price else ""
         
@@ -388,6 +391,7 @@ def export_car_scout_csv(db: Session = Depends(database.get_db)):
             v.ilosc_drzwi or "",
             "",
             v.kolor or "",
+            "",
             v.dealer_name or "",
             v.dealer_address_line_1 or "",
             v.dealer_address_line_2 or "",
@@ -397,7 +401,7 @@ def export_car_scout_csv(db: Session = Depends(database.get_db)):
             "",
             v.contact_phone or "",
             main_image,
-            str(image_count) if image_count else "",
+            "",
             all_pictures,
             audio_str,
             safety_str,

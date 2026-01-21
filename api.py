@@ -103,6 +103,9 @@ async def run_scraper_task(limit: Optional[int] = None):
                     vehicle = models.Vehicle(**vehicle_data)
                     db.add(vehicle)
                     db.flush()
+                else:
+                    if data.get("numer_oferty"):
+                        vehicle.numer_oferty = data.get("numer_oferty")
                 
                 equipment_json = {
                     "technologia": data.get("technologia"),
@@ -367,7 +370,7 @@ def export_car_scout_csv(db: Session = Depends(database.get_db)):
         scraped_at = latest.scraped_at.isoformat() if latest.scraped_at else ""
         
         writer.writerow([
-            str(v.id) if v.id else "",
+            v.numer_oferty or (str(v.id) if v.id else ""),
             v.url or "",
             scraped_at,
             v.marka or "",

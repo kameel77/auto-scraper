@@ -10,6 +10,7 @@ class Vehicle(Base):
     id = Column(Integer, primary_key=True, index=True)
     url = Column(String, unique=True, index=True)
     vin = Column(String, index=True)
+    numer_oferty = Column(String, index=True)
     marka = Column(String, index=True)
     model = Column(String, index=True)
     wersja = Column(String)

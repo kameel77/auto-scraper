@@ -6,20 +6,21 @@ import { useState } from "react";
 export function ScrapeButton() {
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState<{ status: string; current?: number; total?: number } | null>(null);
+  const [marketplace, setMarketplace] = useState<string>("autopunkt");
   const [limit, setLimit] = useState<number | "">("");
 
   const handleScrape = async () => {
     setLoading(true);
-    setProgress({ status: "Uruchamianie scrapera..." });
+    setProgress({ status: `Uruchamianie scrapera dla ${marketplace}...` });
 
     const limitParam = limit === "" ? "all" : limit;
 
     try {
-      const eventSource = new EventSource(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/scrape/progress?limit=${limitParam}`);
+      const eventSource = new EventSource(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/scrape/progress?marketplace=${marketplace}&limit=${limitParam}`);
 
       eventSource.onmessage = (event) => {
         const data = JSON.parse(event.data);
-        if (data.status === "progress") {
+        if (data.status === "progress" || data.status === "collecting" || data.status === "scraping") {
           setProgress({ status: data.message, current: data.current, total: data.total });
         } else if (data.status === "complete") {
           setProgress({ status: `Zakończono! Zebrał ${data.collected} ofert`, current: data.collected, total: data.collected });
@@ -42,7 +43,7 @@ export function ScrapeButton() {
         setProgress({ status: "Błąd połączenia z serwerem" });
       };
 
-      await startScrape(limit === "" ? 0 : limit);
+      await startScrape(marketplace, limit === "" ? 0 : limit);
     } catch (error) {
       console.error("Scrape failed:", error);
       setLoading(false);
@@ -52,7 +53,7 @@ export function ScrapeButton() {
 
   const handleReset = async () => {
     if (!confirm("Czy na pewno chcesz wyczyścić bazę danych?")) return;
-    
+
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/admin/reset-db`, {
         method: "POST",
@@ -72,6 +73,18 @@ export function ScrapeButton() {
   return (
     <div className="flex flex-col gap-3">
       <div className="flex gap-4 w-full sm:w-auto flex-wrap">
+        <div className="flex items-center gap-2 bg-white dark:bg-slate-900 px-4 py-2 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800">
+          <label className="text-sm font-bold text-slate-600 dark:text-slate-400">Marketplace:</label>
+          <select
+            value={marketplace}
+            onChange={(e) => setMarketplace(e.target.value)}
+            disabled={loading}
+            className="px-3 py-1 text-sm font-bold text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          >
+            <option value="autopunkt">Autopunkt</option>
+            <option value="findcar">Findcar.pl</option>
+          </select>
+        </div>
         <div className="flex items-center gap-2 bg-white dark:bg-slate-900 px-4 py-2 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800">
           <label className="text-sm font-bold text-slate-600 dark:text-slate-400">Ilość ofert:</label>
           <input

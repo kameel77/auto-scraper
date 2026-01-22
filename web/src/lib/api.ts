@@ -57,8 +57,12 @@ export async function getVehicleTrends(vehicleId: number): Promise<PriceTrend[]>
     return res.json();
 }
 
-export async function startScrape(limit: number = 10): Promise<{ message: string }> {
-    const res = await fetch(`${API_BASE_URL}/scrape?limit=${limit}`, {
+export async function startScrape(marketplace: string = "autopunkt", limit: number = 0): Promise<{ message: string }> {
+    const url = new URL(`${API_BASE_URL}/scrape`);
+    url.searchParams.append("marketplace", marketplace);
+    if (limit > 0) url.searchParams.append("limit", limit.toString());
+
+    const res = await fetch(url.toString(), {
         method: "POST",
     });
     if (!res.ok) throw new Error("Failed to start scrape");

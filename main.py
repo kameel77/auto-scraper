@@ -12,7 +12,7 @@ from pathlib import Path
 import pandas as pd
 from tqdm import tqdm
 
-from scraper import collect_offer_urls, parse_offer
+from scraper import get_scraper
 
 
 def setup_logging(verbose: bool = False):
@@ -31,29 +31,39 @@ def setup_logging(verbose: bool = False):
 async def main():
     """Główna funkcja scrapera."""
     parser = argparse.ArgumentParser(
-        description='Scraper ofert samochodów z autopunkt.pl'
+        description='Scraper ofert samochodów'
+    )
+    parser.add_argument(
+        '--marketplace', '-m',
+        choices=['autopunkt', 'findcar'],
+        default='autopunkt',
+        help='Marketplace do skrejpowania (default: autopunkt)'
     )
     parser.add_argument(
         '--url',
-        default='https://autopunkt.pl/znajdz-auto',
-        help='URL strony z listą ofert'
+        help='URL strony z listą ofert (opcjonalnie)'
     )
     parser.add_argument(
         '--max-scrolls',
         type=int,
         default=60,
-        help='Maksymalna liczba scrollów (default: 60)'
+        help='Maksymalna liczba scrollów dla autopunkt (default: 60)'
+    )
+    parser.add_argument(
+        '--max-pages',
+        type=int,
+        default=10,
+        help='Maksymalna liczba stron dla findcar (default: 10)'
     )
     parser.add_argument(
         '--scroll-pause',
         type=float,
         default=1.0,
-        help='Pauza między scrollami w sekundach (default: 1.0)'
+        help='Pauza między scrollami/stronami w sekundach (default: 1.0)'
     )
     parser.add_argument(
         '--output',
-        default='autopunkt_vehicles.csv',
-        help='Nazwa pliku wyjściowego CSV (default: autopunkt_vehicles.csv)'
+        help='Nazwa pliku wyjściowego CSV (domyślnie: <marketplace>_vehicles.csv)'
     )
     parser.add_argument(
         '--min-delay',
@@ -96,18 +106,33 @@ async def main():
     
     logger = logging.getLogger(__name__)
     
+    # Wybór scrapera
+    from scraper import get_scraper
+    try:
+        scraper = get_scraper(args.marketplace)
+    except ValueError as e:
+        logger.error(str(e))
+        sys.exit(1)
+
+    output_filename = args.output or f"{args.marketplace}_vehicles.csv"
+
     # === FAZA 1: Zbieranie URL-i ===
     logger.info("=" * 60)
-    logger.info("FAZA 1: Zbieranie URL-i ofert")
+    logger.info(f"FAZA 1: Zbieranie URL-i ofert ({args.marketplace})")
     logger.info("=" * 60)
     
     try:
-        offer_urls = await collect_offer_urls(
-            list_url=args.url,
-            max_scroll_rounds=args.max_scrolls,
-            scroll_pause=args.scroll_pause,
-            headless=args.headless
-        )
+        if args.marketplace == "autopunkt":
+            offer_urls = await scraper.collect_urls(
+                max_scroll_rounds=args.max_scrolls,
+                scroll_pause=args.scroll_pause,
+                headless=args.headless
+            )
+        else: # findcar
+            offer_urls = await scraper.collect_urls(
+                max_pages=args.max_pages,
+                scroll_pause=args.scroll_pause
+            )
     except Exception as e:
         logger.error(f"Błąd podczas zbierania URL-i: {e}")
         sys.exit(1)
@@ -125,7 +150,7 @@ async def main():
     
     # === FAZA 2: Parsowanie ofert ===
     logger.info("=" * 60)
-    logger.info("FAZA 2: Parsowanie ofert")
+    logger.info(f"FAZA 2: Parsowanie ofert ({args.marketplace})")
     logger.info("=" * 60)
     
     rows = []
@@ -133,7 +158,7 @@ async def main():
     
     for url in tqdm(offer_urls, desc="Parsowanie ofert"):
         try:
-            offer_data = parse_offer(url)
+            offer_data = scraper.parse_offer(url)
             rows.append(offer_data)
             
             # Rate limiting
@@ -151,7 +176,7 @@ async def main():
     
     if rows:
         df = pd.DataFrame(rows)
-        output_path = Path(args.output)
+        output_path = Path(output_filename)
         df.to_csv(output_path, index=False, encoding='utf-8-sig')
         logger.info(f"Zapisano {len(df)} ofert do: {output_path.absolute()}")
     else:

@@ -7,8 +7,7 @@ import models, database
 from pydantic import BaseModel
 from datetime import datetime
 import asyncio
-from scraper.url_collector import collect_offer_urls
-from scraper.offer_parser import parse_offer
+from scraper import get_scraper
 import logging
 import json
 import os
@@ -71,17 +70,22 @@ class StatsSchema(BaseModel):
     avg_price: float
     unique_brands: int
 
-async def run_scraper_task(limit: Optional[int] = None):
+async def run_scraper_task(marketplace: str = "autopunkt", limit: Optional[int] = None):
     global scrape_progress
     db = database.SessionLocal()
     try:
         scrape_progress["status"] = "collecting"
-        scrape_progress["message"] = "Zbieranie URL-i ofert..."
+        scrape_progress["message"] = f"Zbieranie URL-i ofert ({marketplace})..."
         scrape_progress["current"] = 0
         scrape_progress["total"] = 0
         
-        logger.info("Starting background scrape task with snapshots...")
-        urls = await collect_offer_urls()
+        logger.info(f"Starting background scrape task for {marketplace}...")
+        scraper = get_scraper(marketplace)
+        
+        if marketplace == "autopunkt":
+            urls = await scraper.collect_urls()
+        else: # findcar
+            urls = await scraper.collect_urls(max_pages=10)
         
         if limit and limit < len(urls):
             logger.info(f"Ograniczam do {limit} ofert")
@@ -95,7 +99,7 @@ async def run_scraper_task(limit: Optional[int] = None):
                 scrape_progress["current"] = i + 1
                 scrape_progress["message"] = f"Parsowanie oferty {i + 1} z {len(urls)}"
                 
-                data = parse_offer(url)
+                data = scraper.parse_offer(url)
                 vehicle = db.query(models.Vehicle).filter(models.Vehicle.url == url).first()
                 if not vehicle:
                     model_keys = models.Vehicle.__table__.columns.keys()
@@ -107,34 +111,44 @@ async def run_scraper_task(limit: Optional[int] = None):
                     if data.get("numer_oferty"):
                         vehicle.numer_oferty = data.get("numer_oferty")
                 
-                equipment_json = {
-                    "technologia": data.get("technologia"),
-                    "komfort": data.get("komfort"),
-                    "bezpieczenstwo": data.get("bezpieczenstwo"),
-                    "wyglad": data.get("wyglad"),
-                }
+                # Normalize equipment for snapshots
+                if marketplace == "autopunkt":
+                    equipment_json = {
+                        "technologia": data.get("technologia"),
+                        "komfort": data.get("komfort"),
+                        "bezpieczenstwo": data.get("bezpieczenstwo"),
+                        "wyglad": data.get("wyglad"),
+                    }
+                else: # findcar
+                    equipment_json = {
+                        "technologia": data.get("equipment_audio_multimedia"),
+                        "komfort": data.get("equipment_comfort_extras"),
+                        "bezpieczenstwo": data.get("equipment_safety"),
+                        "wyglad": data.get("equipment_other"),
+                    }
                 
                 snapshot = models.VehicleSnapshot(
                     vehicle_id=vehicle.id,
                     price=data.get("cena_brutto_pln"),
-                    old_price=data.get("stara_cena_pln"),
+                    old_price=data.get("stara_cena_pln") or data.get("omnibus_lowest_30d_pln"),
                     mileage=data.get("przebieg_km"),
                     equipment_json=equipment_json,
-                    tags=data.get("tagi_oferty"),
+                    tags=data.get("tagi_oferty") or data.get("additional_info_header"),
                     pictures=data.get("zdjecia"),
+                    source=data.get("source", "autopunkt.pl"),
                     scraped_at=datetime.now()
                 )
                 db.add(snapshot)
                 db.commit()
-                logger.info(f"Logged snapshot for: {vehicle.marka} {vehicle.model} (ID: {vehicle.id})")
+                logger.info(f"Logged snapshot for: {vehicle.marka} {vehicle.model} (ID: {vehicle.id}) from {marketplace}")
                 
             except Exception as e:
                 logger.error(f"Error scraping {url}: {e}")
                 db.rollback()
         
         scrape_progress["status"] = "complete"
-        scrape_progress["message"] = f"Zakończono! Zebrano {len(urls)} ofert"
-        logger.info("Scrape task finished.")
+        scrape_progress["message"] = f"Zakończono! Zebrano {len(urls)} ofert z {marketplace}"
+        logger.info(f"Scrape task for {marketplace} finished.")
         
     except Exception as e:
         scrape_progress["status"] = "error"
@@ -149,11 +163,11 @@ def read_root():
     return {"message": "Auto-Scraper API with Trends is running"}
 
 @app.post("/scrape")
-async def trigger_scrape(background_tasks: BackgroundTasks, limit: Optional[int] = None):
+async def trigger_scrape(background_tasks: BackgroundTasks, marketplace: str = "autopunkt", limit: Optional[int] = None):
     global scrape_progress
     scrape_progress = {"status": "idle", "current": 0, "total": 0, "message": ""}
-    background_tasks.add_task(run_scraper_task, limit=limit)
-    return {"message": f"Historical scrape started in background" + (f" (limit={limit})" if limit else " (all offers)") }
+    background_tasks.add_task(run_scraper_task, marketplace=marketplace, limit=limit)
+    return {"message": f"Scrape for {marketplace} started in background" + (f" (limit={limit})" if limit else "") }
 
 def generate_progress() -> Generator[str, None, None]:
     global scrape_progress

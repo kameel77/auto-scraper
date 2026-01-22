@@ -1,150 +1,191 @@
-﻿listing_id,url,scraped_at,marka,model,wersja,vin,cena_brutto_pln,price_display,omnibus_lowest_30d_pln,omnibus_text,rocznik,przebieg_km,typ_silnika,skrzynia_biegow,moc_km,registration_number,pierwsza_rejestracja,pojemnosc_cm3,naped,typ_nadwozia,ilosc_drzwi,seats,kolor,paint_type,dealer_name,dealer_address_line_1,dealer_address_line_2,dealer_address_line_3,dealer_google_rating,dealer_review_count,dealer_google_link,contact_phone,primary_image_url,image_count,zdjecia,equipment_audio_multimedia,equipment_safety,equipment_comfort_extras,equipment_other,additional_info_header,additional_info_content,specs_json,source
-012029455,https://findcar.pl/listings/012029455,2026-01-22T18:50:01.742931+00:00,Skoda,Octavia,,TMBAJ7NX9NY042174,85900,85 900 zł,85900.0,Najniższa cena z 30 dni: 85 900 zł brutto,2021,93951,diesel,automatyczna,150,WI462LS,28.12.2021,1968,przedni,kompakt,5,5,srebrny,metalik,Grupa Cichy-Zasada Sp. z o.o. Sp. j.,Al. Jana III Sobieskiego 1,51-301 Wrocław,,5.0,24,https://maps.google.com/?cid=12075846642729627413&g_mp=CiVnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLkdldFBsYWNlEAIYBCAA,+48222309678,https://carapi.activemotors.pl/photo/1937961/fc15ce1a756a8704.jpg,6,https://carapi.activemotors.pl/photo/1937961/fc15ce1a756a8704.jpg|https://carapi.activemotors.pl/photo/1937961/f1d976bf071542c7.jpg|https://carapi.activemotors.pl/photo/1937961/df67d7c5b42fedeb.jpg|https://carapi.activemotors.pl/photo/1937961/439b52f0aa8bbeec.jpg|https://carapi.activemotors.pl/photo/1937961/eaecb2376a311d18.jpg|https://carapi.activemotors.pl/photo/1937961/fbab0e1e756e3c05.jpg,bluetooth,ABS|aktywny asystent zmiany pasa ruchu|ESP (stabilizacja toru jazdy)|kamera parkowania tył|lampy przeciwmgielne|poduszka powietrzna kierowcy|poduszka powietrzna pasażera,"kierownica wielofunkcyjna|klimatyzacja automatyczna|klimatyzacja automatyczna, dwustrefowa|lampy przednie w technologii LED|lusterka boczne ustawiane elektrycznie|podgrzewane lusterka boczne|przyciemniane tylne szyby|wspomaganie kierownicy",alufelgi|ogranicznik prędkości|tempomat,,"Samochodyużywane.pl to nowa jakość odkupu i sprzedaży samochodów używanych stworzona przez największą grupę dealerską w Polsce – Grupę Cichy-Zasada.
-
-Każdy samochód, który trafia do naszej oferty jest najpierw dokładnie prześwietlany podczas szczegółowej kontroli w profesjonalnym serwisie.
-Po jej zakończeniu nasi eksperci potwierdzają stan pojazdu certyfikatem technicznym. Jednocześnie badamy historię auta, sprawdzamy jego przebieg oraz przeprowadzane wcześniej naprawy. Samochód może zostać objęty gwarancją.
-
-Możesz zostawić swoje auto w rozliczeniu, a dodatkowo – podczas zakupu samochodu zaproponujemy Ci dedykowane opcje finansowania.
-
-Zapraszamy do kontaktu. W stałej ofercie posiadamy ponad 600 samochodów.
-Pomożemy Ci znaleźć Twój wymarzony samochód.
-
-Punkt Sprzedaży oddział Wrocław
-Ul. Jana III Sobieskiego 1
-Autoryzowana Stacja Obsługi marek
-Peugeot, Citroen, Opel oraz BYD
-
-Każdy samochód, na który zostanie umówione spotkanie, będzie przygotowany do prezentacji w naszym ciepłym, dobrze oświetlonym salonie. Dzięki temu mogą Państwo obejrzeć pojazd w komfortowych warunkach – niezależnie od pogody.
-
-Podana cena obowiązuje tylko w połączeniu z finansowaniem w Volkswagen Financial Services. Cena poza ofertą finansowania: 93900 PLN brutto.  
-
-W tym ogłoszeniu prezentujemy pojazd:
-
- Skoda Octavia Style 
- Rok produkcji: 2021
- Przebieg: 93951 km
- Paliwo: Diesel
- Skrzynia biegów: automatyczna
- Napęd: na przednie koła
- Pojemność: 2.0 TDI  (1968 cm³)
- Moc: 150 KM
- Liczba drzwi: 5
- Kolor: szary
- Kraj pochodzenia: Polska
- VIN: TMBAJ7NX9NY042174
+﻿listing_id,numer_oferty,url,scraped_at,marka,model,wersja,vin,cena_brutto_pln,price_display,omnibus_lowest_30d_pln,omnibus_text,rocznik,przebieg_km,typ_silnika,skrzynia_biegow,moc_km,registration_number,pierwsza_rejestracja,pojemnosc_cm3,naped,typ_nadwozia,ilosc_drzwi,seats,kolor,paint_type,dealer_name,dealer_address_line_1,dealer_address_line_2,dealer_address_line_3,dealer_google_rating,dealer_review_count,dealer_google_link,contact_phone,primary_image_url,image_count,zdjecia,equipment_audio_multimedia,equipment_safety,equipment_comfort_extras,equipment_other,additional_info_header,additional_info_content,specs_json,source
+000238337,000238337,https://findcar.pl/listings/000238337,2026-01-22T21:23:43.760011+00:00,Volkswagen,Arteon Shooting Brake,,WVWZZZ3HZPK000615,149800,149 800 zł,149800.0,Najniższa cena z 30 dni: 149 800 zł brutto,2022,81631,benzyna,"automatyczna dwusprzęgłowa (DCT, DSG)",190,GIS,07.12.2022,1984,przedni,kombi,5,5,czarny,metalik,Porsche Inter Auto Polska Sp. z o. o.,Jabłoniowa 2a,41-214 Sosnowiec,,4.2,626,https://maps.google.com/?cid=9477818247839401529&g_mp=CiVnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLkdldFBsYWNlEAIYBCAA,+48662132129,https://carapi.activemotors.pl/photo/1938138/43b6a783627e4a8c.jpg,29,https://carapi.activemotors.pl/photo/1938138/43b6a783627e4a8c.jpg|https://carapi.activemotors.pl/photo/1938138/4f2a9f5ccff8dea1.jpg|https://carapi.activemotors.pl/photo/1938138/867d0992ba5186b1.jpg|https://carapi.activemotors.pl/photo/1938138/471d8c73d2cf8871.jpg|https://carapi.activemotors.pl/photo/1938138/bba9e1ded4558e6a.jpg|https://carapi.activemotors.pl/photo/1938138/21743fff95ef8156.jpg|https://carapi.activemotors.pl/photo/1938138/f1daef28fdd32faa.jpg|https://carapi.activemotors.pl/photo/1938138/738952744ba0d372.jpg|https://carapi.activemotors.pl/photo/1938138/419076d534791c7d.jpg|https://carapi.activemotors.pl/photo/1938138/6a388558252e5906.jpg|https://carapi.activemotors.pl/photo/1938138/ed708ae6fdee452f.jpg|https://carapi.activemotors.pl/photo/1938138/39872669089d8da6.jpg|https://carapi.activemotors.pl/photo/1938138/408dcf85c7a1cfd3.jpg|https://carapi.activemotors.pl/photo/1938138/56166ec9f9804317.jpg|https://carapi.activemotors.pl/photo/1938138/ec353ea627f810d0.jpg|https://carapi.activemotors.pl/photo/1938138/ea0a11f7e1aaed47.jpg|https://carapi.activemotors.pl/photo/1938138/9b8f5fc885bdbfe3.jpg|https://carapi.activemotors.pl/photo/1938138/ece25858f4034fc9.jpg|https://carapi.activemotors.pl/photo/1938138/7d1777094f5e4947.jpg|https://carapi.activemotors.pl/photo/1938138/e9e7ea60e5849731.jpg|https://carapi.activemotors.pl/photo/1938138/b858a11fc6d7ae60.jpg|https://carapi.activemotors.pl/photo/1938138/fc614eaa22174ca4.jpg|https://carapi.activemotors.pl/photo/1938138/0785c1a82ec56acb.jpg|https://carapi.activemotors.pl/photo/1938138/706afef08133734c.jpg|https://carapi.activemotors.pl/photo/1938138/6e355639f95b7f44.jpg|https://carapi.activemotors.pl/photo/1938138/bc1619fae8629dae.jpg|https://carapi.activemotors.pl/photo/1938138/8d588528038e911b.jpg|https://carapi.activemotors.pl/photo/1938138/a645d9bd76e9f68f.jpg|https://carapi.activemotors.pl/photo/1938138/e6a41a8411cffe43.jpg,bluetooth|System nawigacji satelitarnej,ABS|ESP (stabilizacja toru jazdy)|kontrola odległości z przodu (przy parkowaniu)|kontrola odległości z tyłu (przy parkowaniu)|poduszka kolan kierowcy|poduszka powietrzna kierowcy|poduszka powietrzna pasażera,kierownica wielofunkcyjna|klimatyzacja automatyczna|lampy przednie w technologii LED|lusterka boczne ustawiane elektrycznie|podgrzewane lusterka boczne|przyciemniane tylne szyby|wspomaganie kierownicy,alufelgi|tempomat,,"Porsche Inter Auto Polska Sp. Zo.o. Oddział Volkswagen Sosnowiec - ul. Jabłoniowa 2a
+Autoryzowany Dealer Marki Volkswagen, prezentuje ofertę samochodu używanego.
 
 
-Wyposażenie standardowe obejmuje m.in.
+Kupując samochód z naszego salonu otrzymasz:
 
-2 lampki do czytania z przodu i oświetlenie części pasażerskiej z tyłu
-Auto Light Assist- automatyczne włączanie i wyłączanie świateł drogowych
-Bluetooth
-Czujniki odległości przy parkowaniu - przód i tył z MANOEUVRE ASSIST
-DAB+ - cyfrowy odbiór stacji radiowych
-DRIVER ALERT - funkcja wykrywania zmęczenia kierowcy
-Dekor STYLE
-ESP z ABS, EBD, MSR, ASR, EDL, HBA, DSR, RBS, ESBS, TSA, XDS+
-Felgi aluminiowe 18 PERSEUS 7,5J z ogumieniem
-Fotele przednie z funkcją podgrzewania
-Fotele przednie z regulacją wysokości i lędźwiową
-Front Assist - kontrola odstępu z funkcją awaryjnego hamowania
-Funkcja SmartLink z połączeniem bezprzewodowym dla urządzeń Apple iOS
-Gniazdo 12V w bagażniku
-Głośniki - 8 sztuk
-Haczyki na torby w przestrzeni bagażowej
-Hamulec antykolizyjny - multicollision brake
-Hamulec postojowy, elektromechaniczny
-Hill Hold Control - wspomaganie ruszania pod wzniesienia
-Immobilizer - Blokada przeciwuruchomieniowa
-KESSY FULL - bezkluczykowy system obsługi samochodu
-Kamera cofania
-Kierownica 2-ramienna skórzana, wielofunkcyjna z manetkami zmiany biegów
-Klimatyzacja dwustrefowa automatyczna Climatronic
-Kurtyny powietrzne i boczne poduszki powietrzne z przodu
-LIGHT AND RAIN ASSIST - czujnik zmierzchu i deszczu
-Lakier uni
-Lampy przednie LED Top Matrix
-Lane Assist - asystent zmiany pasa ruchu
-Lusterka boczne elektrycznie składane i podgrzewane, aut. przyciemniające się lust. po str. kierowcy
-Lusterko wsteczne ściemniające się automatycznie z czujnikiem wilgotności
-Oparcie tylnej kanapy składane i dzielone
-Oświetlenie części bagażowej - 1 lampka
-Pakiet CHROM - chromowana listwa wokół krawędzi okien bocznych oraz chromowana listwa zderzaka przód
-Parasolka w schowku drzwi kierowcy
-Pasy bezpieczeństwa z przodu i z tyłu trzypunktowe
-Poduszka powietrzna, centralna
-Poduszki pow. czołowe z przodu, pod. kolanowa kierowcy, dezaktywacja pod. pasażera z przodu
-Podłokietnik z przodu
-Podłokietnik z tyłu
-Połączenie alarmowe - manualne lub automatyczne wezwanie pomocy po wypadku
-Radio BOLERO (10 cali, 2 gniazda USB-C umożliwiające ładowanie i trasfer danych)
-Ramka grilla chromowana
-Schowek na kamizelkę odblaskową
-Schowek na okulary
-Skrobaczka do szyb w pokrywie wlewu paliwa
-Składana pokrywa nad przestrzenią bagażową
-SunSet - przyciemniane tylne szyby boczne i szyba pokrywy bagażnika
-System kontroli ciśnienia w oponach TPM
-Szyby przednie i tylne elektrycznie sterowane
-Tempomat aktywny
-Trzy zagłówki tylne
-Tylne światła LED TOP z dynamicznymi kierunkowskazami
-Uchwyt na kwity parkingowe
-Uchwyty ISOFIX na zewn. miejscach z tyłu oraz na fotelu pasażera z przodu
-Uchwyty składane w podsufitce - 4
-VIRTUAL COCKPIT - cyfrowy zestaw wskaźników
-Zamek centralny zdalnie sterowany
-Zestaw do naprawy przebitej opony
-Zestaw siatek w bagażniku
-Światła przeciwmgielne przednie z funkcją doświetlania zakrętów i z LED
-
-Ogłoszenie ma charakter informacyjny i stanowi zaproszenie do zawarcia umowy (art. 71 Kodeksu cywilnego); nie stanowi natomiast oferty handlowej w rozumieniu art. 66 § 1 Kodeksu cywilnego. W celu sprawdzenia zgodności oferty oraz uzyskania wszelkich informacji prosimy kontaktować się z handlowcem d.s. samochodów używanych.
+ • Assistance – Gwarancja Mobilności
+ • Sprawdzony stan techniczny
+ • Potwierdzony przebieg i historia samochodu
+ • Udokumentowane pochodzenie samochodu
 
 
-","{""Marka"": ""Skoda"", ""Model"": ""Octavia"", ""VIN"": ""TMBAJ7NX9NY042174"", ""Numer rejestracyjny"": ""WI462LS"", ""Rok produkcji"": ""2021"", ""Data pierwszej rejestracji"": ""28.12.2021"", ""Przebieg"": ""93 951 km"", ""Silnik / rodzaj paliwa"": ""diesel"", ""Moc"": ""150 KM"", ""Napęd"": ""przedni"", ""Skrzynia biegów"": ""automatyczna"", ""Pojemność silnika"": ""1 968 cm³"", ""Rodzaj nadwozia"": ""kompakt"", ""Liczba drzwi"": ""5"", ""Liczba miejsc"": ""5"", ""Kolor"": ""srebrny"", ""Rodzaj lakieru"": ""metalik""}",findcar.pl
-012747778,https://findcar.pl/listings/012747778,2026-01-22T18:50:04.006436+00:00,Skoda,Superb,2.0 TSI 265KM DSG-7 4x4,TMBCP8NZ2SC013042,163900,163 900 zł,163900.0,Najniższa cena z 30 dni: 163 900 zł brutto,2024,15999,benzyna,automatyczna,265,WE1GA37,18.12.2024,1984,4x4 (dołączany automatycznie),sedan / limuzyna,5,5,niebieski,metalik,Plichta Spółka z o. o. Sp. K.,Wschodnia 38,87-100 Toruń,,4.8,1424,https://maps.google.com/?cid=15208170893420278018&g_mp=CiVnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLkdldFBsYWNlEAIYBCAA,+48691256226,https://carapi.activemotors.pl/photo/1937968/dba170793d6c562a.jpg,1,https://carapi.activemotors.pl/photo/1937968/dba170793d6c562a.jpg,bluetooth|radio|System nawigacji satelitarnej,ABS|aktywny asystent zmiany pasa ruchu|ESP (stabilizacja toru jazdy)|kamera parkowania tył|kontrola odległości z przodu (przy parkowaniu)|kontrola odległości z tyłu (przy parkowaniu)|Park Assistant - asystent parkowania|poduszka powietrzna kierowcy|poduszka powietrzna pasażera,elektryczne szyby przednie|elektryczne szyby tylne|kierownica wielofunkcyjna|lampy przednie w technologii LED|lusterka boczne ustawiane elektrycznie|ogrzewane siedzenia tylne|podgrzewane lusterka boczne|podgrzewany fotel kierowcy|przyciemniane tylne szyby|tapicerka materiałowa|wspomaganie kierownicy,ogranicznik prędkości|system Start/Stop,SalonPL|1Właściciel|Bezwypadkowy|SerwisASO|Gwarancja|FVAT23%|Kamera,"Numer oferty: 
+Ponadto zapytaj naszych Doradców o:
 
-Samochód znajduje się w salonie VOLKSWAGEN PLICHTA TORUŃ przy ulicy Wschodniej 38
+• Pozostawienie pojazdu w rozliczeniu
+• Przedłużoną gwarancję producenta na samochody
+• Korzystne pakiety serwisowe dostępne dla samochodów używanych
+• Dedykowane finansowanie z niskimi ratami
+
+Doradca klienta:
+
+Mateusz tel: 787 016 662
+Kamil tel. 888 337 141
+Dariusz tel. 668 041 952
+Robert tel. 539 022 243
+
+Dostępne formy zakupu:
+✔️ Gotówka
+✔️ Leasing
+✔️ Najem długoterminowy
+✔️ Kredyt
+
+
+
+Niniejsze ogłoszenie jest wyłącznie informacją handlową i nie stanowi oferty w myśl art. 66, § 1. Kodeksu Cywilnego. Sprzedający nie odpowiada za ewentualne błędy lub nieaktualność ogłoszenia.
 
 
 
 
 
-Skoda Superb Selection 2.0 TSI 265KM 4x4  Automat DSG
 
-Atrakcyjne warunki finansowania w fabrycznym Volkswagen Banku.  
 
-Dopłata w wysokości 2 000zł do ubezpieczenia przy zakupie auta w kredycie lub 1.9% wartości samochodu w przypadku finansowania w leasingu.
 
-UWAGA : Dotyczy wyłącznie samochodów wszystkich marek do 9 roku eksploatacji w przypadku kredytu, natomiast polisa w leasingu 1.5% wartości pojazdu dotyczy tylko i wyłącznie samochodów grupy Volkswagena.
 
-1 WłaścicielBezwypadkowyFaktura VAT 23%Serwisowany w ASO SkodaAuto na gwarancji producenta do 18.12.2027 lub 60.000kmMożliwość pozostawienia obecnego samochodu w rozliczeniu, bezpłatna wycenaKupujący zwolniony z opłaty skarbowej
-Wybrane elementy wyposażenia:
 
-Automatyczna skrzynia biegówFotele przednie podgrzewane z masażemFotele tył podgrzewaneDigital Cockpit Pro - Cyfrowy zestaw wskaźników z komputerem pokładowym, personalizowanySkórzana, podgrzewana kierownica wielofunkcyjna z łopatkami zmiany biegówSystem multimedialny z dużym dotykowym ekranem i nawigacją fabrycznąAndroid Auto / Apple Car Play / MirrorLink - bezprzewodowoBluetooth z głośnomówiącymAktywny tempomat ACC z funkcją Stop&amp;GoOgranicznik prędkościKlimatyzacja automatyczna Climatronic, 3-strefowaReflektory przednie FULL LED  z funkcją dynamicznej regulacji zasięgu oraz doświetlaniem zakrętówTylne światła w technologii 3D LEDCzujnik zmierzchuCzujnik deszczuSystem Park Assist Czujniki parkowania przednieCzujniki parkowania tylneKamera cofaniaKESSY FULL - bezkluczykowy system obsługi samochodu System rozpoznawania znaków drogowychFront Assist – kontrola odstępu z funkcją awaryjnego hamowaniaLine Assist - system utzrymania pasa ruchuSide Assist - czujnik ""martwej"" strefySystem rozpoznawania znaków drogowychSystem PreCrashSystem rozpoznawania zmęczenia kierowcyESP, ASR, ABS, MSR, wraz z asystentem siły hamowania i stabilizacją toru jazdy przyczepyLusterka boczne elektrycznie regulowane, podgrzewane i składanePrzyciemniane szybyIsofixPoduszki oraz kurtyny powietrzneElektrycznie sterowana klapa bagażnika (bezdotykowo)Felgi aluminiowe 17`Oświetlenie nastrojowe AMBIENTE
 
-MOŻLIWOŚC TRANSPORTU AUTA NA TERENIE POLSKI.
+","{""Marka"": ""Volkswagen"", ""Model"": ""Arteon Shooting Brake"", ""VIN"": ""WVWZZZ3HZPK000615"", ""Numer rejestracyjny"": ""GIS"", ""Rok produkcji"": ""2022"", ""Data pierwszej rejestracji"": ""07.12.2022"", ""Przebieg"": ""81 631 km"", ""Silnik / rodzaj paliwa"": ""benzyna"", ""Moc"": ""190 KM"", ""Napęd"": ""przedni"", ""Skrzynia biegów"": ""automatyczna dwusprzęgłowa (DCT, DSG)"", ""Pojemność silnika"": ""1 984 cm³"", ""Rodzaj nadwozia"": ""kombi"", ""Liczba drzwi"": ""5"", ""Liczba miejsc"": ""5"", ""Kolor"": ""czarny"", ""Rodzaj lakieru"": ""metalik""}",findcar.pl
+000956660,000956660,https://findcar.pl/listings/000956660,2026-01-22T21:23:45.330907+00:00,Lexus,RZ,450e Omotenashi DIRECT4,JTJAABAB30A002605,199900,199 900 zł,199900.0,Najniższa cena z 30 dni: 199 900 zł brutto,2023,18587,Elektryczny,Automatyczna,313,,15.06.2023,0,4x4 (dołączany automatycznie),SUV,5,5,Czarny,Metalik,Toyota Katowice sp. z o.o.,al. Roździeńskiego 208A,40-315 Katowice,,4.5,739,https://maps.google.com/?cid=17713584679341330833&g_mp=CiVnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLkdldFBsYWNlEAIYBCAA,+48668040182,https://panel.pewneauto.pl/media/UsedCar/241005/66a4f21a306cd.jpg,12,https://panel.pewneauto.pl/media/UsedCar/241005/66a4f21a306cd.jpg|https://panel.pewneauto.pl/media/UsedCar/241005/66a4f21a749fe.jpg|https://panel.pewneauto.pl/media/UsedCar/241005/66a4f219d0bd3.jpg|https://panel.pewneauto.pl/media/UsedCar/241005/66a4f21a43257.jpg|https://panel.pewneauto.pl/media/UsedCar/241005/66a4f219b90cd.jpg|https://panel.pewneauto.pl/media/UsedCar/241005/66a4f21a8ae99.jpg|https://panel.pewneauto.pl/media/UsedCar/241005/66a4f21aa2337.jpg|https://panel.pewneauto.pl/media/UsedCar/241005/66a4f219e4c7e.jpg|https://panel.pewneauto.pl/media/UsedCar/241005/66a4f21ab59bd.jpg|https://panel.pewneauto.pl/media/UsedCar/241005/66a4f21adc04d.jpg|https://panel.pewneauto.pl/media/UsedCar/241005/66a4f21ac6e4d.jpg|https://panel.pewneauto.pl/media/UsedCar/241005/66a4f21af009c.jpg,Bluetooth|Ekran dotykowy|Gniazdo USB|Głosowe sterowanie funkcjami pojazdu|HUD (wyświetlacz przezierny)|Interfejs Android Auto|Interfejs Apple CarPlay|Nawigacja GPS|Zestaw głośnomówiący|Ładowanie bezprzewodowe urządzeń,ABS|Aktywny asystent hamowania awaryjnego|Asystent hamowania awaryjnego w mieście|Asystent pasa ruchu|Elektroniczny system rozdziału siły hamowania|ESP (stabilizacja toru jazdy)|Isofix|Kurtyny powietrzne|Kurtyny powietrzne - tył|Poduszka kolan pasażera|Poduszka powietrzna chroniąca kolana|Poduszka powietrzna kierowcy|Poduszka powietrzna pasażera|Poduszki boczne przednie|Poduszki boczne tylne|RCTA - System ostrzegania o ruchu poprzecznym z tyłu pojazdu|System ostrzegający o możliwej kolizji|System powiadamiania o wypadku|System wspomagania hamowania|System wykrywania zmęczenia kierowcy,Czujnik deszczu|Dach panoramiczny|Dźwignia zmiany biegów wykończona skórą|Elektryczne szyby przednie|Elektryczne szyby tylne|Elektrycznie ustawiane fotele|Elektrycznie ustawiany fotel kierowcy|Fotele przednie wentylowane|Keyless Entry|Keyless Go|Kierownica ogrzewana|Kierownica skórzana|Kierownica sportowa|Klimatyzacja dwustrefowa|Kolumna kierownicy regulowana elektrycznie|Podgrzewane przednie siedzenia|Podgrzewane tylne siedzenia|Podgrzewany fotel pasażera|Podłokietniki - przód|Podłokietniki - tył|Przyciemniane szyby|Regul. elektr. podparcia lędźwiowego - kierowca|Regul. elektr. podparcia lędźwiowego - pasażer|Siedzenie z pamięcią ustawienia|Tapicerka Alcantara|Uruchamianie silnika bez użycia kluczyków|Wielofunkcyjna kierownica|Łopatki zmiany biegów,Felgi aluminiowe 20|Aktywny asystent zmiany pasa ruchu|ASR (kontrola trakcji)|Asystent (czujnik) martwego pola|Asystent hamowania - Brake Assist|Asystent jazdy w korku|Asystent parkowania|Asystent świateł drogowych|Czujnik zmierzchu|Czujniki parkowania przednie|Czujniki parkowania tylne|Dynamiczne światła doświetlające zakręty|Elektroniczna kontrola ciśnienia w oponach|Elektrycznie ustawiane lusterka|Elektryczny hamulec postojowy|Kamera cofania|Kamera panoramiczna 360|Kontrola odległości|Lampy tylne w technologii LED|Lusterka boczne składane elektrycznie|Ogranicznik prędkości|Oświetlenie drogi do domu|Podgrzewane lusterka boczne|RSA - System rozpoznawania znaków drogowych|Tempomat aktywny|Wspomaganie kierownicy|Wspomaganie ruszania pod górę|Światła do jazdy dziennej|Światła do jazdy dziennej diodowe LED|Światła LED|Światła przeciwmgielne|Funkcja szybkiego ładowania|Kabel do ładowania|System odzyskiwania energii,,"Autoryzowany dealer Lexus Katowice oferuje do sprzedaży samochód używany Lexus RZ 450e DIRECT4 
+Wersja wyposażenia: Omotenashi
 
-MOŻLIWOŚĆ POZOSTAWIENIA AUTA W ROZLICZENIU.
+Dodatkowe informacje dotyczące samochodu:
+- bezwypadkowy
+- zakupiony w polskim salonie
+- serwisowany w Autoryzowanym Serwisie
+- od pierwszego właściciela
+- sprzedaż na podstawie faktury VAT 23%
 
-_
-Zapraszamy do kontaktu i na jazdę próbną:
+Gwarancja:
 
-☎️+48 783 127 901 Paweł Kalinowski
+W cenie samochodu 12 miesięczna gwarancja bez limitu kilometrów z możliwością darmowego przedłużenia do 10 lat lub 185000km LEXUS RELAX* ( O szczegóły zapytaj doradcę )
 
-☎️+48 693 250 738 Mateusz Karwaszewski
+Zakup samochodu w Lexus Katowice to bezpieczeństwo transakcji i gwarancja, że używany pojazd, który Państwo kupują, został sprawdzony przez nasz Dział Serwisu Mechanicznego. Oferujemy:
+- ponad 15 lat doświadczenia na rynku motoryzacyjnym
+- udokumentowany przebieg
+- możliwość wglądu w historię samochodu (podczas wizyty w naszym salonie)
+- kompleksową obsługę finansowania zakupu oraz ubezpieczenia samochodu
+- możliwość przyjęcia w rozliczeniu samochodu zakupionego w polskim salonie (różne marki).
 
-☎️+48 691 160 785 Przemysław Roszak
+Dla komfortu naszych Klientów prosimy o telefoniczne umówienie terminu spotkania i prezentacji samochodu.
 
-☎️+48 691 256 226 Łukasz Staszewski
-_
-Oferujemy również kompleksową obsługę w zakresie finansowania i ubezpieczenia:
+Kontakt do Doradców:
 
-- kredyty i leasingi z atrakcyjnym oprocentowaniem
-- uproszczone procedury
-- atrakcyjne pakiety AC/OC/NW/ASS wiodących firm ubezpieczeniowych
+• Adam Szkaradek, tel. 668 040 182
 
-_
-Niniejsze ogłoszenie nie stanowi oferty w myśl art. 66 § 1 Kodeksu Cywilnego, a jedynie zaproszenie do zawarcia umowy. 
-Nie odpowiadamy za ewentualne niezamierzone błędy w ogłoszeniu.
-","{""Marka"": ""Skoda"", ""Model"": ""Superb"", ""Wersja"": ""2.0 TSI 265KM DSG-7 4x4"", ""VIN"": ""TMBCP8NZ2SC013042"", ""Numer rejestracyjny"": ""WE1GA37"", ""Rok produkcji"": ""2024"", ""Data pierwszej rejestracji"": ""18.12.2024"", ""Przebieg"": ""15 999 km"", ""Silnik / rodzaj paliwa"": ""benzyna"", ""Moc"": ""265 KM"", ""Napęd"": ""4x4 (dołączany automatycznie)"", ""Skrzynia biegów"": ""automatyczna"", ""Pojemność silnika"": ""1 984 cm³"", ""Rodzaj nadwozia"": ""sedan / limuzyna"", ""Liczba drzwi"": ""5"", ""Liczba miejsc"": ""5"", ""Kolor"": ""niebieski"", ""Rodzaj lakieru"": ""metalik""}",findcar.pl
+• Michał Langer, tel. 880 142 963
+
+Wszelkie informacje zawarte na niniejszej stronie internetowej nie stanowią oferty w rozumieniu Kodeksu Cywilnego. W wypadku sprzedaży konsumenckiej w rozumieniu ustawy z dnia 27 lipca 2002 r. o szczególnych warunkach sprzedaży konsumenckiej oraz o zmianie Kodeksu cywilnego (dalej: Ustawa), zawarte na niniejszej stronie internetowej informacje nie stanowią zapewnienia w rozumieniu art. 4 ust. 3 Ustawy, jak również nie stanowią opisu towaru w rozumieniu art. 4 ust. 2 Ustawy. Indywidualne uzgodnienie ceny i wyposażenia pojazdu następuje w umowie jego sprzedaż.","{""Marka"": ""Lexus"", ""Model"": ""RZ"", ""Wersja"": ""450e Omotenashi DIRECT4"", ""VIN"": ""JTJAABAB30A002605"", ""Rok produkcji"": ""2023"", ""Data pierwszej rejestracji"": ""15.06.2023"", ""Przebieg"": ""18 587 km"", ""Silnik / rodzaj paliwa"": ""Elektryczny"", ""Moc"": ""313 KM"", ""Napęd"": ""4x4 (dołączany automatycznie)"", ""Skrzynia biegów"": ""Automatyczna"", ""Pojemność silnika"": ""0 cm³"", ""Rodzaj nadwozia"": ""SUV"", ""Liczba drzwi"": ""5"", ""Liczba miejsc"": ""5"", ""Kolor"": ""Czarny"", ""Rodzaj lakieru"": ""Metalik""}",findcar.pl
+001674983,001674983,https://findcar.pl/listings/001674983,2026-01-22T21:23:47.669393+00:00,Lexus,NX,350h Omotenashi AWD,JTJCKBEZ202037661,239900,239 900 zł,239900.0,Najniższa cena z 30 dni: 239 900 zł brutto,2024,47415,Hybryda,"Automatyczna (CVT, eCVT)",243,,14.05.2024,2487,4x4 (dołączany automatycznie),SUV,5,5,Szary,Metalik,Cygan Auto Sp. z o.o.,ul. Jagiellońska 84,03-303 Warszawa,,4.7,850,https://maps.google.com/?cid=15394866105551637155&g_mp=CiVnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLkdldFBsYWNlEAIYBCAA,+48882341273,https://panel.pewneauto.pl/media/UsedCar/365708/6972192d4c0e5.jpg,40,https://panel.pewneauto.pl/media/UsedCar/365708/6972192d4c0e5.jpg|https://panel.pewneauto.pl/media/UsedCar/365708/69723fb740afa.jpg|https://panel.pewneauto.pl/media/UsedCar/365708/6972192b0a1d3.jpg|https://panel.pewneauto.pl/media/UsedCar/365708/69721929e40c7.jpg|https://panel.pewneauto.pl/media/UsedCar/365708/6972192a426cb.jpg|https://panel.pewneauto.pl/media/UsedCar/365708/6972192eaaaa9.jpg|https://panel.pewneauto.pl/media/UsedCar/365708/69721929a2c54.jpg|https://panel.pewneauto.pl/media/UsedCar/365708/6972192ee3b45.jpg|https://panel.pewneauto.pl/media/UsedCar/365708/6972192b3f645.jpg|https://panel.pewneauto.pl/media/UsedCar/365708/6972192771cbd.jpg|https://panel.pewneauto.pl/media/UsedCar/365708/69721926c65da.jpg|https://panel.pewneauto.pl/media/UsedCar/365708/69721926517da.jpg|https://panel.pewneauto.pl/media/UsedCar/365708/69721927a8b27.jpg|https://panel.pewneauto.pl/media/UsedCar/365708/6972192708a3b.jpg|https://panel.pewneauto.pl/media/UsedCar/365708/69721927e1ed8.jpg|https://panel.pewneauto.pl/media/UsedCar/365708/697219280c8bb.jpg|https://panel.pewneauto.pl/media/UsedCar/365708/697219295ec62.jpg|https://panel.pewneauto.pl/media/UsedCar/365708/69721925d8e91.jpg|https://panel.pewneauto.pl/media/UsedCar/365708/697219268d378.jpg|https://panel.pewneauto.pl/media/UsedCar/365708/697219272fb0d.jpg|https://panel.pewneauto.pl/media/UsedCar/365708/697219261b355.jpg|https://panel.pewneauto.pl/media/UsedCar/365708/6972192846094.jpg|https://panel.pewneauto.pl/media/UsedCar/365708/697219287e32c.jpg|https://panel.pewneauto.pl/media/UsedCar/365708/69721928d55d8.jpg|https://panel.pewneauto.pl/media/UsedCar/365708/6972192923211.jpg|https://panel.pewneauto.pl/media/UsedCar/365708/6972192ac8967.jpg|https://panel.pewneauto.pl/media/UsedCar/365708/6972192c62594.jpg|https://panel.pewneauto.pl/media/UsedCar/365708/6972192a815a5.jpg|https://panel.pewneauto.pl/media/UsedCar/365708/6972192c23a6f.jpg|https://panel.pewneauto.pl/media/UsedCar/365708/6972192db9300.jpg|https://panel.pewneauto.pl/media/UsedCar/365708/6972192b7553a.jpg|https://panel.pewneauto.pl/media/UsedCar/365708/6972192d0baad.jpg|https://panel.pewneauto.pl/media/UsedCar/365708/6972192bc008b.jpg|https://panel.pewneauto.pl/media/UsedCar/365708/6972192c03ff5.jpg|https://panel.pewneauto.pl/media/UsedCar/365708/6972192d8c39c.jpg|https://panel.pewneauto.pl/media/UsedCar/365708/6972192df3a87.jpg|https://panel.pewneauto.pl/media/UsedCar/365708/6972192e347a1.jpg|https://panel.pewneauto.pl/media/UsedCar/365708/6972192f2e364.jpg|https://panel.pewneauto.pl/media/UsedCar/365708/69723fb7486fb.jpg|https://panel.pewneauto.pl/media/UsedCar/365708/69723fb6cebaa.png,Bluetooth|Ekran dotykowy|Gniazdo USB|Głosowe sterowanie funkcjami pojazdu|HUD (wyświetlacz przezierny)|Interfejs Android Auto|Interfejs Apple CarPlay|Nawigacja GPS|Zestaw głośnomówiący|Ładowanie bezprzewodowe urządzeń,ABS|Aktywny asystent hamowania awaryjnego|Asystent hamowania awaryjnego w mieście|Asystent pasa ruchu|Boczna poduszka powietrzna kierowcy|Elektroniczny system rozdziału siły hamowania|ESP (stabilizacja toru jazdy)|Isofix|Kurtyny powietrzne|Kurtyny powietrzne - tył|Poduszka kolan pasażera|Poduszka powietrzna chroniąca kolana|Poduszka powietrzna kierowcy|Poduszka powietrzna pasażera|Poduszki boczne przednie|Poduszki boczne tylne|RCTA - System ostrzegania o ruchu poprzecznym z tyłu pojazdu|System hamowania awaryjnego dla ochrony pieszych|System ostrzegający o możliwej kolizji|System powiadamiania o wypadku|System wspomagania hamowania|System wykrywania zmęczenia kierowcy,Cyfrowy kluczyk|Czujnik deszczu|Dźwignia zmiany biegów wykończona skórą|Elektryczne szyby przednie|Elektryczne szyby tylne|Elektrycznie ustawiane fotele|Elektrycznie ustawiany fotel kierowcy|Fotele przednie wentylowane|Hak|Keyless Entry|Keyless Go|Kierownica ogrzewana|Kierownica skórzana|Klimatyzacja automatyczna|Kolumna kierownicy regulowana elektrycznie|Podgrzewane przednie siedzenia|Podgrzewane tylne siedzenia|Podgrzewany fotel pasażera|Podłokietniki - przód|Podłokietniki - tył|Przyciemniane szyby|Regul. elektr. podparcia lędźwiowego - kierowca|Regul. elektr. podparcia lędźwiowego - pasażer|Siedzenie z pamięcią ustawienia|Tapicerka skórzana|Uruchamianie silnika bez użycia kluczyków|Wielofunkcyjna kierownica|Łopatki zmiany biegów,Felgi aluminiowe 20|Aktywny asystent zmiany pasa ruchu|ASR (kontrola trakcji)|Asystent (czujnik) martwego pola|Asystent hamowania - Brake Assist|Asystent jazdy w korku|Asystent parkowania|Asystent świateł drogowych|Czujnik zmierzchu|Czujniki parkowania przednie|Czujniki parkowania tylne|Elektroniczna kontrola ciśnienia w oponach|Elektrycznie ustawiane lusterka|Elektryczny hamulec postojowy|Kamera cofania|Kamera panoramiczna 360|Kontrola odległości|Lampy doświetlające zakręt|Lampy tylne w technologii LED|Lusterka boczne składane elektrycznie|Ogranicznik prędkości|Podgrzewane lusterka boczne|RSA - System rozpoznawania znaków drogowych|Spryskiwacze reflektorów|Tempomat aktywny|Wspomaganie kierownicy|Wspomaganie ruszania pod górę|Światła do jazdy dziennej|Światła do jazdy dziennej diodowe LED|Światła LED|Światła przeciwmgielne,,"Lexus NX 350h Omotenashi AWD II (2021-)
+
+Kupiony w polskim salonie Lexus
+Gwarancja Lexus Relax do 10 lat
+Zarejestrowany
+Pierwszy właściciel
+Serwisowany w ASO Lexus
+Bezwypadkowy
+
+Forma sprzedaży: Faktura VAT Marża
+Kupujący na os. fizyczną zwolniony z opłaty skarbowej PCC 2%
+
+Rok produkcji: 2024
+Data pierwszej rejestracji: 2024-05-14
+Pojemność: 2487 ccm
+Przebieg: 47 415 km
+Nadwozie: SUV
+Paliwo: Hybryda
+Łączna moc układu: 243 KM
+Skrzynia biegów: Automatyczna (eCVT)
+Napęd: 4x4 (dołączany automatycznie)
+Kolor: Sonic Grey
+Wykończenie wnętrza: Tapicerka skórzana w kolorze czarnym
+
+
+PONAD 500 SAMOCHODÓW W OFERCIE „Przejdź do strony sprzedawcy”
+Link do strony UZYWANEGRUPACYGAN znajduje się w ogłoszeniu.
+https://uzywane.lexus-polska.pl/diler/13
+Zapraszamy do zapoznania się szeroką ofertą samochodów używanych Grupy Cygan lidera na polskim rynku.
+
+GWARANCJA
+To idealny sposób na zachowanie komfortu na dłużej, bez ponoszenia dodatkowych kosztów.
+Sprzedawane przez nas auta przechodzą pełny serwis i posiadają roczną gwarancję Lexus Relax, którą można przedłużyć na kolejny rok lub 15 000 km wykonując przegląd w autoryzowanym serwisie Lexus. 
+Program obejmuje samochody marki Lexus młodsze niż 10 lat, z przebiegiem poniżej 185 000 km. 
+Dzięki temu masz pewność, że Twój samochód znajdzie się w rękach wykwalifikowanych specjalistów i zostanie naprawiony z użyciem wyłącznie oryginalnych części. 
+
+MOŻLIWOŚĆ WYMIANY AUTA
+Jeśli w ciągu 14 dni okażę się, że samochód który kupiłeś nie przypadł Ci do gustu, bez problemu możesz wymienić go na inne auto z naszej oferty.
+
+PEŁNA HISTORIA
+Każdy docenia oryginalną historię samochodu. Powoduje to niski spadek wartości, a co za tym idzie wysokie oszczędności przy ewentualnej odsprzedaży. W efekcie, serwisowanie w autoryzowanej stacji staje się zdecydowanie opłacalne. Nasze samochody mają pełną dokumentacje.
+
+PONAD 40 LAT DOŚWIADCZENIA
+Nasza firma ma już ponad 40 lat doświadczenia. Jesteśmy na rynku tak wiele lat, dzięki zaufaniu naszych klientów. Państwa pełne zadowolenie jest dla Nas priorytetem, dlatego też do każdego klienta podchodzimy indywidualnie, a nasze samochody używane wyglądają i jeżdżą jak nowe.
+
+JAZDA PRÓBNA
+Zapraszamy Państwa do jazdy testowej autami używanymi.
+
+ROZLICZENIE TWOJEGO SAMOCHODU.
+Nie trać czasu na sprzedaż swojego samochodu. Przyjmujemy w rozliczeniu samochody zakupione w Polskiej sieci Dealerskiej – różnych marek.
+
+SPECJALNE FINANSOWANIE I UBEZPIECZENIE
+Wszystkich formalności dopełnisz w naszym salonie. Nasza oferta jest wciąż modernizowana dla Państwa wygody. Aby uzyskać szczegółowe informacje na temat bieżącej oferty – prosimy o kontakt.
+
+KUP SAMOCHÓD BEZ WYCHODZENIA Z DOMU
+Szanowni Państwo,
+W trosce o Państwa wygodę oferujemy sprzedaż samochodu online. Nasi handlowcy są dostępni dodatkowo w trybie face-time oraz pod komunikatorem WhatsApp. Dzięki temu pokażemy samochód na video, prześlemy wszystkie dokumentacje tj. protokół kontroli jakości, więcej zdjęć oraz film danego samochodu, poprowadzimy Państwa przez cały proces zakupu a na koniec podstawimy samochód z gwarancją pod domem. Zapraszamy do zapoznania się z naszą ofertą i kontaktu z handlowcami.
+
+Ogłoszenie ma charakter informacyjny i stanowi zaproszenie do zawarcia umowy (art. 71 Kodeksu cywilnego); nie stanowi natomiast oferty handlowej w rozumieniu art. 66 § 1 Kodeksu cywilnego.","{""Marka"": ""Lexus"", ""Model"": ""NX"", ""Wersja"": ""350h Omotenashi AWD"", ""VIN"": ""JTJCKBEZ202037661"", ""Rok produkcji"": ""2024"", ""Data pierwszej rejestracji"": ""14.05.2024"", ""Przebieg"": ""47 415 km"", ""Silnik / rodzaj paliwa"": ""Hybryda"", ""Moc"": ""243 KM"", ""Napęd"": ""4x4 (dołączany automatycznie)"", ""Skrzynia biegów"": ""Automatyczna (CVT, eCVT)"", ""Pojemność silnika"": ""2 487 cm³"", ""Rodzaj nadwozia"": ""SUV"", ""Liczba drzwi"": ""5"", ""Liczba miejsc"": ""5"", ""Kolor"": ""Szary"", ""Rodzaj lakieru"": ""Metalik""}",findcar.pl
+002393306,002393306,https://findcar.pl/listings/002393306,2026-01-22T21:23:50.099195+00:00,Lexus,NX,300 Comfort AWD,JTJBARBZ702158231,89900,89 900 zł,89900.0,Najniższa cena z 30 dni: 89 900 zł brutto,2017,165327,Benzyna,Automatyczna,238,,09.08.2018,1998,4x4 (dołączany automatycznie),SUV,5,5,Szary,,Autoryzowana Stacja Dealerska Toyota Ukleja Sp.j.,ul. Zawady 38,61-002 Poznań,,4.4,447,https://maps.google.com/?cid=545832081132394621&g_mp=CiVnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLkdldFBsYWNlEAIYBCAA,+48616299016,https://panel.pewneauto.pl/media/UsedCar/363589/69724de78dabc.jpg,22,https://panel.pewneauto.pl/media/UsedCar/363589/69724de78dabc.jpg|https://panel.pewneauto.pl/media/UsedCar/363589/69724de824414.jpg|https://panel.pewneauto.pl/media/UsedCar/363589/69724de54be64.jpg|https://panel.pewneauto.pl/media/UsedCar/363589/69724de84ab8e.jpg|https://panel.pewneauto.pl/media/UsedCar/363589/69724de7b4b3f.jpg|https://panel.pewneauto.pl/media/UsedCar/363589/69724de88b2fc.jpg|https://panel.pewneauto.pl/media/UsedCar/363589/69724de8002cc.jpg|https://panel.pewneauto.pl/media/UsedCar/363589/69724de86f75c.jpg|https://panel.pewneauto.pl/media/UsedCar/363589/69724de7d3e8e.jpg|https://panel.pewneauto.pl/media/UsedCar/363589/69724de4c2476.jpg|https://panel.pewneauto.pl/media/UsedCar/363589/69724de4eb7ec.jpg|https://panel.pewneauto.pl/media/UsedCar/363589/69724de52402b.jpg|https://panel.pewneauto.pl/media/UsedCar/363589/69724de64d08d.jpg|https://panel.pewneauto.pl/media/UsedCar/363589/69724de67d480.jpg|https://panel.pewneauto.pl/media/UsedCar/363589/69724de6b13be.jpg|https://panel.pewneauto.pl/media/UsedCar/363589/69724de75f7c6.jpg|https://panel.pewneauto.pl/media/UsedCar/363589/69724de6e48d0.jpg|https://panel.pewneauto.pl/media/UsedCar/363589/69724de5ad16a.jpg|https://panel.pewneauto.pl/media/UsedCar/363589/69724de72a27c.jpg|https://panel.pewneauto.pl/media/UsedCar/363589/69724de5de107.jpg|https://panel.pewneauto.pl/media/UsedCar/363589/69724de57e4a4.jpg|https://panel.pewneauto.pl/media/UsedCar/363589/69724de61c364.jpg,Bluetooth|Gniazdo USB|Nawigacja GPS,ABS|Boczna poduszka powietrzna kierowcy|Elektroniczny system rozdziału siły hamowania|ESP (stabilizacja toru jazdy)|Isofix|Kurtyny powietrzne|Poduszka powietrzna chroniąca kolana|Poduszka powietrzna kierowcy|Poduszka powietrzna pasażera|Poduszki boczne przednie|System wspomagania hamowania,Czujnik deszczu|Dźwignia zmiany biegów wykończona skórą|Elektryczne szyby przednie|Elektryczne szyby tylne|Elektrycznie ustawiane fotele|Elektrycznie ustawiany fotel kierowcy|Kierownica skórzana|Klimatyzacja automatyczna|Podgrzewane przednie siedzenia|Podgrzewany fotel pasażera|Przyciemniane szyby|Tapicerka skórzana|Wielofunkcyjna kierownica|Łopatki zmiany biegów,ASR (kontrola trakcji)|Czujnik zmierzchu|Czujniki parkowania przednie|Czujniki parkowania tylne|Elektroniczna kontrola ciśnienia w oponach|Elektrycznie ustawiane lusterka|Kamera cofania|Lampy doświetlające zakręt|Lusterka boczne składane elektrycznie|Podgrzewane lusterka boczne|Tempomat|Wspomaganie kierownicy|Wspomaganie ruszania pod górę|Światła do jazdy dziennej|Światła LED|Światła przeciwmgielne,,"Szanowni Państwo - Przyjmujemy w rozliczeniu auta wszystkich marek.
+
+Salon samochodów Lexus Toyota Ukleja to autoryzowana stacja dealerska marki Toyota i Lexus. Jesteśmy firmą, która działa na rynku motoryzacyjnym od 1978 roku.
+
+Adres: Zawady 38 Poznań 61-002
+
+Lexus NX 300 Comfort+GPS+LSS, Benzyna, salon Polska, serwis ASO, FV marża.
+
+Dział handlowy:
+61 629 90 16
+
+Program Lexus Select obejmuje wyłącznie samochody marki Lexus, które w dniu sprzedaży spełniają oba warunki:
+•	mają mniej niż 10 lat od daty pierwszej rejestracji,
+•	posiadają przebieg nie większy niż 185 000 km.
+Gwarancja Lexus Select obowiązuje do momentu osiągnięcia jednego z powyższych limitów — czasu lub przebiegu — w zależności od tego, który nastąpi wcześniej.
+Dla aut niespełniających tych kryteriów dostępne są gwarancje w atrakcyjnych cenach. Szczegóły uzyskasz u doradcy.
+
+Nasza firma oferuje m.in klientom:
+-  Sprawdzone samochody z protokołem oceny stanu technicznego
+- Gwarancja Pewne Auto/Lexus Select
+- Pełen zakres obsługi serwisowej oraz sprzedażowej
+- Obsługę finansową (Kinto, kredyty, leasingi)
+- Ubezpieczenia w pakietach dealerskich
+
+Niniejsze ogłoszenie jest wyłącznie informacją handlową i nie stanowi oferty w myśl art. 66, § 1. Kodeksu Cywilnego. Sprzedający zastrzega sobie prawo do zmian w treści ogłoszenia bez wcześniejszego uprzedzenia.","{""Marka"": ""Lexus"", ""Model"": ""NX"", ""Wersja"": ""300 Comfort AWD"", ""VIN"": ""JTJBARBZ702158231"", ""Rok produkcji"": ""2017"", ""Data pierwszej rejestracji"": ""09.08.2018"", ""Przebieg"": ""165 327 km"", ""Silnik / rodzaj paliwa"": ""Benzyna"", ""Moc"": ""238 KM"", ""Napęd"": ""4x4 (dołączany automatycznie)"", ""Skrzynia biegów"": ""Automatyczna"", ""Pojemność silnika"": ""1 998 cm³"", ""Rodzaj nadwozia"": ""SUV"", ""Liczba drzwi"": ""5"", ""Liczba miejsc"": ""5"", ""Kolor"": ""Szary""}",findcar.pl
+003111629,003111629,https://findcar.pl/listings/003111629,2026-01-22T21:23:52.238669+00:00,Toyota,Corolla Cross,2.0 Hybrid Style AWD,JTNACABB80J005114,132900,132 900 zł,132900.0,Najniższa cena z 30 dni: 132 900 zł brutto,2022,36477,Hybryda,Automatyczna,152,,30.01.2023,1987,4x4 (dołączany automatycznie),SUV,5,5,Srebrny,,Auto Podlasie Sp. z o.o.,ul. Brzezińska 24A,92-103 Łódź,,4.2,1628,https://maps.google.com/?cid=11931956927080348639&g_mp=CiVnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLkdldFBsYWNlEAIYBCAA,+48426569090,https://panel.pewneauto.pl/media/UsedCar/364370/69723302d8f3b.jpg,51,https://panel.pewneauto.pl/media/UsedCar/364370/69723302d8f3b.jpg|https://panel.pewneauto.pl/media/UsedCar/364370/697233044d1d1.jpg|https://panel.pewneauto.pl/media/UsedCar/364370/697233041de16.jpg|https://panel.pewneauto.pl/media/UsedCar/364370/6964ae2be1fb7.png|https://panel.pewneauto.pl/media/UsedCar/364370/697233034e361.jpg|https://panel.pewneauto.pl/media/UsedCar/364370/697233037e91d.jpg|https://panel.pewneauto.pl/media/UsedCar/364370/69723303bb84b.jpg|https://panel.pewneauto.pl/media/UsedCar/364370/6964ae2c8eddb.png|https://panel.pewneauto.pl/media/UsedCar/364370/6972330327e08.jpg|https://panel.pewneauto.pl/media/UsedCar/364370/69723303e7077.jpg|https://panel.pewneauto.pl/media/UsedCar/364370/6964ae2b1fac1.png|https://panel.pewneauto.pl/media/UsedCar/364370/697233289e451.jpg|https://panel.pewneauto.pl/media/UsedCar/364370/69723328be9d3.jpg|https://panel.pewneauto.pl/media/UsedCar/364370/69723328ea8b5.jpg|https://panel.pewneauto.pl/media/UsedCar/364370/69723328dfd7a.jpg|https://panel.pewneauto.pl/media/UsedCar/364370/69723328f0abe.jpg|https://panel.pewneauto.pl/media/UsedCar/364370/6972332903451.jpg|https://panel.pewneauto.pl/media/UsedCar/364370/69723329db553.jpg|https://panel.pewneauto.pl/media/UsedCar/364370/69723329d3f7f.jpg|https://panel.pewneauto.pl/media/UsedCar/364370/69723328c52fa.jpg|https://panel.pewneauto.pl/media/UsedCar/364370/69723329c758f.jpg|https://panel.pewneauto.pl/media/UsedCar/364370/69723328cb691.jpg|https://panel.pewneauto.pl/media/UsedCar/364370/69723329cd6f8.jpg|https://panel.pewneauto.pl/media/UsedCar/364370/6972332947a5a.jpg|https://panel.pewneauto.pl/media/UsedCar/364370/69723329335fd.jpg|https://panel.pewneauto.pl/media/UsedCar/364370/697233294de25.jpg|https://panel.pewneauto.pl/media/UsedCar/364370/697233293a0c9.jpg|https://panel.pewneauto.pl/media/UsedCar/364370/6972332941210.jpg|https://panel.pewneauto.pl/media/UsedCar/364370/69723329540ba.jpg|https://panel.pewneauto.pl/media/UsedCar/364370/697233295a207.jpg|https://panel.pewneauto.pl/media/UsedCar/364370/6972332960a68.jpg|https://panel.pewneauto.pl/media/UsedCar/364370/6972332966f8d.jpg|https://panel.pewneauto.pl/media/UsedCar/364370/697233296e350.jpg|https://panel.pewneauto.pl/media/UsedCar/364370/69723329875c8.jpg|https://panel.pewneauto.pl/media/UsedCar/364370/697233297a61c.jpg|https://panel.pewneauto.pl/media/UsedCar/364370/6972332980f97.jpg|https://panel.pewneauto.pl/media/UsedCar/364370/697233292ce36.jpg|https://panel.pewneauto.pl/media/UsedCar/364370/697233291266e.jpg|https://panel.pewneauto.pl/media/UsedCar/364370/6972332919368.jpg|https://panel.pewneauto.pl/media/UsedCar/364370/6972332926ce3.jpg|https://panel.pewneauto.pl/media/UsedCar/364370/697233291fdc1.jpg|https://panel.pewneauto.pl/media/UsedCar/364370/69723329ba8e2.jpg|https://panel.pewneauto.pl/media/UsedCar/364370/69723329c15ba.jpg|https://panel.pewneauto.pl/media/UsedCar/364370/69723329a024e.jpg|https://panel.pewneauto.pl/media/UsedCar/364370/69723328d1b5b.jpg|https://panel.pewneauto.pl/media/UsedCar/364370/69723328d9174.jpg|https://panel.pewneauto.pl/media/UsedCar/364370/697233298dfd4.jpg|https://panel.pewneauto.pl/media/UsedCar/364370/6972332994874.jpg|https://panel.pewneauto.pl/media/UsedCar/364370/69723329a70c1.jpg|https://panel.pewneauto.pl/media/UsedCar/364370/69723329b4392.jpg|https://panel.pewneauto.pl/media/UsedCar/364370/69723329ad60c.jpg,Bluetooth|Ekran dotykowy|Gniazdo USB|Interfejs Android Auto|Interfejs Apple CarPlay|Nawigacja GPS|Zestaw głośnomówiący,ABS|Asystent hamowania awaryjnego w mieście|Asystent pasa ruchu|Boczna poduszka powietrzna kierowcy|Elektroniczny system rozdziału siły hamowania|ESP (stabilizacja toru jazdy)|Isofix|Kurtyny powietrzne|Poduszka powietrzna chroniąca kolana|Poduszka powietrzna kierowcy|Poduszka powietrzna pasażera|Poduszki boczne przednie|Poduszki boczne tylne|RCTA - System ostrzegania o ruchu poprzecznym z tyłu pojazdu|System hamowania awaryjnego dla ochrony pieszych|System ostrzegający o możliwej kolizji|System powiadamiania o wypadku|System wspomagania hamowania|System wykrywania zmęczenia kierowcy,Czujnik deszczu|Dźwignia zmiany biegów wykończona skórą|Elektryczne szyby przednie|Elektryczne szyby tylne|Keyless Entry|Keyless Go|Kierownica ogrzewana|Kierownica skórzana|Klimatyzacja dwustrefowa|Podgrzewane przednie siedzenia|Podgrzewany fotel pasażera|Podłokietniki - przód|Podłokietniki - tył|Przyciemniane szyby|Regul. elektr. podparcia lędźwiowego - kierowca|Uruchamianie silnika bez użycia kluczyków|Wielofunkcyjna kierownica,Felgi aluminiowe 18|Aktywny asystent zmiany pasa ruchu|ASR (kontrola trakcji)|Asystent (czujnik) martwego pola|Asystent hamowania - Brake Assist|Asystent świateł drogowych|Czujnik zmierzchu|Czujniki parkowania przednie|Czujniki parkowania tylne|Elektroniczna kontrola ciśnienia w oponach|Elektrycznie ustawiane lusterka|Elektryczny hamulec postojowy|Kamera cofania|Kontrola odległości|Lampy tylne w technologii LED|Lusterka boczne składane elektrycznie|Ogranicznik prędkości|Podgrzewane lusterka boczne|RSA - System rozpoznawania znaków drogowych|Tempomat aktywny|Wspomaganie kierownicy|Wspomaganie ruszania pod górę|Światła do jazdy dziennej|Światła do jazdy dziennej diodowe LED|Światła LED|Światła przeciwmgielne,,"COROLLA CROSS, 2.0 Hybrid, STYLE | TECH, AWD, 197KM, SalonPL, FV Marża
+
+Autoryzowany Dealer, Toyota Łódź ul. Brzezińska 24A
+Salon Samochodów Używanych
+
+Dział Handlowy:
+Łukasz Czwajda 601-218-746
+Tymoteusz Szymański 536-060-162
+Mateusz Matczak 530-810-908
+Konrad Brzeziński 508-291-663
+
+
+#11
+
+Oferujemy
+-samochody używane różnych marek, w pełni przygotowane pod kątem mechanicznym i wizualnym.
+-pełny wgląd w historie serwisową, potwierdzony przebieg
+-doposażenie samochodu w wybrane przez klienta akcesoria
+-gwarancja TOYOTA PEWNE AUTO na okres co najmniej 12tu miesięcy
+-możliwość zostawienia starego auta w rozliczeniu
+-odkup samochodów
+-możliwość skorzystania z atrakcyjnej oferty leasingu, kredytu
+-rejestracja pojazdów i ubezpieczenie
+
+Podana cena promocyjna 132900 zł brutto dotyczy zakupu samochodu w finansowaniu Toyota Leasing Polska lub Toyota Bank Polska.
+Cena brutto 135900 zł.
+
+* * * * * *
+Ogłoszenie ma charakter informacyjny i stanowi zaproszenie do zawarcia umowy (art. 71 Kodeksu cywilnego); nie stanowi natomiast oferty handlowej w rozumieniu art. 66 § 1 Kodeksu cywilnego.","{""Marka"": ""Toyota"", ""Model"": ""Corolla Cross"", ""Wersja"": ""2.0 Hybrid Style AWD"", ""VIN"": ""JTNACABB80J005114"", ""Rok produkcji"": ""2022"", ""Data pierwszej rejestracji"": ""30.01.2023"", ""Przebieg"": ""36 477 km"", ""Silnik / rodzaj paliwa"": ""Hybryda"", ""Moc"": ""152 KM"", ""Napęd"": ""4x4 (dołączany automatycznie)"", ""Skrzynia biegów"": ""Automatyczna"", ""Pojemność silnika"": ""1 987 cm³"", ""Rodzaj nadwozia"": ""SUV"", ""Liczba drzwi"": ""5"", ""Liczba miejsc"": ""5"", ""Kolor"": ""Srebrny""}",findcar.pl

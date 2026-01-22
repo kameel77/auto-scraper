@@ -108,13 +108,14 @@ class FindcarScraper(BaseScraper):
             "source": "findcar.pl"
         }
 
-    async def collect_urls(self, max_pages=10, page_size=45, start_page=1, **kwargs) -> list[str]:
+    async def collect_urls(self, max_pages=10, page_size=50, start_page=0, **kwargs) -> list[str]:
         all_ids = []
-        for page in range(start_page, start_page + max_pages):
-            self.logger.info(f"Pobieranie strony {page} (Size: {page_size})...")
+        for p_idx in range(start_page, start_page + max_pages):
+            offset = p_idx * page_size
+            self.logger.info(f"Pobieranie strony {p_idx} (Offset: {offset}, Size: {page_size})...")
             
-            if page > start_page:
-                referer = self.list_url.format(page_size, page - 1)
+            if p_idx > start_page:
+                referer = self.list_url.format(page_size, offset - page_size)
             else:
                 referer = f"{self.base_url}/"
 
@@ -124,17 +125,19 @@ class FindcarScraper(BaseScraper):
                 "Cache-Control": "max-age=0"
             })
 
-            target_url = self.list_url.format(page_size, page)
+            target_url = self.list_url.format(page_size, offset)
             try:
-                if page > start_page:
+                if p_idx > start_page:
                     time.sleep(random.uniform(1.5, 3.5))
 
                 response = self.session.get(target_url, timeout=30)
                 response.raise_for_status()
 
-                ids = set(re.findall(r'/listings/(\d{6,})', response.text))
+                # Robust regex for publicListingNumber - handles both escaped and direct JSON
+                ids = set(re.findall(r'publicListingNumber["\\]+?:\s*?["\\]+?(\d+)', response.text))
+                
                 if not ids:
-                    ids = set(re.findall(r'"publicListingNumber"\s*:\s*"(\d+)"', response.text))
+                    ids = set(re.findall(r'/listings/(\d{6,})', response.text))
 
                 if not ids:
                     self.logger.info("Koniec wyników lub błąd pobierania ID.")

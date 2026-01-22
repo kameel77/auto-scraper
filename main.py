@@ -132,12 +132,14 @@ async def main():
             # Calculate max_pages based on limit if it's the default value
             max_pages = args.max_pages
             if args.limit and args.max_pages == 10:
-                max_pages = (args.limit // 45) + 1
+                max_pages = (args.limit // 50) + 1
             elif not args.limit and args.max_pages == 10:
                 max_pages = 1000
 
             offer_urls = await scraper.collect_urls(
                 max_pages=max_pages,
+                page_size=50,
+                start_page=0,
                 scroll_pause=args.scroll_pause
             )
     except Exception as e:

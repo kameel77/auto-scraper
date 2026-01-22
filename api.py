@@ -89,7 +89,7 @@ async def run_scraper_task(marketplace: str = "autopunkt", limit: Optional[int] 
             # - If limit is None/0, go deep (1000 pages)
             # - If limit is set, calculate pages needed (45 results per page)
             if limit:
-                max_pages = (limit // 45) + 1
+                max_pages = (limit // 50) + 1
             else:
                 max_pages = 1000
                 

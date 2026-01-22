@@ -346,8 +346,9 @@ def export_car_scout_csv(db: Session = Depends(database.get_db)):
         if not latest:
             continue
             
-        required_fields = latest.price and v.rocznik and latest.mileage
-        if not required_fields:
+        # Relaxed check: allow 0 (e.g. for new cars with 0 mileage)
+        has_required = latest.price is not None and v.rocznik is not None and latest.mileage is not None
+        if not has_required:
             continue
             
         raw_equipment = latest.equipment_json if latest else {}
@@ -391,18 +392,18 @@ def export_car_scout_csv(db: Session = Depends(database.get_db)):
             v.model or "",
             v.wersja or "",
             v.vin or "",
-            str(latest.price) if latest.price else "",
+            str(latest.price) if latest.price is not None else "",
             price_display,
-            str(latest.old_price) if latest.old_price else "",
+            str(latest.old_price) if latest.old_price is not None else "",
             "",
-            str(v.rocznik) if v.rocznik else "",
-            str(latest.mileage) if latest.mileage else "",
+            str(v.rocznik) if v.rocznik is not None else "",
+            str(latest.mileage) if latest.mileage is not None else "",
             v.typ_silnika or "",
             v.skrzynia_biegow or "",
-            str(v.moc_km) if v.moc_km else "",
+            str(v.moc_km) if v.moc_km is not None else "",
             "",
             v.pierwsza_rejestracja or "",
-            str(v.pojemnosc_cm3) if v.pojemnosc_cm3 else "",
+            str(v.pojemnosc_cm3) if v.pojemnosc_cm3 is not None else "",
             v.naped or "",
             v.typ_nadwozia or "",
             v.ilosc_drzwi or "",

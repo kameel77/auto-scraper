@@ -62,6 +62,7 @@ class FindcarScraper(BaseScraper):
 
         return {
             "listing_id": listing_id,
+            "numer_oferty": listing_id,
             "url": f"{self.base_url}/listings/{listing_id}",
             "scraped_at": datetime.now(timezone.utc).isoformat(),
             "marka": specs.get("Marka") or (card.get("make") or {}).get("text"),

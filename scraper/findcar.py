@@ -20,9 +20,17 @@ class FindcarScraper(BaseScraper):
     def _make_session(self):
         s = requests.Session()
         s.headers.update({
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
-            "Accept-Language": "pl,en-US;q=0.7,en;q=0.3",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+            "Accept-Language": "pl-PL,pl;q=0.9,en-US;q=0.8,en;q=0.7",
+            "Accept-Encoding": "gzip, deflate, br",
+            "Sec-Fetch-Dest": "document",
+            "Sec-Fetch-Mode": "navigate",
+            "Sec-Fetch-Site": "none",
+            "Sec-Fetch-User": "?1",
+            "Upgrade-Insecure-Requests": "1",
+            "Cache-Control": "max-age=0",
+            "DNT": "1"
         })
         return s
 
@@ -110,6 +118,15 @@ class FindcarScraper(BaseScraper):
 
     async def collect_urls(self, max_pages=10, page_size=50, start_page=0, **kwargs) -> list[str]:
         all_ids = []
+        
+        # Warm up session by visiting home page
+        try:
+            self.logger.info("Rozgrzewanie sesji (visit home page)...")
+            self.session.get(self.base_url, timeout=20)
+            time.sleep(random.uniform(1.0, 2.5))
+        except Exception as e:
+            self.logger.warning(f"Problem z rozgrzewaniem sesji: {e}")
+
         for p_idx in range(start_page, start_page + max_pages):
             offset = p_idx * page_size
             self.logger.info(f"Pobieranie strony {p_idx} (Offset: {offset}, Size: {page_size})...")
@@ -131,22 +148,28 @@ class FindcarScraper(BaseScraper):
                     time.sleep(random.uniform(1.5, 3.5))
 
                 response = self.session.get(target_url, timeout=30)
+                if response.status_code != 200:
+                    self.logger.error(f"  ❌ Błąd HTTP {response.status_code} dla {target_url}")
+                
                 response.raise_for_status()
 
                 # Robust regex for publicListingNumber - handles both escaped and direct JSON
                 ids = set(re.findall(r'publicListingNumber["\\]+?:\s*?["\\]+?(\d+)', response.text))
                 
                 if not ids:
+                    # Look for listing previews in HTML
                     ids = set(re.findall(r'/listings/(\d{6,})', response.text))
 
                 if not ids:
-                    self.logger.info("Koniec wyników lub błąd pobierania ID.")
+                    self.logger.info(f"  ⚠️ Nie znaleziono ID na stronie {p_idx}. Status: {response.status_code}. Długość body: {len(response.text)}")
+                    if len(response.text) < 1000:
+                        self.logger.debug(f"  Snippet: {response.text[:500]}")
                     break
 
                 all_ids.extend(sorted(list(ids)))
                 self.logger.info(f"  📌 Znaleziono {len(ids)} ofert na stronie.")
             except Exception as e:
-                self.logger.error(f"Błąd strony {page}: {e}")
+                self.logger.error(f"Błąd strony {p_idx}: {e}")
                 break
         
         return [f"{self.base_url}/listings/{lid}" for lid in all_ids]

@@ -85,7 +85,15 @@ async def run_scraper_task(marketplace: str = "autopunkt", limit: Optional[int] 
         if marketplace == "autopunkt":
             urls = await scraper.collect_urls()
         else: # findcar
-            urls = await scraper.collect_urls(max_pages=10)
+            # Calculate max_pages based on limit:
+            # - If limit is None/0, go deep (1000 pages)
+            # - If limit is set, calculate pages needed (45 results per page)
+            if limit:
+                max_pages = (limit // 45) + 1
+            else:
+                max_pages = 1000
+                
+            urls = await scraper.collect_urls(max_pages=max_pages)
         
         if limit and limit < len(urls):
             logger.info(f"Ograniczam do {limit} ofert")
@@ -125,6 +133,8 @@ async def run_scraper_task(marketplace: str = "autopunkt", limit: Optional[int] 
                         "komfort": data.get("equipment_comfort_extras"),
                         "bezpieczenstwo": data.get("equipment_safety"),
                         "wyglad": data.get("equipment_other"),
+                        "additional_info_header": data.get("additional_info_header"),
+                        "additional_info_content": data.get("additional_info_content"),
                     }
                 
                 snapshot = models.VehicleSnapshot(
@@ -377,6 +387,10 @@ def export_car_scout_csv(db: Session = Depends(database.get_db)):
         equipment_comfort = equipment.get("komfort", [])
         equipment_other = equipment.get("wyglad", [])
         
+        # New: Extract additional info for Findcar
+        add_info_header = equipment.get("additional_info_header", "")
+        add_info_content = equipment.get("additional_info_content", latest.tags if latest else "")
+        
         audio_str = "|".join(equipment_audio) if isinstance(equipment_audio, list) else str(equipment_audio or "")
         safety_str = "|".join(equipment_safety) if isinstance(equipment_safety, list) else str(equipment_safety or "")
         comfort_str = "|".join(equipment_comfort) if isinstance(equipment_comfort, list) else str(equipment_comfort or "")
@@ -425,8 +439,8 @@ def export_car_scout_csv(db: Session = Depends(database.get_db)):
             safety_str,
             comfort_str,
             other_str,
-            "",
-            latest.tags or "",
+            add_info_header or "",
+            add_info_content or "",
             ""
         ])
     

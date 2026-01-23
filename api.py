@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Depends, BackgroundTasks, HTTPException
 from fastapi.responses import StreamingResponse, FileResponse
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import func, and_, or_
 from sqlalchemy.orm import Session
 from typing import List, Optional, Generator
 import models, database
@@ -213,7 +214,6 @@ def get_vehicles(
 ):
     # Base query for vehicles
     # We join with the latest snapshot for each vehicle to allow filtering by price
-    from sqlalchemy import and_, or_
     
     # Subquery to get the ID of the latest snapshot for each vehicle
     latest_snapshot_ids = db.query(
@@ -279,7 +279,6 @@ def get_vehicle_trends(vehicle_id: int, db: Session = Depends(database.get_db)):
 
 @app.get("/stats", response_model=StatsSchema)
 def get_stats(db: Session = Depends(database.get_db)):
-    from sqlalchemy import func
     total_vehicles = db.query(models.Vehicle).count()
     total_snapshots = db.query(models.VehicleSnapshot).count()
     avg_price = db.query(func.avg(models.VehicleSnapshot.price)).scalar() or 0

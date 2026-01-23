@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Depends, BackgroundTasks, HTTPException
 from fastapi.responses import StreamingResponse, FileResponse
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import func, and_, or_
+from sqlalchemy import func, and_, or_, text, inspect
 from sqlalchemy.orm import Session
 from typing import List, Optional, Generator
 import models, database
@@ -21,6 +21,26 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 models.Base.metadata.create_all(bind=database.engine)
+
+def apply_migrations():
+    """Prosta migracja dodająca brakujące kolumny."""
+    try:
+        inspector = inspect(database.engine)
+        tables = inspector.get_table_names()
+        if 'vehicle_snapshots' in tables:
+            columns = [c['name'] for c in inspector.get_columns('vehicle_snapshots')]
+            with database.engine.connect() as conn:
+                if 'equipment' not in columns:
+                    logger.info("Dodawanie kolumny 'equipment' do vehicle_snapshots")
+                    conn.execute(text("ALTER TABLE vehicle_snapshots ADD COLUMN equipment TEXT"))
+                if 'additional_equipment' not in columns:
+                    logger.info("Dodawanie kolumny 'additional_equipment' do vehicle_snapshots")
+                    conn.execute(text("ALTER TABLE vehicle_snapshots ADD COLUMN additional_equipment TEXT"))
+                conn.commit()
+    except Exception as e:
+        logger.error(f"Błąd podczas migracji: {e}")
+
+apply_migrations()
 
 app = FastAPI(title="Auto-Scraper API")
 

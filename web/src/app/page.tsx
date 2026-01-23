@@ -21,7 +21,7 @@ export default async function Home({
 }) {
     const filters = await searchParams;
     const [vehicles, stats] = await Promise.all([
-        getVehicles(filters).catch(() => []),
+        getVehicles(filters as any).catch(() => []),
         getStats().catch(() => ({
             total_vehicles: 0,
             total_snapshots: 0,
@@ -39,7 +39,7 @@ export default async function Home({
                             Auto-Scraper <span className="text-indigo-600">Dashboard</span>
                         </h1>
                         <p className="text-lg text-slate-500 font-medium tracking-wide">
-                            Przeglądaj najnowsze oferty z Autopunkt wyselekcjonowane dla Ciebie.
+                            Przeglądaj najnowsze oferty z wielu źródeł wyselekcjonowane dla Ciebie.
                         </p>
                     </div>
                     <div className="flex gap-4 w-full sm:w-auto flex-wrap">

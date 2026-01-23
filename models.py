@@ -54,6 +54,8 @@ class VehicleSnapshot(Base):
     
     # Wyposażenie i Tagi (jako JSON lub Text)
     equipment_json = Column(JSON) # Przechowujemy wszystkie grupy wyposażenia
+    equipment = Column(Text)       # Surowe wyposażenie (dla źródeł bez podziału)
+    additional_equipment = Column(Text) # Dodatkowe wyposażenie (surowe)
     tags = Column(Text)
     
     # Zdjecia (mogą się zmieniać)

@@ -48,6 +48,57 @@ class VehisScraper(BaseScraper):
         except ValueError:
             return None
 
+    def _map_to_pl(self, field: str, value: str) -> str:
+        if not value:
+            return value
+        
+        mapping = {
+            "fuel_type": {
+                "Diesel": "diesel",
+                "Petrol unleaded": "benzynowy",
+                "Petrol/gas": "benzyna+LPG",
+                "Electric": "elektryczny",
+                "Hybrid": "hybrydowy",
+            },
+            "gearbox_type": {
+                "Manual gearbox": "manualna",
+                "Automatic transmission": "automatyczna",
+                "Automatic stepless": "automatyczna",
+                "Automatic sequential": "automatyczna",
+                "Automated manual gearbox": "półautomatyczna",
+            },
+            "drive_type": {
+                "Front wheel drive": "na przednie koła",
+                "Rear wheel drive": "na tylne koła",
+                "4 wheel drive permanent": "4x4 (stały)",
+                "4 wheel drive general": "4x4",
+                "4 wheel drive insertable": "4x4 (dołączany)",
+            },
+            "body_type": {
+                "Sedan": "sedan",
+                "Stationwagon": "kombi",
+                "Coupe": "coupe",
+                "Convertible": "kabriolet",
+                "Van": "minivan",
+                "SUV": "SUV",
+                "Hatchback": "hatchback",
+                "Combi": "kombi",
+                "Pick-Up": "pick-up",
+            }
+        }
+        
+        if field in mapping:
+            # Try exact match first, then case-insensitive
+            val_map = mapping[field]
+            if value in val_map:
+                return val_map[value]
+            
+            for k, v in val_map.items():
+                if k.lower() == value.lower():
+                    return v
+                    
+        return value
+
     def _build_detail_url(self, group_id: str, subject_id: str) -> str:
         return f"{self.base_url}/broker/subjects/{group_id}/{subject_id}"
 
@@ -97,6 +148,8 @@ class VehisScraper(BaseScraper):
 
         price_net = data.get("netto_price") or data.get("consumer_netto_price")
         price = self._safe_int(price_net)
+        # Convert to Brutto (Net * 1.23) as requested
+        price_brutto = int(price * 1.23) if price else None
 
         return {
             "listing_id": data.get("subject_id"),
@@ -107,18 +160,18 @@ class VehisScraper(BaseScraper):
             "model": data.get("model"),
             "wersja": data.get("version"),
             "vin": data.get("vin"),
-            "cena_brutto_pln": price,
-            "price_display": price_net,
+            "cena_brutto_pln": price_brutto,
+            "price_display": f"{price_brutto:,} PLN".replace(",", " ") if price_brutto else None,
             "rocznik": self._safe_int(data.get("manufacturing_year")),
             "przebieg_km": self._safe_int(data.get("mileage")),
-            "typ_silnika": data.get("fuel_type"),
-            "skrzynia_biegow": data.get("gearbox_type"),
+            "typ_silnika": self._map_to_pl("fuel_type", data.get("fuel_type")),
+            "skrzynia_biegow": self._map_to_pl("gearbox_type", data.get("gearbox_type")),
             "moc_km": self._safe_int(data.get("engine_power")),
             "registration_number": data.get("registration_number"),
             "pierwsza_rejestracja": data.get("first_registration_date"),
             "pojemnosc_cm3": self._safe_int(data.get("engine_capacity")),
-            "naped": data.get("drive_type"),
-            "typ_nadwozia": data.get("body_type"),
+            "naped": self._map_to_pl("drive_type", data.get("drive_type")),
+            "typ_nadwozia": self._map_to_pl("body_type", data.get("body_type")),
             "ilosc_drzwi": self._safe_int(data.get("number_of_doors")),
             "seats": self._safe_int(data.get("number_of_seats")),
             "kolor": data.get("color"),
@@ -127,6 +180,8 @@ class VehisScraper(BaseScraper):
             "primary_image_url": images[0] if images else None,
             "image_count": len(images),
             "zdjecia": "|".join(images),
+            "equipment": "|".join(equipment),
+            "additional_equipment": "|".join(additional_equipment),
             "equipment_audio_multimedia": "|".join(equipment),
             "equipment_other": "|".join(additional_equipment),
             "additional_info_content": data.get("additional_description"),

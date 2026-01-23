@@ -157,6 +157,8 @@ async def run_scraper_task(marketplace: str = "autopunkt", limit: Optional[int] 
                     old_price=data.get("stara_cena_pln") or data.get("omnibus_lowest_30d_pln"),
                     mileage=data.get("przebieg_km"),
                     equipment_json=equipment_json,
+                    equipment=data.get("equipment"),
+                    additional_equipment=data.get("additional_equipment"),
                     tags=data.get("tagi_oferty") or data.get("additional_info_header"),
                     pictures=data.get("zdjecia"),
                     source=data.get("source", "autopunkt.pl"),
@@ -409,6 +411,12 @@ def export_car_scout_csv(db: Session = Depends(database.get_db)):
         safety_str = "|".join(equipment_safety) if isinstance(equipment_safety, list) else str(equipment_safety or "")
         comfort_str = "|".join(equipment_comfort) if isinstance(equipment_comfort, list) else str(equipment_comfort or "")
         other_str = "|".join(equipment_other) if isinstance(equipment_other, list) else str(equipment_other or "")
+        
+        # Priority for raw equipment if available (e.g. for Vehis)
+        if latest.equipment:
+            audio_str = latest.equipment
+        if latest.additional_equipment:
+            other_str = latest.additional_equipment
         
         scraped_at = latest.scraped_at.isoformat() if latest.scraped_at else ""
         

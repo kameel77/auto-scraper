@@ -66,7 +66,12 @@ class FindcarScraper(BaseScraper):
         addr = dealer.get("address") or {}
 
         price_pln100 = pricing.get("offerPricePln100")
-        price_pln = int(price_pln100 / 100) if isinstance(price_pln100, int) else self._safe_int(pricing.get("displayAmount"))
+        # Prepare image list: primary first, then others
+        other_images = [img for img in image_urls if img != card.get("primaryImage")]
+        all_ordered_images = []
+        if card.get("primaryImage"):
+            all_ordered_images.append(card.get("primaryImage"))
+        all_ordered_images.extend(other_images)
 
         return {
             "listing_id": listing_id,
@@ -104,8 +109,8 @@ class FindcarScraper(BaseScraper):
             "dealer_google_link": dealer.get("googleLink"),
             "contact_phone": detail.get("contactPhone"),
             "primary_image_url": card.get("primaryImage"),
-            "image_count": len(image_urls),
-            "zdjecia": "|".join(image_urls),
+            "image_count": len(all_ordered_images),
+            "zdjecia": " | ".join(all_ordered_images),
             "equipment_audio_multimedia": "|".join(eq["Audio"]),
             "equipment_safety": "|".join(eq["Bezpieczeństwo"]),
             "equipment_comfort_extras": "|".join(eq["Komfort"]),

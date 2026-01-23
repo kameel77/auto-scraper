@@ -9,11 +9,19 @@ export const revalidate = 0;
 export default async function Home({
     searchParams,
 }: {
-    searchParams: Promise<{ marka?: string }>;
+    searchParams: Promise<{
+        marka?: string;
+        model?: string;
+        rok_min?: string;
+        rok_max?: string;
+        cena_min?: string;
+        cena_max?: string;
+        miasto?: string;
+    }>;
 }) {
-    const { marka } = await searchParams;
+    const filters = await searchParams;
     const [vehicles, stats] = await Promise.all([
-        getVehicles(marka).catch(() => []),
+        getVehicles(filters).catch(() => []),
         getStats().catch(() => ({
             total_vehicles: 0,
             total_snapshots: 0,
@@ -36,9 +44,8 @@ export default async function Home({
                     </div>
                     <div className="flex gap-4 w-full sm:w-auto flex-wrap">
                         <a
-                            href={`${
-                                process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
-                            }/export/csv/car-scout`}
+                            href={`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
+                                }/export/csv/car-scout`}
                             target="_blank"
                             className="inline-flex items-center justify-center px-6 py-3 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-sm font-black rounded-xl transition-all border border-slate-200 dark:border-slate-700"
                         >
@@ -58,9 +65,8 @@ export default async function Home({
                             CSV Car Scout
                         </a>
                         <a
-                            href={`${
-                                process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
-                            }/export/csv`}
+                            href={`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
+                                }/export/csv`}
                             target="_blank"
                             className="inline-flex items-center justify-center px-6 py-3 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-sm font-black rounded-xl transition-all border border-slate-200 dark:border-slate-700"
                         >
@@ -111,8 +117,8 @@ export default async function Home({
                 {vehicles.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-20 bg-white dark:bg-slate-900 rounded-3xl border-2 border-dashed border-slate-200 dark:border-slate-800">
                         <p className="text-slate-500 text-lg font-medium">
-                            {marka
-                                ? `Brak ofert dla marki "${marka}".`
+                            {filters.marka
+                                ? `Brak ofert dla marki "${filters.marka}".`
                                 : "Brak danych w bazie. Uruchom scraper, aby zebrać oferty."}
                         </p>
                     </div>

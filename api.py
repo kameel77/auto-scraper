@@ -203,18 +203,55 @@ def get_vehicles(
     skip: int = 0, 
     limit: int = 50, 
     marka: Optional[str] = None,
+    model: Optional[str] = None,
+    rok_min: Optional[int] = None,
+    rok_max: Optional[int] = None,
+    cena_min: Optional[int] = None,
+    cena_max: Optional[int] = None,
+    miasto: Optional[str] = None,
     db: Session = Depends(database.get_db)
 ):
-    query = db.query(models.Vehicle)
+    # Base query for vehicles
+    # We join with the latest snapshot for each vehicle to allow filtering by price
+    from sqlalchemy import and_, or_
+    
+    # Subquery to get the ID of the latest snapshot for each vehicle
+    latest_snapshot_ids = db.query(
+        models.VehicleSnapshot.vehicle_id,
+        func.max(models.VehicleSnapshot.scraped_at).label('max_scraped_at')
+    ).group_by(models.VehicleSnapshot.vehicle_id).subquery()
+
+    latest_snapshots = db.query(models.VehicleSnapshot).join(
+        latest_snapshot_ids,
+        and_(
+            models.VehicleSnapshot.vehicle_id == latest_snapshot_ids.c.vehicle_id,
+            models.VehicleSnapshot.scraped_at == latest_snapshot_ids.c.max_scraped_at
+        )
+    ).subquery()
+
+    query = db.query(models.Vehicle).join(latest_snapshots, models.Vehicle.id == latest_snapshots.c.vehicle_id)
+
     if marka:
         query = query.filter(models.Vehicle.marka.ilike(f"%{marka}%"))
+    if model:
+        query = query.filter(models.Vehicle.model.ilike(f"%{model}%"))
+    if rok_min:
+        query = query.filter(models.Vehicle.rocznik >= rok_min)
+    if rok_max:
+        query = query.filter(models.Vehicle.rocznik <= rok_max)
+    if cena_min:
+        query = query.filter(latest_snapshots.c.price >= cena_min)
+    if cena_max:
+        query = query.filter(latest_snapshots.c.price <= cena_max)
+    if miasto:
+        query = query.filter(models.Vehicle.dealer_address_line_2.ilike(f"%{miasto}%"))
     
     vehicles = query.offset(skip).limit(limit).all()
     
-    # Map to schema with latest snapshot
+    # Map to schema
     result = []
     for v in vehicles:
-        # Get latest snapshot
+        # Get latest snapshot manually for simplicity in mapping (or we could use the joined data)
         latest = db.query(models.VehicleSnapshot).filter(models.VehicleSnapshot.vehicle_id == v.id).order_by(models.VehicleSnapshot.scraped_at.desc()).first()
         
         v_dict = {
@@ -228,7 +265,7 @@ def get_vehicles(
             "lokalizacja_miasto": v.dealer_address_line_2.split()[-1] if v.dealer_address_line_2 else None,
             "latest_price": latest.price if latest else None,
             "latest_mileage": latest.mileage if latest else None,
-            "latest_image": latest.pictures.split(" | ")[0] if latest and latest.pictures else None,
+            "latest_image": (latest.pictures.split(" | ")[0] if " | " in latest.pictures else latest.pictures.split("|")[0]) if latest and latest.pictures else None,
             "scraped_at": latest.scraped_at if latest else None,
             "equipment": latest.equipment_json if latest else None
         }
@@ -242,9 +279,9 @@ def get_vehicle_trends(vehicle_id: int, db: Session = Depends(database.get_db)):
 
 @app.get("/stats", response_model=StatsSchema)
 def get_stats(db: Session = Depends(database.get_db)):
+    from sqlalchemy import func
     total_vehicles = db.query(models.Vehicle).count()
     total_snapshots = db.query(models.VehicleSnapshot).count()
-    from sqlalchemy import func
     avg_price = db.query(func.avg(models.VehicleSnapshot.price)).scalar() or 0
     brands = db.query(func.count(func.distinct(models.Vehicle.marka))).scalar() or 0
     return {
@@ -253,6 +290,35 @@ def get_stats(db: Session = Depends(database.get_db)):
         "avg_price": float(avg_price),
         "unique_brands": brands
     }
+
+@app.get("/brands", response_model=List[str])
+def get_brands(db: Session = Depends(database.get_db)):
+    brands = db.query(models.Vehicle.marka).distinct().filter(models.Vehicle.marka.isnot(None)).order_by(models.Vehicle.marka).all()
+    return [b[0] for b in brands]
+
+@app.get("/models", response_model=List[str])
+def get_models(marka: Optional[str] = None, db: Session = Depends(database.get_db)):
+    query = db.query(models.Vehicle.model).distinct().filter(models.Vehicle.model.isnot(None))
+    if marka:
+        query = query.filter(models.Vehicle.marka.ilike(f"%{marka}%"))
+    models_list = query.order_by(models.Vehicle.model).all()
+    return [m[0] for m in models_list]
+
+@app.get("/cities", response_model=List[str])
+def get_cities(db: Session = Depends(database.get_db)):
+    # Extract cities from dealer_address_line_2
+    # This is a bit tricky with SQLite, so we'll do it in Python if needed or just use the column directly
+    cities_raw = db.query(models.Vehicle.dealer_address_line_2).distinct().filter(models.Vehicle.dealer_address_line_2.isnot(None)).all()
+    
+    cities = set()
+    for row in cities_raw:
+        addr = row[0]
+        if addr:
+            parts = addr.split()
+            if parts:
+                cities.add(parts[-1])
+    
+    return sorted(list(cities))
 
 @app.get("/export/csv")
 def export_csv(db: Session = Depends(database.get_db)):
@@ -374,11 +440,16 @@ def export_car_scout_csv(db: Session = Depends(database.get_db)):
         
         all_pictures = latest.pictures if latest and latest.pictures else ""
         
-        picture_list = all_pictures.split(" | ") if all_pictures else []
-        vehicle_photos = [p for p in picture_list if "/uploads_pewne/" in p]
-        main_image = vehicle_photos[0] if vehicle_photos else ""
-        other_images = " | ".join(vehicle_photos[1:]) if len(vehicle_photos) > 1 else ""
-        all_pictures = " | ".join(vehicle_photos)
+        picture_list = []
+        if all_pictures:
+            if " | " in all_pictures:
+                picture_list = all_pictures.split(" | ")
+            else:
+                picture_list = all_pictures.split("|")
+        
+        main_image = picture_list[0] if picture_list else ""
+        other_images = " | ".join(picture_list[1:]) if len(picture_list) > 1 else ""
+        all_pictures_str = " | ".join(picture_list)
         
         price_display = f"{latest.price:,} PLN".replace(",", " ") if latest.price else ""
         
@@ -434,7 +505,7 @@ def export_car_scout_csv(db: Session = Depends(database.get_db)):
             v.contact_phone or "",
             main_image,
             "",
-            all_pictures,
+            all_pictures_str,
             audio_str,
             safety_str,
             comfort_str,

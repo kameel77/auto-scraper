@@ -34,12 +34,42 @@ export interface Stats {
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
-export async function getVehicles(marka?: string): Promise<Vehicle[]> {
+export async function getVehicles(filters: {
+    marka?: string;
+    model?: string;
+    rok_min?: string;
+    rok_max?: string;
+    cena_min?: string;
+    cena_max?: string;
+    miasto?: string;
+} = {}): Promise<Vehicle[]> {
     const url = new URL(`${API_BASE_URL}/vehicles`);
-    if (marka) url.searchParams.append("marka", marka);
+    Object.entries(filters).forEach(([key, value]) => {
+        if (value) url.searchParams.append(key, value);
+    });
 
     const res = await fetch(url.toString(), { cache: "no-store" });
     if (!res.ok) throw new Error("Failed to fetch vehicles");
+    return res.json();
+}
+
+export async function getBrands(): Promise<string[]> {
+    const res = await fetch(`${API_BASE_URL}/brands`, { cache: "no-store" });
+    if (!res.ok) throw new Error("Failed to fetch brands");
+    return res.json();
+}
+
+export async function getModels(marka?: string): Promise<string[]> {
+    const url = new URL(`${API_BASE_URL}/models`);
+    if (marka) url.searchParams.append("marka", marka);
+    const res = await fetch(url.toString(), { cache: "no-store" });
+    if (!res.ok) throw new Error("Failed to fetch models");
+    return res.json();
+}
+
+export async function getCities(): Promise<string[]> {
+    const res = await fetch(`${API_BASE_URL}/cities`, { cache: "no-store" });
+    if (!res.ok) throw new Error("Failed to fetch cities");
     return res.json();
 }
 

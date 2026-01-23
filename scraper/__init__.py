@@ -1,6 +1,7 @@
 from .base import BaseScraper
 from .autopunkt import AutopunktScraper
 from .findcar import FindcarScraper
+from .vehis import VehisScraper
 
 def get_scraper(name: str) -> BaseScraper:
     """
@@ -8,7 +9,8 @@ def get_scraper(name: str) -> BaseScraper:
     """
     scrapers = {
         "autopunkt": AutopunktScraper,
-        "findcar": FindcarScraper
+        "findcar": FindcarScraper,
+        "vehis": VehisScraper
     }
     
     scraper_class = scrapers.get(name.lower())
@@ -17,4 +19,4 @@ def get_scraper(name: str) -> BaseScraper:
     
     return scraper_class()
 
-__all__ = ["get_scraper", "BaseScraper", "AutopunktScraper", "FindcarScraper"]
+__all__ = ["get_scraper", "BaseScraper", "AutopunktScraper", "FindcarScraper", "VehisScraper"]

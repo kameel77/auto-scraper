@@ -84,7 +84,7 @@ async def run_scraper_task(marketplace: str = "autopunkt", limit: Optional[int] 
         
         if marketplace == "autopunkt":
             urls = await scraper.collect_urls()
-        else: # findcar
+        elif marketplace == "findcar":
             # Calculate max_pages based on limit:
             # - If limit is None/0, go deep (1000 pages)
             # - If limit is set, calculate pages needed (45 results per page)
@@ -94,6 +94,12 @@ async def run_scraper_task(marketplace: str = "autopunkt", limit: Optional[int] 
                 max_pages = 1000
                 
             urls = await scraper.collect_urls(max_pages=max_pages)
+        else:  # vehis
+            if limit:
+                max_pages = (limit // 50) + 1
+            else:
+                max_pages = 1000
+            urls = await scraper.collect_urls(max_pages=max_pages, page_size=50)
         
         if limit and limit < len(urls):
             logger.info(f"Ograniczam do {limit} ofert")
@@ -127,13 +133,21 @@ async def run_scraper_task(marketplace: str = "autopunkt", limit: Optional[int] 
                         "bezpieczenstwo": data.get("bezpieczenstwo"),
                         "wyglad": data.get("wyglad"),
                     }
-                else: # findcar
+                elif marketplace == "findcar":
                     equipment_json = {
                         "technologia": data.get("equipment_audio_multimedia"),
                         "komfort": data.get("equipment_comfort_extras"),
                         "bezpieczenstwo": data.get("equipment_safety"),
                         "wyglad": data.get("equipment_other"),
                         "additional_info_header": data.get("additional_info_header"),
+                        "additional_info_content": data.get("additional_info_content"),
+                    }
+                else:  # vehis
+                    equipment_json = {
+                        "technologia": data.get("equipment_audio_multimedia"),
+                        "komfort": data.get("equipment_comfort_extras"),
+                        "bezpieczenstwo": data.get("equipment_safety"),
+                        "wyglad": data.get("equipment_other"),
                         "additional_info_content": data.get("additional_info_content"),
                     }
                 

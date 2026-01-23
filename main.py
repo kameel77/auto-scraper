@@ -35,7 +35,7 @@ async def main():
     )
     parser.add_argument(
         '--marketplace', '-m',
-        choices=['autopunkt', 'findcar'],
+        choices=['autopunkt', 'findcar', 'vehis'],
         default='autopunkt',
         help='Marketplace do skrejpowania (default: autopunkt)'
     )
@@ -128,7 +128,7 @@ async def main():
                 scroll_pause=args.scroll_pause,
                 headless=args.headless
             )
-        else: # findcar
+        elif args.marketplace == "findcar":
             # Calculate max_pages based on limit if it's the default value
             max_pages = args.max_pages
             if args.limit and args.max_pages == 10:
@@ -141,6 +141,16 @@ async def main():
                 page_size=50,
                 start_page=0,
                 scroll_pause=args.scroll_pause
+            )
+
+        else:  # vehis
+            max_pages = args.max_pages
+            if args.limit and args.max_pages == 10:
+                max_pages = (args.limit // 50) + 1
+            offer_urls = await scraper.collect_urls(
+                max_pages=max_pages,
+                page_size=50,
+                start_offset=0
             )
     except Exception as e:
         logger.error(f"Błąd podczas zbierania URL-i: {e}")

@@ -85,7 +85,7 @@ async def run_scraper_task(marketplace: str = "autopunkt", limit: Optional[int] 
         
         if marketplace == "autopunkt":
             urls = await scraper.collect_urls()
-        else: # findcar
+        elif marketplace == "findcar":
             # Calculate max_pages based on limit:
             # - If limit is None/0, go deep (1000 pages)
             # - If limit is set, calculate pages needed (45 results per page)
@@ -95,6 +95,12 @@ async def run_scraper_task(marketplace: str = "autopunkt", limit: Optional[int] 
                 max_pages = 1000
                 
             urls = await scraper.collect_urls(max_pages=max_pages)
+        else:  # vehis
+            if limit:
+                max_pages = (limit // 50) + 1
+            else:
+                max_pages = 1000
+            urls = await scraper.collect_urls(max_pages=max_pages, page_size=50)
         
         if limit and limit < len(urls):
             logger.info(f"Ograniczam do {limit} ofert")
@@ -128,13 +134,21 @@ async def run_scraper_task(marketplace: str = "autopunkt", limit: Optional[int] 
                         "bezpieczenstwo": data.get("bezpieczenstwo"),
                         "wyglad": data.get("wyglad"),
                     }
-                else: # findcar
+                elif marketplace == "findcar":
                     equipment_json = {
                         "technologia": data.get("equipment_audio_multimedia"),
                         "komfort": data.get("equipment_comfort_extras"),
                         "bezpieczenstwo": data.get("equipment_safety"),
                         "wyglad": data.get("equipment_other"),
                         "additional_info_header": data.get("additional_info_header"),
+                        "additional_info_content": data.get("additional_info_content"),
+                    }
+                else:  # vehis
+                    equipment_json = {
+                        "technologia": data.get("equipment_audio_multimedia"),
+                        "komfort": data.get("equipment_comfort_extras"),
+                        "bezpieczenstwo": data.get("equipment_safety"),
+                        "wyglad": data.get("equipment_other"),
                         "additional_info_content": data.get("additional_info_content"),
                     }
                 
@@ -144,6 +158,8 @@ async def run_scraper_task(marketplace: str = "autopunkt", limit: Optional[int] 
                     old_price=data.get("stara_cena_pln") or data.get("omnibus_lowest_30d_pln"),
                     mileage=data.get("przebieg_km"),
                     equipment_json=equipment_json,
+                    equipment=data.get("equipment"),
+                    additional_equipment=data.get("additional_equipment"),
                     tags=data.get("tagi_oferty") or data.get("additional_info_header"),
                     pictures=data.get("zdjecia"),
                     source=data.get("source", "autopunkt.pl"),
@@ -465,6 +481,12 @@ def export_car_scout_csv(db: Session = Depends(database.get_db)):
         safety_str = "|".join(equipment_safety) if isinstance(equipment_safety, list) else str(equipment_safety or "")
         comfort_str = "|".join(equipment_comfort) if isinstance(equipment_comfort, list) else str(equipment_comfort or "")
         other_str = "|".join(equipment_other) if isinstance(equipment_other, list) else str(equipment_other or "")
+        
+        # Priority for raw equipment if available (e.g. for Vehis)
+        if latest.equipment:
+            audio_str = latest.equipment
+        if latest.additional_equipment:
+            other_str = latest.additional_equipment
         
         scraped_at = latest.scraped_at.isoformat() if latest.scraped_at else ""
         

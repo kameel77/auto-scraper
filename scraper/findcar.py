@@ -153,12 +153,15 @@ class FindcarScraper(BaseScraper):
                 
                 response.raise_for_status()
 
-                # Robust regex for publicListingNumber - handles both escaped and direct JSON
-                ids = set(re.findall(r'publicListingNumber["\\]+?:\s*?["\\]+?(\d+)', response.text))
-                
-                if not ids:
-                    # Look for listing previews in HTML
-                    ids = set(re.findall(r'/listings/(\d{6,})', response.text))
+                # 1. New robust regex for ID extraction (handles slugs/intermediate chars)
+                found_ids_url = re.findall(r'/listings/(?:[^"\']*?[-/])?(\d{5,})', response.text)
+                ids = set(found_ids_url)
+
+                # 2. Fallback: Search for publicListingNumber in JSON-like structure
+                json_ids = re.findall(r'"publicListingNumber"\s*:\s*"(\d+)"', response.text)
+                if json_ids:
+                    ids.update(json_ids)
+                    self.logger.debug(f"  ℹ️ Użyto metody JSON fallback dla strony {p_idx}")
 
                 if not ids:
                     self.logger.info(f"  ⚠️ Nie znaleziono ID na stronie {p_idx}. Status: {response.status_code}. Długość body: {len(response.text)}")
@@ -166,7 +169,11 @@ class FindcarScraper(BaseScraper):
                         self.logger.debug(f"  Snippet: {response.text[:500]}")
                     break
 
-                all_ids.extend(sorted(list(ids)))
+                result = sorted(list(ids))
+                if result:
+                    self.logger.debug(f"  (Debug: Znaleziono przykładowe ID: {result[:3]}...)")
+
+                all_ids.extend(result)
                 self.logger.info(f"  📌 Znaleziono {len(ids)} ofert na stronie.")
             except Exception as e:
                 self.logger.error(f"Błąd strony {p_idx}: {e}")

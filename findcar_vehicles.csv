@@ -1,78 +1,86 @@
 ﻿listing_id,numer_oferty,url,scraped_at,marka,model,wersja,vin,cena_brutto_pln,price_display,omnibus_lowest_30d_pln,omnibus_text,rocznik,przebieg_km,typ_silnika,skrzynia_biegow,moc_km,registration_number,pierwsza_rejestracja,pojemnosc_cm3,naped,typ_nadwozia,ilosc_drzwi,seats,kolor,paint_type,dealer_name,dealer_address_line_1,dealer_address_line_2,dealer_address_line_3,dealer_google_rating,dealer_review_count,dealer_google_link,contact_phone,primary_image_url,image_count,zdjecia,equipment_audio_multimedia,equipment_safety,equipment_comfort_extras,equipment_other,additional_info_header,additional_info_content,specs_json,source
-000238337,000238337,https://findcar.pl/listings/000238337,2026-01-23T08:06:48.549729+00:00,Volkswagen,Arteon Shooting Brake,,WVWZZZ3HZPK000615,149800,149 800 zł,149800.0,Najniższa cena z 30 dni: 149 800 zł brutto,2022,81631,benzyna,"automatyczna dwusprzęgłowa (DCT, DSG)",190,GIS,07.12.2022,1984,przedni,kombi,5,5,czarny,metalik,Porsche Inter Auto Polska Sp. z o. o.,Jabłoniowa 2a,41-214 Sosnowiec,,4.2,626,https://maps.google.com/?cid=9477818247839401529&g_mp=CiVnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLkdldFBsYWNlEAIYBCAA,+48662132129,https://carapi.activemotors.pl/photo/1938138/43b6a783627e4a8c.jpg,29,https://carapi.activemotors.pl/photo/1938138/43b6a783627e4a8c.jpg|https://carapi.activemotors.pl/photo/1938138/4f2a9f5ccff8dea1.jpg|https://carapi.activemotors.pl/photo/1938138/867d0992ba5186b1.jpg|https://carapi.activemotors.pl/photo/1938138/471d8c73d2cf8871.jpg|https://carapi.activemotors.pl/photo/1938138/bba9e1ded4558e6a.jpg|https://carapi.activemotors.pl/photo/1938138/21743fff95ef8156.jpg|https://carapi.activemotors.pl/photo/1938138/f1daef28fdd32faa.jpg|https://carapi.activemotors.pl/photo/1938138/738952744ba0d372.jpg|https://carapi.activemotors.pl/photo/1938138/419076d534791c7d.jpg|https://carapi.activemotors.pl/photo/1938138/6a388558252e5906.jpg|https://carapi.activemotors.pl/photo/1938138/ed708ae6fdee452f.jpg|https://carapi.activemotors.pl/photo/1938138/39872669089d8da6.jpg|https://carapi.activemotors.pl/photo/1938138/408dcf85c7a1cfd3.jpg|https://carapi.activemotors.pl/photo/1938138/56166ec9f9804317.jpg|https://carapi.activemotors.pl/photo/1938138/ec353ea627f810d0.jpg|https://carapi.activemotors.pl/photo/1938138/ea0a11f7e1aaed47.jpg|https://carapi.activemotors.pl/photo/1938138/9b8f5fc885bdbfe3.jpg|https://carapi.activemotors.pl/photo/1938138/ece25858f4034fc9.jpg|https://carapi.activemotors.pl/photo/1938138/7d1777094f5e4947.jpg|https://carapi.activemotors.pl/photo/1938138/e9e7ea60e5849731.jpg|https://carapi.activemotors.pl/photo/1938138/b858a11fc6d7ae60.jpg|https://carapi.activemotors.pl/photo/1938138/fc614eaa22174ca4.jpg|https://carapi.activemotors.pl/photo/1938138/0785c1a82ec56acb.jpg|https://carapi.activemotors.pl/photo/1938138/706afef08133734c.jpg|https://carapi.activemotors.pl/photo/1938138/6e355639f95b7f44.jpg|https://carapi.activemotors.pl/photo/1938138/bc1619fae8629dae.jpg|https://carapi.activemotors.pl/photo/1938138/8d588528038e911b.jpg|https://carapi.activemotors.pl/photo/1938138/a645d9bd76e9f68f.jpg|https://carapi.activemotors.pl/photo/1938138/e6a41a8411cffe43.jpg,bluetooth|System nawigacji satelitarnej,ABS|ESP (stabilizacja toru jazdy)|kontrola odległości z przodu (przy parkowaniu)|kontrola odległości z tyłu (przy parkowaniu)|poduszka kolan kierowcy|poduszka powietrzna kierowcy|poduszka powietrzna pasażera,kierownica wielofunkcyjna|klimatyzacja automatyczna|lampy przednie w technologii LED|lusterka boczne ustawiane elektrycznie|podgrzewane lusterka boczne|przyciemniane tylne szyby|wspomaganie kierownicy,alufelgi|tempomat,,"Porsche Inter Auto Polska Sp. Zo.o. Oddział Volkswagen Sosnowiec - ul. Jabłoniowa 2a
-Autoryzowany Dealer Marki Volkswagen, prezentuje ofertę samochodu używanego.
+012638420,012638420,https://findcar.pl/listings/012638420,2026-01-26T22:38:13.195921+00:00,Fiat,Doblo,,VYFEDYHT1TJ529252,98400.0,98 400 zł,98400.0,Najniższa cena z 30 dni: 98 400 zł brutto,2025,0,diesel,manualna,100,,,1499,2WD,furgon,,3,biały,,Grupa PGD Sp. z o. o.,ul. Krasnobrodzka 5,03-214 Warszawa,,3.9,109,https://maps.google.com/?cid=16452751612824052387&g_mp=CiVnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLkdldFBsYWNlEAIYBCAA,+48667071999,https://api.pgd.ovh/cache/site_export_euromobil_dostawcze/uploads_fiat/cars/new/115234/20260126-161425-3.jpg?time=1769444029,15,https://api.pgd.ovh/cache/site_export_euromobil_dostawcze/uploads_fiat/cars/new/115234/20260126-161425-3.jpg?time=1769444029 | https://api.pgd.ovh/cache/site_export_euromobil_dostawcze/uploads_fiat/cars/new/115234/20260126-161513-2.jpg?time=1769444029 | https://api.pgd.ovh/cache/site_export_euromobil_dostawcze/uploads_fiat/cars/new/115234/20260126-161341-2.jpg?time=1769444029 | https://api.pgd.ovh/cache/site_export_euromobil_dostawcze/uploads_fiat/cars/new/115234/20260126-161152-2.jpg?time=1769444029 | https://api.pgd.ovh/cache/site_export_euromobil_dostawcze/uploads_fiat/cars/new/115234/20260126-161237-2.jpg?time=1769444029 | https://api.pgd.ovh/cache/site_export_euromobil_dostawcze/uploads_fiat/cars/new/115234/20260126-161525-2.jpg?time=1769444029 | https://api.pgd.ovh/cache/site_export_euromobil_dostawcze/uploads_fiat/cars/new/115234/20260126-161144-2.jpg?time=1769444029 | https://api.pgd.ovh/cache/site_export_euromobil_dostawcze/uploads_fiat/cars/new/115234/20260126-161553-2.jpg?time=1769444029 | https://api.pgd.ovh/cache/site_export_euromobil_dostawcze/uploads_fiat/cars/new/115234/20260126-161624-2.jpg?time=1769444029 | https://api.pgd.ovh/cache/site_export_euromobil_dostawcze/uploads_fiat/cars/new/115234/20260126-160721-2.jpg?time=1769444029 | https://api.pgd.ovh/cache/site_export_euromobil_dostawcze/uploads_fiat/cars/new/115234/20260126-160756-2.jpg?time=1769444029 | https://api.pgd.ovh/cache/site_export_euromobil_dostawcze/uploads_fiat/cars/new/115234/20260126-160826-2.jpg?time=1769444029 | https://api.pgd.ovh/cache/site_export_euromobil_dostawcze/uploads_fiat/cars/new/115234/20260126-160926-2.jpg?time=1769444029 | https://api.pgd.ovh/cache/site_export_euromobil_dostawcze/uploads_fiat/cars/new/115234/20260126-160953-2.jpg?time=1769444029 | https://api.pgd.ovh/cache/site_export_euromobil_dostawcze/uploads_fiat/cars/new/115234/20260126-161047-2.jpg?time=1769444029,Centralny zamek sterowany pilotem|Kamera cofania|Sterowanie systemem audio przyciskami na kierownicy|System Start/Stop|Tylne czujniki parkowania|Zestaw głośnomówiący Bluetooth,ABS|ESP|Poduszka powietrzna kierowcy|Poduszka powietrzna pasażera|Tempomat,Klimatyzacja manualna|Komputer pokładowy,Drzwi przesuwne,,"Numer oferty: WBN00194FI<br><br>Numer VIN: VYFEDYHT1TJ529252<br><br><b>Dodatkowe informacje:</b><p><strong>WYPOSAŻENIE</strong>&nbsp;<strong>STANDARDOWE</strong><br>025 - Klimatyzacja manualna<br>0ML - MODEL YEAR 2025<br>365 - Czujniki spadku ciśnienia w ogumieniu pośrednie<br>396 - Wykładzina z tworzywa na podłodze w kabinie kierowcy<br>3CU - felgi stalowe szare 16'' 205/60 R16 96H XL Class A+<br>416 - Tempomat<br>499 - Zestaw do naprawy ""Fix&amp;Go""<br>4ZF - Pakiet Safety<br>516 - Drzwi tylne dwuskrzydłowe pełne<br>523 - Drzwi boczne przesuwne po stronie pasażera<br>614 - Pięć poduszek bezpieczeństwa czołowa pasażera, boczne i kurtynowe dla kierowcy i pasażera w R1<br>7ET - Przegroda pełna stała z haczykiem na ubrania<br>RDN - Stacja dokująca do Smarthphon-a<br>RTR - System Connect SOS &amp; Assistance BTA 4S<br>SCA - Kierownica z tworzywa sztucznego wielofunkcyjna przyciski do sterowania<br>XH3 - Tylne czujniki parkowania</p><p><strong>WYPOSAŻENIE DODATKOWO PŁATNE <br></strong>&nbsp;5ZJ MAGIC CARGO - Ławka dwumiejscowa pasażera ze stolikiem do pisania <br>CKC Wykładzina antypoślizgowa 9mm na podłodze w przestrzeni ładunkowej <br>RDE System multimedialny AIO 10"", AM/FM/DAB;USB <br>TBB Koło zapasowe <br>XAM Kamera cofania + czujniki parkowania tyłSystem multimedialny AIO</p><p>Cena samochodu - <strong>80 000 netto</strong></p><p>Auto dostępne do oględzin w naszym salonie, serdecznie zapraszamy. ST Motors, autoryzowany dealer Fiat Professional.</p><p><strong>Fiat Professional salon Warszawa ul. Krasnobrodzka 5 Centrum Motoryzacyjne Toruńska:</strong></p><p>Adrian Czyżewski +48 667 071 999</p><p>Jarosław Szmitko &nbsp;+48 667 071 762</p><p>Maciej Strzerzyński +48 667 071 911</p><p>Informacje umieszczone na stronie internetowej służą jedynie celom informacyjnym i nie stanowią oferty w rozumieniu przepis&oacute;w Kodeksu<br>Cywilnego oraz opisu towaru ani zapewnienia w rozumieniu art. 4 Ustawy z dnia 27 lipca 2002 r. o szczeg&oacute;lnych warunkach sprzedaży<br>konsumenckiej. Indywidualne uzgodnienie właściwości i specyfikacji pojazdu następuje w umowie sprzedaży. Zdjęcie prezentowanego modelu<br>jest zdjęciem przykładowym i może przedstawiać wersję inną niż oferowana w ogłoszeniu.&nbsp;</p><br><b>Bezpieczeństwo:</b><p>Poduszka powietrzna kierowcy, ESP, ABS, Poduszka powietrzna pasażera, Tempomat</p><br><b>Wnętrze:</b><p>Klimatyzacja manualna, Komputer pokładowy</p><br><b>Technologia:</b><p>Centralny zamek sterowany pilotem, Tylne czujniki parkowania, Sterowanie systemem audio przyciskami na kierownicy, Zestaw głośnomówiący Bluetooth, Kamera cofania, System Start/Stop</p><br><b>Dostawcze:</b><p>Drzwi przesuwne</p>","{""Marka"": ""Fiat"", ""Model"": ""Doblo"", ""VIN"": ""VYFEDYHT1TJ529252"", ""Rok produkcji"": ""2025"", ""Przebieg"": ""0 km"", ""Silnik / rodzaj paliwa"": ""diesel"", ""Moc"": ""100 KM"", ""Napęd"": ""2WD"", ""Skrzynia biegów"": ""manualna"", ""Pojemność silnika"": ""1 499 cm³"", ""Rodzaj nadwozia"": ""furgon"", ""Liczba miejsc"": ""3"", ""Kolor"": ""biały""}",findcar.pl
+013356743,013356743,https://findcar.pl/listings/013356743,2026-01-26T22:38:15.087762+00:00,Skoda,Superb Combi,Essence,TMBJN8NZ9SC014802,119700.0,119 700 zł,119700.0,Najniższa cena z 30 dni: 119 700 zł brutto,2024,47748,benzyna,automatyczna,150,PK7033S,04.12.2024,1498,przedni,kombi,5.0,5,biały,akrylowy,Plichta Spółka z o. o. Sp. K.,Marynarki Polskiej 92,80-557 Gdańsk,,4.6,297,https://maps.google.com/?cid=10751831718604154302&g_mp=CiVnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLkdldFBsYWNlEAIYBCAA,+48785334846,https://carapi.activemotors.pl/photo/1943429/dca7386b344dbec2.jpg,3,https://carapi.activemotors.pl/photo/1943429/dca7386b344dbec2.jpg | https://carapi.activemotors.pl/photo/1943429/61a0dfbc82cc3e39.jpg | https://carapi.activemotors.pl/photo/1943429/d2c8f510c00fdc47.jpg,bluetooth|radio,ABS|ESP (stabilizacja toru jazdy)|kamera parkowania tył|kontrola odległości z przodu (przy parkowaniu)|kontrola odległości z tyłu (przy parkowaniu)|poduszka powietrzna kierowcy|poduszka powietrzna pasażera,"elektryczne szyby przednie|elektryczne szyby tylne|kierownica wielofunkcyjna|klimatyzacja automatyczna|klimatyzacja automatyczna, dwustrefowa|lampy przednie w technologii LED|lusterka boczne ustawiane elektrycznie|podgrzewane lusterka boczne|podgrzewany fotel kierowcy|przyciemniane tylne szyby|tapicerka materiałowa|wspomaganie kierownicy",alufelgi|ogranicznik prędkości|system Start/Stop,"1.5TSI m-HEV 150KM DSG, Kamera, Virtual, Asystenci, Smartlink, FV23%","Numer oferty: SKGL81222
+
+Samochód znajduje się w salonie Certyfikowane Używane PLICHTA w Gdańsku przy ulicy Marynarki Polskiej 92.
+
+Wszystkie pojazdy z naszej oferty znajdują się na ekspozycji w zadaszonej hali.
+
+W naszej ofercie znajdują się wyselekcjonowane samochody z pewną historią, przebiegiem, oraz sprawdzonym stanem technicznym.
+_
+
+Oferujemy również kompleksową obsługę zakupu na miejscu: 
+
+- Możliwość pozostawienia obecnie posiadanego pojazdu w rozliczeniu - wycena na miejscu!
+
+- Kredyty i leasingi z atrakcyjnym oprocentowaniem w różnych instytucjach finansowych - Uproszczone procedury;
+
+- Atrakcyjne pakiety dealerskie AC/OC/NW/ASS wiodących firm ubezpieczeniowych;
+
+- Oryginalne akcesoria do samochodów;
+
+- Zakup oraz wymiana opon z gwarancją na 3 lata;
+
+- Obsługa posprzedażowa w ASO:
+
+           -> Pakiety olejowe
+           -> Pakiety serwisowe
+           -> Rozszerzona gwarancja
 
 
-Kupując samochód z naszego salonu otrzymasz:
+Skoda Superb Combi 1.5 TSI m-HEV 150 KM
+_
 
- • Assistance – Gwarancja Mobilności
- • Sprawdzony stan techniczny
- • Potwierdzony przebieg i historia samochodu
- • Udokumentowane pochodzenie samochodu
+Wersja wyposażenia: Essence
+Rok produkcji: 2024
+Data pierwszej rejestracji: 04.12.2024
+_
 
+Samochód bezywpadkowy; Salon PL
+Regularnie serwisowany w ASO;
+Kamera, Smartlink, Ogranicznik prędkości.
+_
 
-Ponadto zapytaj naszych Doradców o:
+• Reflektory LED
+• Bluetooth
+• Smartlink
+• Virtualcockpit
+• Klimatyzacja automatyczna dwustrefowa 
+• Podgrzewane fotele
+• Podgrzewana kierownica
+• Zestaw głośnomówiący
+• Kamera cofania
+• Czujniki parkowania z wizualizacja
+• Multifunkcyjna kierownica
+• ISOFIX
+• Front Assist
+• Lane Assist
+• Side Assist
+• System rozpoznawania zmęczenia kierowcy
+• Sygnalizacja przekroczenia prędkości
+• Ogranicznik prędkości
+• Odpalanie samochodu bez użycia kluczyków
+• Elektryczne lusterka, ogrzewane
+• Elektryczne szyby
+I wiele innych
+_
 
-• Pozostawienie pojazdu w rozliczeniu
-• Przedłużoną gwarancję producenta na samochody
-• Korzystne pakiety serwisowe dostępne dla samochodów używanych
-• Dedykowane finansowanie z niskimi ratami
+Auto sprzedawane na podstawie Faktury VAT 23% - kupujący zwolniony z opłaty skarbowej PCC (2%);
+Możliwość pozostawienia auta w rozliczeniu.
 
-Doradca klienta:
+""Oferowany pojazd może mieć aktywne funkcje abonamentowe, które nie są częścią przedstawionej oferty, a sprzedający nie ponosi odpowiedzialności za czas ich funkcjonowania.""
 
-Mateusz tel: 787 016 662
-Kamil tel. 888 337 141
-Dariusz tel. 668 041 952
-Robert tel. 539 022 243
+_
 
-Dostępne formy zakupu:
-✔️ Gotówka
-✔️ Leasing
-✔️ Najem długoterminowy
-✔️ Kredyt
+Zapraszamy do kontaktu i na jazdę próbną:
 
+☎️  +48 691 241 631 Michał Czoczys
+☎️  +48 693 050 079 Piotr Smardzewski
+☎️  +48 885 554 531 Sylwester Jędrzejczyk
+☎️  +48 691 781 535 Patryk Trzebiatowski
+☎️  +48 785 334 846 Piotr Adamski
+_
 
-
-Niniejsze ogłoszenie jest wyłącznie informacją handlową i nie stanowi oferty w myśl art. 66, § 1. Kodeksu Cywilnego. Sprzedający nie odpowiada za ewentualne błędy lub nieaktualność ogłoszenia.
-
-
-
-
-
-
-
-
-
-
-
-","{""Marka"": ""Volkswagen"", ""Model"": ""Arteon Shooting Brake"", ""VIN"": ""WVWZZZ3HZPK000615"", ""Numer rejestracyjny"": ""GIS"", ""Rok produkcji"": ""2022"", ""Data pierwszej rejestracji"": ""07.12.2022"", ""Przebieg"": ""81 631 km"", ""Silnik / rodzaj paliwa"": ""benzyna"", ""Moc"": ""190 KM"", ""Napęd"": ""przedni"", ""Skrzynia biegów"": ""automatyczna dwusprzęgłowa (DCT, DSG)"", ""Pojemność silnika"": ""1 984 cm³"", ""Rodzaj nadwozia"": ""kombi"", ""Liczba drzwi"": ""5"", ""Liczba miejsc"": ""5"", ""Kolor"": ""czarny"", ""Rodzaj lakieru"": ""metalik""}",findcar.pl
-000956660,000956660,https://findcar.pl/listings/000956660,2026-01-23T08:06:50.684363+00:00,Lexus,RZ,450e Omotenashi DIRECT4,JTJAABAB30A002605,199900,199 900 zł,199900.0,Najniższa cena z 30 dni: 199 900 zł brutto,2023,18587,Elektryczny,Automatyczna,313,,15.06.2023,0,4x4 (dołączany automatycznie),SUV,5,5,Czarny,Metalik,Toyota Katowice sp. z o.o.,al. Roździeńskiego 208A,40-315 Katowice,,4.5,739,https://maps.google.com/?cid=17713584679341330833&g_mp=CiVnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLkdldFBsYWNlEAIYBCAA,+48668040182,https://panel.pewneauto.pl/media/UsedCar/241005/66a4f21a306cd.jpg,12,https://panel.pewneauto.pl/media/UsedCar/241005/66a4f21a306cd.jpg|https://panel.pewneauto.pl/media/UsedCar/241005/66a4f21a749fe.jpg|https://panel.pewneauto.pl/media/UsedCar/241005/66a4f219d0bd3.jpg|https://panel.pewneauto.pl/media/UsedCar/241005/66a4f21a43257.jpg|https://panel.pewneauto.pl/media/UsedCar/241005/66a4f219b90cd.jpg|https://panel.pewneauto.pl/media/UsedCar/241005/66a4f21a8ae99.jpg|https://panel.pewneauto.pl/media/UsedCar/241005/66a4f21aa2337.jpg|https://panel.pewneauto.pl/media/UsedCar/241005/66a4f219e4c7e.jpg|https://panel.pewneauto.pl/media/UsedCar/241005/66a4f21ab59bd.jpg|https://panel.pewneauto.pl/media/UsedCar/241005/66a4f21adc04d.jpg|https://panel.pewneauto.pl/media/UsedCar/241005/66a4f21ac6e4d.jpg|https://panel.pewneauto.pl/media/UsedCar/241005/66a4f21af009c.jpg,Bluetooth|Ekran dotykowy|Gniazdo USB|Głosowe sterowanie funkcjami pojazdu|HUD (wyświetlacz przezierny)|Interfejs Android Auto|Interfejs Apple CarPlay|Nawigacja GPS|Zestaw głośnomówiący|Ładowanie bezprzewodowe urządzeń,ABS|Aktywny asystent hamowania awaryjnego|Asystent hamowania awaryjnego w mieście|Asystent pasa ruchu|Elektroniczny system rozdziału siły hamowania|ESP (stabilizacja toru jazdy)|Isofix|Kurtyny powietrzne|Kurtyny powietrzne - tył|Poduszka kolan pasażera|Poduszka powietrzna chroniąca kolana|Poduszka powietrzna kierowcy|Poduszka powietrzna pasażera|Poduszki boczne przednie|Poduszki boczne tylne|RCTA - System ostrzegania o ruchu poprzecznym z tyłu pojazdu|System ostrzegający o możliwej kolizji|System powiadamiania o wypadku|System wspomagania hamowania|System wykrywania zmęczenia kierowcy,Czujnik deszczu|Dach panoramiczny|Dźwignia zmiany biegów wykończona skórą|Elektryczne szyby przednie|Elektryczne szyby tylne|Elektrycznie ustawiane fotele|Elektrycznie ustawiany fotel kierowcy|Fotele przednie wentylowane|Keyless Entry|Keyless Go|Kierownica ogrzewana|Kierownica skórzana|Kierownica sportowa|Klimatyzacja dwustrefowa|Kolumna kierownicy regulowana elektrycznie|Podgrzewane przednie siedzenia|Podgrzewane tylne siedzenia|Podgrzewany fotel pasażera|Podłokietniki - przód|Podłokietniki - tył|Przyciemniane szyby|Regul. elektr. podparcia lędźwiowego - kierowca|Regul. elektr. podparcia lędźwiowego - pasażer|Siedzenie z pamięcią ustawienia|Tapicerka Alcantara|Uruchamianie silnika bez użycia kluczyków|Wielofunkcyjna kierownica|Łopatki zmiany biegów,Felgi aluminiowe 20|Aktywny asystent zmiany pasa ruchu|ASR (kontrola trakcji)|Asystent (czujnik) martwego pola|Asystent hamowania - Brake Assist|Asystent jazdy w korku|Asystent parkowania|Asystent świateł drogowych|Czujnik zmierzchu|Czujniki parkowania przednie|Czujniki parkowania tylne|Dynamiczne światła doświetlające zakręty|Elektroniczna kontrola ciśnienia w oponach|Elektrycznie ustawiane lusterka|Elektryczny hamulec postojowy|Kamera cofania|Kamera panoramiczna 360|Kontrola odległości|Lampy tylne w technologii LED|Lusterka boczne składane elektrycznie|Ogranicznik prędkości|Oświetlenie drogi do domu|Podgrzewane lusterka boczne|RSA - System rozpoznawania znaków drogowych|Tempomat aktywny|Wspomaganie kierownicy|Wspomaganie ruszania pod górę|Światła do jazdy dziennej|Światła do jazdy dziennej diodowe LED|Światła LED|Światła przeciwmgielne|Funkcja szybkiego ładowania|Kabel do ładowania|System odzyskiwania energii,,"Autoryzowany dealer Lexus Katowice oferuje do sprzedaży samochód używany Lexus RZ 450e DIRECT4 
-Wersja wyposażenia: Omotenashi
-
-Dodatkowe informacje dotyczące samochodu:
-- bezwypadkowy
-- zakupiony w polskim salonie
-- serwisowany w Autoryzowanym Serwisie
-- od pierwszego właściciela
-- sprzedaż na podstawie faktury VAT 23%
-
-Gwarancja:
-
-W cenie samochodu 12 miesięczna gwarancja bez limitu kilometrów z możliwością darmowego przedłużenia do 10 lat lub 185000km LEXUS RELAX* ( O szczegóły zapytaj doradcę )
-
-Zakup samochodu w Lexus Katowice to bezpieczeństwo transakcji i gwarancja, że używany pojazd, który Państwo kupują, został sprawdzony przez nasz Dział Serwisu Mechanicznego. Oferujemy:
-- ponad 15 lat doświadczenia na rynku motoryzacyjnym
-- udokumentowany przebieg
-- możliwość wglądu w historię samochodu (podczas wizyty w naszym salonie)
-- kompleksową obsługę finansowania zakupu oraz ubezpieczenia samochodu
-- możliwość przyjęcia w rozliczeniu samochodu zakupionego w polskim salonie (różne marki).
-
-Dla komfortu naszych Klientów prosimy o telefoniczne umówienie terminu spotkania i prezentacji samochodu.
-
-Kontakt do Doradców:
-
-• Adam Szkaradek, tel. 668 040 182
-
-• Michał Langer, tel. 880 142 963
-
-Wszelkie informacje zawarte na niniejszej stronie internetowej nie stanowią oferty w rozumieniu Kodeksu Cywilnego. W wypadku sprzedaży konsumenckiej w rozumieniu ustawy z dnia 27 lipca 2002 r. o szczególnych warunkach sprzedaży konsumenckiej oraz o zmianie Kodeksu cywilnego (dalej: Ustawa), zawarte na niniejszej stronie internetowej informacje nie stanowią zapewnienia w rozumieniu art. 4 ust. 3 Ustawy, jak również nie stanowią opisu towaru w rozumieniu art. 4 ust. 2 Ustawy. Indywidualne uzgodnienie ceny i wyposażenia pojazdu następuje w umowie jego sprzedaż.","{""Marka"": ""Lexus"", ""Model"": ""RZ"", ""Wersja"": ""450e Omotenashi DIRECT4"", ""VIN"": ""JTJAABAB30A002605"", ""Rok produkcji"": ""2023"", ""Data pierwszej rejestracji"": ""15.06.2023"", ""Przebieg"": ""18 587 km"", ""Silnik / rodzaj paliwa"": ""Elektryczny"", ""Moc"": ""313 KM"", ""Napęd"": ""4x4 (dołączany automatycznie)"", ""Skrzynia biegów"": ""Automatyczna"", ""Pojemność silnika"": ""0 cm³"", ""Rodzaj nadwozia"": ""SUV"", ""Liczba drzwi"": ""5"", ""Liczba miejsc"": ""5"", ""Kolor"": ""Czarny"", ""Rodzaj lakieru"": ""Metalik""}",findcar.pl
+Niniejsze ogłoszenie nie stanowi oferty w myśl art. 66 § 1 Kodeksu Cywilnego, a jedynie zaproszenie do zawarcia umowy. 
+Nie odpowiadamy za ewentualne niezamierzone błędy w ogłoszeniu.
+","{""Marka"": ""Skoda"", ""Model"": ""Superb Combi"", ""Wersja"": ""Essence"", ""VIN"": ""TMBJN8NZ9SC014802"", ""Numer rejestracyjny"": ""PK7033S"", ""Rok produkcji"": ""2024"", ""Data pierwszej rejestracji"": ""04.12.2024"", ""Przebieg"": ""47 748 km"", ""Silnik / rodzaj paliwa"": ""benzyna"", ""Moc"": ""150 KM"", ""Napęd"": ""przedni"", ""Skrzynia biegów"": ""automatyczna"", ""Pojemność silnika"": ""1 498 cm³"", ""Rodzaj nadwozia"": ""kombi"", ""Liczba drzwi"": ""5"", ""Liczba miejsc"": ""5"", ""Kolor"": ""biały"", ""Rodzaj lakieru"": ""akrylowy""}",findcar.pl

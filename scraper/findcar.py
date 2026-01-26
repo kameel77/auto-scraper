@@ -66,6 +66,8 @@ class FindcarScraper(BaseScraper):
         addr = dealer.get("address") or {}
 
         price_pln100 = pricing.get("offerPricePln100")
+        price_pln = (price_pln100 / 100) if isinstance(price_pln100, int) else None
+
         # Prepare image list: primary first, then others
         other_images = [img for img in image_urls if img != card.get("primaryImage")]
         all_ordered_images = []
@@ -159,7 +161,8 @@ class FindcarScraper(BaseScraper):
                 response.raise_for_status()
 
                 # 1. New robust regex for ID extraction (handles slugs/intermediate chars)
-                found_ids_url = re.findall(r'/listings/(?:[^"\']*?[-/])?(\d{5,})', response.text)
+                # Matches URLs like /oferty-dealerow/some-slug-012345678
+                found_ids_url = re.findall(r'/oferty-dealerow/[^"\']*?-(\d{5,9})(?:\?|#|")', response.text)
                 ids = set(found_ids_url)
 
                 # 2. Fallback: Search for publicListingNumber in JSON-like structure

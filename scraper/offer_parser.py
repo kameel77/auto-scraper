@@ -582,7 +582,7 @@ def parse_offer(url: str) -> dict:
             filtered_images = [
                 img for img in json_images 
                 if img.startswith("http") 
-                and not any(skip in img.lower() for skip in ["icon", "facebook", "statichttps://maps", "data:image/svg"])
+                and not any(skip in img.lower() for skip in ["icon", "facebook", "statichttps://maps", "data:image/svg", ".svg", "_nuxt/img/"])
                 and "/cars/" in img  # Tylko zdjęcia z /cars/
             ]
             data["zdjecia"] = " | ".join(filtered_images) if filtered_images else None
@@ -794,7 +794,7 @@ def _extract_images(soup: BeautifulSoup, base_url: str) -> str | None:
             continue
         
         # Filtruj ikony i social media
-        if any(skip in src.lower() for skip in ["icon", "instagram", "facebook", "logo"]):
+        if any(skip in src.lower() for skip in ["icon", "instagram", "facebook", "logo", ".svg", "_nuxt/img/"]):
             continue
         
         abs_src = urljoin(base_url, src)

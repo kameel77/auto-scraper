@@ -124,6 +124,7 @@ async def main():
     try:
         if args.marketplace == "autopunkt":
             offer_urls = await scraper.collect_urls(
+                limit=args.limit,
                 max_scroll_rounds=args.max_scrolls,
                 scroll_pause=args.scroll_pause,
                 headless=args.headless

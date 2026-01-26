@@ -1,0 +1,154 @@
+{
+    "name": "Motolia_Ayvens_check_spec_photos_v2",
+    "nodes": [
+        {
+            "parameters": {
+                "documentId": {
+                    "__rl": true,
+                    "value": "18hrB36_iKkWJW1yqjSgP46QfzJO7HeAD6Kc41ZgFYCQ",
+                    "mode": "list",
+                    "cachedResultName": "motolia_oferty_web"
+                },
+                "sheetName": {
+                    "__rl": true,
+                    "value": "gid=0",
+                    "mode": "list",
+                    "cachedResultName": "Sheet1"
+                },
+                "event": "rowUpdated",
+                "options": {}
+            },
+            "id": "trigger-sheets",
+            "name": "Google Sheets Trigger",
+            "type": "n8n-nodes-base.googleSheetsTrigger",
+            "typeVersion": 1,
+            "position": [
+                100,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "conditions": {
+                    "options": {
+                        "caseSensitive": true,
+                        "leftValue": "",
+                        "typeValidation": "strict"
+                    },
+                    "conditions": [
+                        {
+                            "id": "check-empty-url",
+                            "leftValue": "={{ $json.Specyfikacja_url }}",
+                            "rightValue": "",
+                            "operator": {
+                                "type": "string",
+                                "operation": "isEmpty"
+                            }
+                        },
+                        {
+                            "id": "check-calc-nr",
+                            "leftValue": "={{ $json.Kalkulacja_nr }}",
+                            "rightValue": "",
+                            "operator": {
+                                "type": "string",
+                                "operation": "notEmpty"
+                            }
+                        }
+                    ],
+                    "combinator": "and"
+                }
+            },
+            "id": "if-empty-spec",
+            "name": "If Spec Empty",
+            "type": "n8n-nodes-base.if",
+            "typeVersion": 2,
+            "position": [
+                350,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "resource": "fileFolder",
+                "searchMethod": "query",
+                "queryString": "=name contains '{{ $json.Kalkulacja_nr }}' and trashed = false and '15iF6459YOGFDhmXNpb_SrYj7-LXbuElz' in parents",
+                "options": {}
+            },
+            "id": "search-drive",
+            "name": "Search Files in Drive",
+            "type": "n8n-nodes-base.googleDrive",
+            "typeVersion": 3,
+            "position": [
+                600,
+                280
+            ]
+        },
+        {
+            "parameters": {
+                "documentId": {
+                    "__rl": true,
+                    "value": "18hrB36_iKkWJW1yqjSgP46QfzJO7HeAD6Kc41ZgFYCQ",
+                    "mode": "list",
+                    "cachedResultName": "motolia_oferty_web"
+                },
+                "sheetName": {
+                    "__rl": true,
+                    "value": "gid=0",
+                    "mode": "list",
+                    "cachedResultName": "Sheet1"
+                },
+                "rowNumber": "={{ $node[\"Google Sheets Trigger\"].json[\"row_number\"] }}",
+                "columns": {
+                    "mappingMode": "defineBelow",
+                    "value": {
+                        "Specyfikacja_url": "={{ $json.webViewLink }}"
+                    }
+                },
+                "options": {}
+            },
+            "id": "update-sheet",
+            "name": "Update Row with URL",
+            "type": "n8n-nodes-base.googleSheets",
+            "typeVersion": 4.5,
+            "position": [
+                850,
+                280
+            ]
+        }
+    ],
+    "connections": {
+        "Google Sheets Trigger": {
+            "main": [
+                [
+                    {
+                        "node": "If Spec Empty",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "If Spec Empty": {
+            "main": [
+                [
+                    {
+                        "node": "Search Files in Drive",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Search Files in Drive": {
+            "main": [
+                [
+                    {
+                        "node": "Update Row with URL",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    }
+}

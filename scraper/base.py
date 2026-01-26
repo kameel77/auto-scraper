@@ -14,7 +14,7 @@ class BaseScraper(ABC):
         self.logger = logging.getLogger(f"{__name__}.{name}")
 
     @abstractmethod
-    async def collect_urls(self, **kwargs) -> list[str]:
+    async def collect_urls(self, limit: int | None = None, **kwargs) -> list[str]:
         """
         Collect URLs of individual car offers from the marketplace.
         """

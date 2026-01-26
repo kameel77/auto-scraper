@@ -15,21 +15,34 @@ class AutopunktScraper(BaseScraper):
         super().__init__(name="autopunkt", base_url="https://autopunkt.pl")
         self.list_url = "https://autopunkt.pl/znajdz-auto"
 
-    async def collect_urls(self, max_scroll_rounds=60, scroll_pause=1.0, headless=True) -> list[str]:
+    async def collect_urls(self, limit: int | None = None, max_scroll_rounds=60, scroll_pause=1.0, headless=True) -> list[str]:
         urls = set()
-        self.logger.info(f"Rozpoczynam zbieranie URL-i z: {self.list_url}")
+        self.logger.info(f"Rozpoczynam zbieranie URL-i z: {self.list_url} (limit: {limit})")
         
         async with async_playwright() as p:
             browser: Browser = await p.chromium.launch(headless=headless)
-            page: Page = await browser.new_page()
+            # Use a single context for optimization
+            context = await browser.new_context(
+                viewport={"width": 1280, "height": 720},
+                user_agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36"
+            )
+            page: Page = await context.new_page()
+            
+            # BLOCK HEAVY RESOURCES to save CPU/RAM
+            async def block_aggressively(route):
+                if route.request.resource_type in ["image", "media", "font", "stylesheet"]:
+                    await route.abort()
+                else:
+                    await route.continue_()
+            
+            await page.route("**/*", block_aggressively)
             
             try:
-                await page.set_viewport_size({"width": 1920, "height": 1080})
                 self.logger.info("Ładowanie strony...")
-                await page.goto(self.list_url, wait_until="networkidle", timeout=120_000)
+                await page.goto(self.list_url, wait_until="commit", timeout=60_000)
                 
                 await self._handle_cookie_consent(page)
-                urls = await self._scroll_and_collect(page, max_scroll_rounds, scroll_pause)
+                urls = await self._scroll_and_collect(page, max_scroll_rounds, scroll_pause, limit)
                 
             except Exception as e:
                 self.logger.error(f"Błąd podczas zbierania URL-i: {e}")
@@ -37,23 +50,29 @@ class AutopunktScraper(BaseScraper):
             finally:
                 await browser.close()
         
-        self.logger.info(f"Zebrano {len(urls)} unikalnych URL-i")
-        return sorted(list(urls))
+        # If we have a limit, ensure we don't return more than requested
+        final_urls = sorted(list(urls))
+        if limit:
+            final_urls = final_urls[:limit]
+            
+        self.logger.info(f"Zebrano {len(final_urls)} unikalnych URL-i")
+        return final_urls
 
     async def _handle_cookie_consent(self, page: Page) -> None:
         consent_texts = ["Akceptuj", "Zgadzam się", "Accept", "OK", "Zgoda"]
         for txt in consent_texts:
             try:
+                # Use a shorter timeout since we want fast execution
                 btn = page.get_by_role("button", name=re.compile(txt, re.I))
                 if await btn.count() > 0:
-                    await btn.first.click(timeout=2000)
+                    await btn.first.click(timeout=1000)
                     self.logger.info(f"Kliknięto przycisk consent: {txt}")
-                    await page.wait_for_timeout(1000)
+                    await page.wait_for_timeout(500)
                     break
             except Exception:
                 continue
 
-    async def _scroll_and_collect(self, page: Page, max_rounds: int, scroll_pause: float) -> set[str]:
+    async def _scroll_and_collect(self, page: Page, max_rounds: int, scroll_pause: float, limit: int | None = None) -> set[str]:
         urls = set()
         last_count = 0
         no_change_count = 0
@@ -72,6 +91,11 @@ class AutopunktScraper(BaseScraper):
             current_count = len(urls)
             self.logger.info(f"Runda {round_num + 1}/{max_rounds}: zebrano {current_count} URL-i")
             
+            # EARLY EXIT if limit reached
+            if limit and current_count >= limit:
+                self.logger.info(f"Osiągnięto limit ({limit}) - kończę zbieranie")
+                break
+                
             clicked = await self._try_load_more_button(page, scroll_pause)
             await page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
             await page.wait_for_timeout(int(scroll_pause * 1000))

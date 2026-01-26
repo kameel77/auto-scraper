@@ -16,6 +16,7 @@ import csv
 import json
 import io
 import time
+import re
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -104,7 +105,7 @@ async def run_scraper_task(marketplace: str = "autopunkt", limit: Optional[int] 
         scraper = get_scraper(marketplace)
         
         if marketplace == "autopunkt":
-            urls = await scraper.collect_urls()
+            urls = await scraper.collect_urls(limit=limit)
         elif marketplace == "findcar":
             # Calculate max_pages based on limit:
             # - If limit is None/0, go deep (1000 pages)
@@ -301,7 +302,7 @@ def get_vehicles(
             "lokalizacja_miasto": v.dealer_address_line_2.split()[-1] if v.dealer_address_line_2 else None,
             "latest_price": latest.price if latest else None,
             "latest_mileage": latest.mileage if latest else None,
-            "latest_image": (latest.pictures.split(" | ")[0] if " | " in latest.pictures else latest.pictures.split("|")[0]) if latest and latest.pictures else None,
+            "latest_image": re.split(r'\s*\|\s*', latest.pictures)[0] if latest and latest.pictures else None,
             "scraped_at": latest.scraped_at if latest else None,
             "equipment": latest.equipment_json if latest else None
         }
@@ -387,8 +388,9 @@ def export_csv(db: Session = Depends(database.get_db)):
             equipment = {}
         
         all_pictures = latest.pictures if latest and latest.pictures else ""
-        main_image = all_pictures.split(" | ")[0] if all_pictures else ""
-        other_images = " | ".join(all_pictures.split(" | ")[1:]) if all_pictures else ""
+        picture_list = re.split(r'\s*\|\s*', all_pictures) if all_pictures else []
+        main_image = picture_list[0] if picture_list else ""
+        other_images = " | ".join(picture_list[1:]) if len(picture_list) > 1 else ""
         
         writer.writerow([
             v.id,
@@ -475,12 +477,7 @@ def export_car_scout_csv(db: Session = Depends(database.get_db)):
         
         all_pictures = latest.pictures if latest and latest.pictures else ""
         
-        picture_list = []
-        if all_pictures:
-            if " | " in all_pictures:
-                picture_list = all_pictures.split(" | ")
-            else:
-                picture_list = all_pictures.split("|")
+        picture_list = re.split(r'\s*\|\s*', all_pictures) if all_pictures else []
         
         main_image = picture_list[0] if picture_list else ""
         other_images = " | ".join(picture_list[1:]) if len(picture_list) > 1 else ""

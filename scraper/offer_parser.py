@@ -340,25 +340,32 @@ def _extract_grouped_equipment(html: str) -> dict:
 def _extract_images_from_json(html: str) -> list[str]:
     """
     Wyciąga listę zdjęć z window.__NUXT__ (files array).
-    
-    Args:
-        html: Kod HTML strony
-        
-    Returns:
-        Lista URL-i zdjęć
     """
     # Szukaj: files:["url1","url2",...]
-    pattern = r'files:\[([^\]]+)\]'
+    # Pattern szuka literalnego array [...] po kluczu 'files:'
+    pattern = r'files:(\[.*?\])'
     match = re.search(pattern, html)
     
     if not match:
         return []
     
-    files_str = match.group(1)
-    # Wyciągnij wszystkie URL-e w cudzysłowach
-    urls = re.findall(r'"(https?://[^"]+)"', files_str)
+    array_str = match.group(1)
+    try:
+        # Próba sparsowania jako JSON - obsłuży \u002F (slashe) automatycznie
+        urls = json.loads(array_str)
+        if isinstance(urls, list):
+            return [u for u in urls if isinstance(u, str)]
+    except Exception as e:
+        logger.debug(f"Błąd json.loads w extract_images_from_json: {e}")
     
-    return urls
+    # Fallback: regex jeśli JSON zawiedzie
+    # Wyciągnij wszystko co wygląda jak URL w cudzysłowach, obsługując potencjalne \u002F
+    raw_urls = re.findall(r'"(https?://[^"]+)"', array_str)
+    if not raw_urls:
+        # Spróbuj dopasować z literalnym \u002F
+        raw_urls = re.findall(r'"(https?:\\u002F\\u002F[^"]+)"', array_str)
+        
+    return [u.replace('\\u002F', '/') for u in raw_urls]
 
 
 def _extract_location_from_json(html: str, nuxt_map: dict) -> dict:
@@ -578,13 +585,24 @@ def parse_offer(url: str) -> dict:
 
         # === ZDJĘCIA ===
         if json_images:
-            # Filtruj tylko prawdziwe zdjęcia pojazdu (nie ikony, mapy, SVG)
-            filtered_images = [
-                img for img in json_images 
-                if img.startswith("http") 
-                and not any(skip in img.lower() for skip in ["icon", "facebook", "statichttps://maps", "data:image/svg", ".svg", "_nuxt/img/"])
-                and "/cars/" in img  # Tylko zdjęcia z /cars/
-            ]
+            # Filtruj tylko prawdziwe zdjęcia pojazdu
+            filtered_images = []
+            for img in json_images:
+                if not isinstance(img, str) or not img.startswith("http"):
+                    continue
+                
+                lower_img = img.lower()
+                # Forbidden keywords/domains
+                forbidden = ["icon", "facebook", "maps.google", "google", "logo", ".svg", "_nuxt/img/", "data:image"]
+                if any(f in lower_img for f in forbidden):
+                    continue
+                
+                # For Autopunkt, vehicle images MUST contain '/cars/'
+                if "/cars/" not in lower_img:
+                    continue
+                
+                filtered_images.append(img)
+            
             data["zdjecia"] = " | ".join(filtered_images) if filtered_images else None
         else:
             # HTML fallback
@@ -793,11 +811,21 @@ def _extract_images(soup: BeautifulSoup, base_url: str) -> str | None:
         if not src:
             continue
         
-        # Filtruj ikony i social media
-        if any(skip in src.lower() for skip in ["icon", "instagram", "facebook", "logo", ".svg", "_nuxt/img/"]):
+        # Explicitly block data URIs (Base64)
+        if src.startswith("data:"):
+            continue
+            
+        src_lower = src.lower()
+        
+        # Forbidden keywords and generic assets
+        skipped = ["icon", "instagram", "facebook", "logo", ".svg", "_nuxt/img/", "google", "maps", "avatar"]
+        if any(skip in src_lower for skip in skipped):
             continue
         
         abs_src = urljoin(base_url, src)
+        
+        # Stricter check for vehicle photos (usually in /cars/ or similarly named paths)
+        # We allow others as fallback but prioritize /cars/ if present
         img_urls.append(abs_src)
     
     # Usuń duplikaty zachowując kolejność
@@ -807,5 +835,10 @@ def _extract_images(soup: BeautifulSoup, base_url: str) -> str | None:
         if url not in seen:
             seen.add(url)
             unique_imgs.append(url)
+    
+    # Priority filtering: if we have images with '/cars/', take only those
+    car_photos = [u for u in unique_imgs if "/cars/" in u.lower()]
+    if car_photos:
+        return " | ".join(car_photos)
     
     return " | ".join(unique_imgs) if unique_imgs else None

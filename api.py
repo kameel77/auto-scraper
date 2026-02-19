@@ -356,9 +356,18 @@ def get_cities(db: Session = Depends(database.get_db)):
     
     return sorted(list(cities))
 
+@app.get("/sources", response_model=List[str])
+def get_sources(db: Session = Depends(database.get_db)):
+    """Return all unique source values from vehicles."""
+    sources = db.query(models.Vehicle.source).distinct().filter(models.Vehicle.source.isnot(None)).order_by(models.Vehicle.source).all()
+    return [s[0] for s in sources]
+
 @app.get("/export/csv")
-def export_csv(db: Session = Depends(database.get_db)):
-    vehicles = db.query(models.Vehicle).all()
+def export_csv(source: Optional[str] = None, db: Session = Depends(database.get_db)):
+    query = db.query(models.Vehicle)
+    if source:
+        query = query.filter(models.Vehicle.source == source)
+    vehicles = query.all()
     
     logger.info(f"Exporting {len(vehicles)} vehicles to CSV")
     
@@ -421,15 +430,19 @@ def export_csv(db: Session = Depends(database.get_db)):
         ])
     
     output.seek(0)
+    filename = f"vehicles_{source}.csv" if source else "vehicles.csv"
     return StreamingResponse(
         iter([output.getvalue()]),
         media_type="text/csv",
-        headers={"Content-Disposition": "attachment; filename=vehicles.csv"}
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
     )
 
 @app.get("/export/csv/car-scout")
-def export_car_scout_csv(db: Session = Depends(database.get_db)):
-    vehicles = db.query(models.Vehicle).all()
+def export_car_scout_csv(source: Optional[str] = None, db: Session = Depends(database.get_db)):
+    query = db.query(models.Vehicle)
+    if source:
+        query = query.filter(models.Vehicle.source == source)
+    vehicles = query.all()
     
     logger.info(f"Exporting {len(vehicles)} vehicles to Car-Scout CSV")
     
@@ -554,10 +567,11 @@ def export_car_scout_csv(db: Session = Depends(database.get_db)):
         ])
     
     output.seek(0)
+    filename = f"car-scout-export_{source}.csv" if source else "car-scout-export.csv"
     return StreamingResponse(
         iter([output.getvalue()]),
         media_type="text/csv",
-        headers={"Content-Disposition": "attachment; filename=car-scout-export.csv"}
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
     )
 
 @app.post("/admin/reset-db")

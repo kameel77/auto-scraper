@@ -87,6 +87,24 @@ export async function getVehicleTrends(vehicleId: number): Promise<PriceTrend[]>
     return res.json();
 }
 
+export async function getSources(): Promise<string[]> {
+    const res = await fetch(`${API_BASE_URL}/sources`, { cache: "no-store" });
+    if (!res.ok) throw new Error("Failed to fetch sources");
+    return res.json();
+}
+
+export function getExportCsvUrl(source?: string): string {
+    const url = new URL(`${API_BASE_URL}/export/csv`);
+    if (source) url.searchParams.append("source", source);
+    return url.toString();
+}
+
+export function getExportCarScoutCsvUrl(source?: string): string {
+    const url = new URL(`${API_BASE_URL}/export/csv/car-scout`);
+    if (source) url.searchParams.append("source", source);
+    return url.toString();
+}
+
 export async function startScrape(marketplace: string = "autopunkt", limit: number = 0): Promise<{ message: string }> {
     const url = new URL(`${API_BASE_URL}/scrape`);
     url.searchParams.append("marketplace", marketplace);

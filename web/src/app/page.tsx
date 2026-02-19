@@ -1,7 +1,8 @@
-import { getVehicles, getStats } from "@/lib/api";
+import { getVehicles, getStats, getSources } from "@/lib/api";
 import { ScrapeButton } from "@/components/ScrapeButton";
 import { VehicleRow } from "@/components/VehicleRow";
 import { FilterBar } from "@/components/FilterBar";
+import { ExportDropdown } from "@/components/ExportDropdown";
 import { Suspense } from "react";
 
 export const revalidate = 0;
@@ -20,7 +21,7 @@ export default async function Home({
     }>;
 }) {
     const filters = await searchParams;
-    const [vehicles, stats] = await Promise.all([
+    const [vehicles, stats, sources] = await Promise.all([
         getVehicles(filters as any).catch(() => []),
         getStats().catch(() => ({
             total_vehicles: 0,
@@ -28,7 +29,10 @@ export default async function Home({
             avg_price: 0,
             unique_brands: 0,
         })),
+        getSources().catch(() => []),
     ]);
+
+    const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
     return (
         <main className="min-h-screen bg-slate-50 dark:bg-slate-950 p-8 sm:p-12">
@@ -43,48 +47,7 @@ export default async function Home({
                         </p>
                     </div>
                     <div className="flex gap-4 w-full sm:w-auto flex-wrap">
-                        <a
-                            href={`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
-                                }/export/csv/car-scout`}
-                            target="_blank"
-                            className="inline-flex items-center justify-center px-6 py-3 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-sm font-black rounded-xl transition-all border border-slate-200 dark:border-slate-700"
-                        >
-                            <svg
-                                className="w-4 h-4 mr-2"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                                />
-                            </svg>
-                            CSV Car Scout
-                        </a>
-                        <a
-                            href={`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
-                                }/export/csv`}
-                            target="_blank"
-                            className="inline-flex items-center justify-center px-6 py-3 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-sm font-black rounded-xl transition-all border border-slate-200 dark:border-slate-700"
-                        >
-                            <svg
-                                className="w-4 h-4 mr-2"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                                />
-                            </svg>
-                            Export CSV
-                        </a>
+                        <ExportDropdown sources={sources} apiBaseUrl={apiBaseUrl} />
                         <ScrapeButton />
                         <div className="flex-1 sm:flex-none bg-white dark:bg-slate-900 px-6 py-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800">
                             <p className="text-xs text-indigo-600 dark:text-indigo-400 uppercase font-bold tracking-widest mb-1">

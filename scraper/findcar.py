@@ -123,7 +123,7 @@ class FindcarScraper(BaseScraper):
             "source": "findcar.pl"
         }
 
-    async def collect_urls(self, max_pages=10, page_size=50, start_page=0, **kwargs) -> list[str]:
+    async def collect_urls(self, max_pages=10, page_size=45, start_page=0, **kwargs) -> list[str]:
         all_ids = []
         
         # Warm up session by visiting home page

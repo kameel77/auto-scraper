@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 class FindcarScraper(BaseScraper):
     def __init__(self):
         super().__init__(name="findcar", base_url="https://findcar.pl")
-        self.list_url = "https://findcar.pl/oferty-dealerow?priceType=offer&size={}&sort=createdAt,desc&page={}"
+        self.list_url = "https://findcar.pl/znajdz-samochod/{}?size={}"
         self.detail_api = "https://findcar.pl/api/listings/{}"
         self.session = self._make_session()
 
@@ -23,7 +23,7 @@ class FindcarScraper(BaseScraper):
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
             "Accept-Language": "pl-PL,pl;q=0.9,en-US;q=0.8,en;q=0.7",
-            "Accept-Encoding": "gzip, deflate, br",
+            "Accept-Encoding": "gzip, deflate",
             "Sec-Fetch-Dest": "document",
             "Sec-Fetch-Mode": "navigate",
             "Sec-Fetch-Site": "none",
@@ -135,11 +135,11 @@ class FindcarScraper(BaseScraper):
             self.logger.warning(f"Problem z rozgrzewaniem sesji: {e}")
 
         for p_idx in range(start_page, start_page + max_pages):
-            offset = p_idx * page_size
-            self.logger.info(f"Pobieranie strony {p_idx} (Offset: {offset}, Size: {page_size})...")
+            page_number = p_idx + 1
+            self.logger.info(f"Pobieranie strony {page_number} (Size: {page_size})...")
             
             if p_idx > start_page:
-                referer = self.list_url.format(page_size, offset - page_size)
+                referer = self.list_url.format(page_number - 1, page_size)
             else:
                 referer = f"{self.base_url}/"
 
@@ -149,7 +149,7 @@ class FindcarScraper(BaseScraper):
                 "Cache-Control": "max-age=0"
             })
 
-            target_url = self.list_url.format(page_size, offset)
+            target_url = self.list_url.format(page_number, page_size)
             try:
                 if p_idx > start_page:
                     time.sleep(random.uniform(1.5, 3.5))

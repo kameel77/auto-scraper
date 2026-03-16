@@ -205,15 +205,20 @@ async def run_scraper_task(marketplace: str = "autopunkt", limit: Optional[int] 
         
         # Archiving logic: if this was a full scrape (no limit, or limit was 0), 
         # mark all vehicles for this marketplace that were NOT in the scraped URLs as "archiwum".
-        is_full_scrape = not limit or limit == 0
+        # For findcar/vehis, a full scrape might mean max_pages is high and no limit provided.
+        # For autopunkt, urls can be up to 3000+. Let's assume if limit is None, it is a full scrape.
+        is_full_scrape = True if (not limit or limit == 0) else False
+        
+        # Additional safety check: If it's Autopunkt and we found very few URLs without a limit, 
+        # it might be a silent failure of Playwright, but usually we trust `limit is None`.
         if is_full_scrape and urls:
             try:
                 # Find current active vehicles for this marketplace
-                # In SQLite, checking against a very large list in IN clause might fail, so we chunk it or update via NOT IN
-                # Or just fetch all IDs and do sets
+                # Scraper sets source as "autopunkt.pl", "findcar.pl", "vehis.pl", but marketplace param is just "autopunkt"
+                source_domain = f"{marketplace}.pl" if not marketplace.endswith('.pl') else marketplace
                 active_urls = set(urls)
                 db_vehicles = db.query(models.Vehicle.id, models.Vehicle.url).filter(
-                    models.Vehicle.source == marketplace, 
+                    models.Vehicle.source == source_domain, 
                     or_(models.Vehicle.status == 'active', models.Vehicle.status.is_(None))
                 ).all()
                 

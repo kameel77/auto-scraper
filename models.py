@@ -34,6 +34,7 @@ class Vehicle(Base):
     contact_phone = Column(String)
     
     source = Column(String, index=True, default="autopunkt.pl")
+    status = Column(String, default="active", index=True)
     
     created_at = Column(DateTime, default=datetime.utcnow)
     

@@ -37,6 +37,13 @@ def apply_migrations():
                 if 'additional_equipment' not in columns:
                     logger.info("Dodawanie kolumny 'additional_equipment' do vehicle_snapshots")
                     conn.execute(text("ALTER TABLE vehicle_snapshots ADD COLUMN additional_equipment TEXT"))
+            
+        if 'vehicles' in tables:
+            columns = [c['name'] for c in inspector.get_columns('vehicles')]
+            with database.engine.connect() as conn:
+                if 'status' not in columns:
+                    logger.info("Dodawanie kolumny 'status' do vehicles")
+                    conn.execute(text("ALTER TABLE vehicles ADD COLUMN status VARCHAR DEFAULT 'active'"))
                 conn.commit()
     except Exception as e:
         logger.error(f"Błąd podczas migracji: {e}")
@@ -140,10 +147,12 @@ async def run_scraper_task(marketplace: str = "autopunkt", limit: Optional[int] 
                 if not vehicle:
                     model_keys = models.Vehicle.__table__.columns.keys()
                     vehicle_data = {k: v for k, v in data.items() if k in model_keys}
+                    vehicle_data["status"] = "active"
                     vehicle = models.Vehicle(**vehicle_data)
                     db.add(vehicle)
                     db.flush()
                 else:
+                    vehicle.status = "active"
                     if data.get("numer_oferty"):
                         vehicle.numer_oferty = data.get("numer_oferty")
                 
@@ -192,6 +201,33 @@ async def run_scraper_task(marketplace: str = "autopunkt", limit: Optional[int] 
                 
             except Exception as e:
                 logger.error(f"Error scraping {url}: {e}")
+                db.rollback()
+        
+        # Archiving logic: if this was a full scrape (no limit, or limit was 0), 
+        # mark all vehicles for this marketplace that were NOT in the scraped URLs as "archiwum".
+        is_full_scrape = not limit or limit == 0
+        if is_full_scrape and urls:
+            try:
+                # Find current active vehicles for this marketplace
+                # In SQLite, checking against a very large list in IN clause might fail, so we chunk it or update via NOT IN
+                # Or just fetch all IDs and do sets
+                active_urls = set(urls)
+                db_vehicles = db.query(models.Vehicle.id, models.Vehicle.url).filter(
+                    models.Vehicle.source == marketplace, 
+                    or_(models.Vehicle.status == 'active', models.Vehicle.status.is_(None))
+                ).all()
+                
+                archived_count = 0
+                for v_id, v_url in db_vehicles:
+                    if v_url not in active_urls:
+                        db.query(models.Vehicle).filter(models.Vehicle.id == v_id).update({"status": "archiwum"})
+                        archived_count += 1
+                        
+                if archived_count > 0:
+                    db.commit()
+                    logger.info(f"Oznaczono {archived_count} pojazdów jako 'archiwum' dla {marketplace}")
+            except Exception as e:
+                logger.error(f"Error during archiving logic: {e}")
                 db.rollback()
         
         scrape_progress["status"] = "complete"
@@ -364,7 +400,9 @@ def get_sources(db: Session = Depends(database.get_db)):
 
 @app.get("/export/csv")
 def export_csv(source: Optional[str] = None, db: Session = Depends(database.get_db)):
-    query = db.query(models.Vehicle)
+    query = db.query(models.Vehicle).filter(
+        or_(models.Vehicle.status == 'active', models.Vehicle.status.is_(None))
+    )
     if source:
         query = query.filter(models.Vehicle.source == source)
     vehicles = query.all()
@@ -439,7 +477,9 @@ def export_csv(source: Optional[str] = None, db: Session = Depends(database.get_
 
 @app.get("/export/csv/car-scout")
 def export_car_scout_csv(source: Optional[str] = None, db: Session = Depends(database.get_db)):
-    query = db.query(models.Vehicle)
+    query = db.query(models.Vehicle).filter(
+        or_(models.Vehicle.status == 'active', models.Vehicle.status.is_(None))
+    )
     if source:
         query = query.filter(models.Vehicle.source == source)
     vehicles = query.all()

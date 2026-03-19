@@ -22,8 +22,12 @@ export function ExportDropdown({ sources, apiBaseUrl }: ExportDropdownProps) {
         return () => document.removeEventListener("mousedown", handleClick);
     }, []);
 
-    const buildUrl = (format: "csv" | "car-scout", source?: string) => {
-        const path = format === "csv" ? "/export/csv" : "/export/csv/car-scout";
+    const buildUrl = (format: "csv" | "car-scout" | "car-scout-archive", source?: string) => {
+        let path = "";
+        if (format === "csv") path = "/export/csv";
+        else if (format === "car-scout") path = "/export/csv/car-scout";
+        else if (format === "car-scout-archive") path = "/export/csv/car-scout/archive";
+        
         const url = new URL(`${apiBaseUrl}${path}`);
         if (source) url.searchParams.append("source", source);
         return url.toString();
@@ -73,7 +77,7 @@ export function ExportDropdown({ sources, apiBaseUrl }: ExportDropdownProps) {
                             Wybierz źródło
                         </p>
                     </div>
-                    <div className="max-h-[400px] overflow-y-auto">
+                    <div className="max-h-[450px] overflow-y-auto">
                         {allSources.map((source) => {
                             const label = source === "all" ? "🌐 Wszystkie źródła" : source;
                             const sourceParam = source === "all" ? undefined : source;
@@ -85,24 +89,37 @@ export function ExportDropdown({ sources, apiBaseUrl }: ExportDropdownProps) {
                                     <p className="text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
                                         {label}
                                     </p>
-                                    <div className="flex gap-2">
+                                    <div className="flex flex-col gap-2">
+                                        <div className="flex gap-2">
+                                            <a
+                                                href={buildUrl("car-scout", sourceParam)}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                onClick={() => setOpen(false)}
+                                                title="Tylko aktualne oferty z ostatniego pobrania"
+                                                className="flex-1 text-center px-3 py-1.5 bg-indigo-50 dark:bg-indigo-900/30 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 text-[10px] font-black rounded-lg transition-colors leading-tight flex items-center justify-center"
+                                            >
+                                                Car Scout CSV
+                                            </a>
+                                            <a
+                                                href={buildUrl("csv", sourceParam)}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                onClick={() => setOpen(false)}
+                                                className="flex-1 text-center px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 text-[10px] font-black rounded-lg transition-colors leading-tight flex items-center justify-center"
+                                            >
+                                                Zwykły CSV
+                                            </a>
+                                        </div>
                                         <a
-                                            href={buildUrl("car-scout", sourceParam)}
+                                            href={buildUrl("car-scout-archive", sourceParam)}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             onClick={() => setOpen(false)}
-                                            className="flex-1 text-center px-3 py-1.5 bg-indigo-50 dark:bg-indigo-900/30 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 text-xs font-bold rounded-lg transition-colors"
+                                            title="Wszystkie historyczne i aktualne oferty"
+                                            className="w-full text-center px-3 py-1.5 bg-amber-50 dark:bg-amber-900/20 hover:bg-amber-100 dark:hover:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-[10px] font-black rounded-lg transition-colors border border-amber-100 dark:border-amber-900/30"
                                         >
-                                            Car Scout CSV
-                                        </a>
-                                        <a
-                                            href={buildUrl("csv", sourceParam)}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            onClick={() => setOpen(false)}
-                                            className="flex-1 text-center px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs font-bold rounded-lg transition-colors"
-                                        >
-                                            Zwykły CSV
+                                            Archiwum Car Scout CSV
                                         </a>
                                     </div>
                                 </div>

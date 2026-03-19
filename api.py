@@ -403,6 +403,13 @@ def get_sources(db: Session = Depends(database.get_db)):
     sources = db.query(models.Vehicle.source).distinct().filter(models.Vehicle.source.isnot(None)).order_by(models.Vehicle.source).all()
     return [s[0] for s in sources]
 
+def get_latest_scrape_timestamp(db: Session, source: Optional[str] = None):
+    """Finds the most recent scraped_at timestamp for a given source."""
+    query = db.query(func.max(models.VehicleSnapshot.scraped_at))
+    if source:
+        query = query.filter(models.VehicleSnapshot.source == source)
+    return query.scalar()
+
 @app.get("/export/csv")
 def export_csv(source: Optional[str] = None, db: Session = Depends(database.get_db)):
     query = db.query(models.Vehicle).filter(
@@ -482,11 +489,32 @@ def export_csv(source: Optional[str] = None, db: Session = Depends(database.get_
 
 @app.get("/export/csv/car-scout")
 def export_car_scout_csv(source: Optional[str] = None, db: Session = Depends(database.get_db)):
-    query = db.query(models.Vehicle).filter(
-        or_(models.Vehicle.status == 'active', models.Vehicle.status.is_(None))
-    )
+    # Find latest scrape timestamp for this source
+    latest_ts = get_latest_scrape_timestamp(db, source)
+    
+    query = db.query(models.Vehicle)
+    
+    if latest_ts:
+        # We take everything from the last 12 hours of the max timestamp to be safe 
+        # (in case a scrape took a few hours)
+        from datetime import timedelta
+        start_time = latest_ts - timedelta(hours=12)
+        
+        # Subquery for vehicles that have a snapshot in this window
+        recent_vehicle_ids = db.query(models.VehicleSnapshot.vehicle_id).filter(
+            models.VehicleSnapshot.scraped_at >= start_time
+        )
+        if source:
+            recent_vehicle_ids = recent_vehicle_ids.filter(models.VehicleSnapshot.source == source)
+        
+        query = query.filter(models.Vehicle.id.in_(recent_vehicle_ids.subquery()))
+    else:
+        # Fallback to active if no snapshots found (shouldn't happen)
+        query = query.filter(or_(models.Vehicle.status == 'active', models.Vehicle.status.is_(None)))
+        
     if source:
         query = query.filter(models.Vehicle.source == source)
+    
     vehicles = query.all()
     
     logger.info(f"Exporting {len(vehicles)} vehicles to Car-Scout CSV")
@@ -613,6 +641,132 @@ def export_car_scout_csv(source: Optional[str] = None, db: Session = Depends(dat
     
     output.seek(0)
     filename = f"car-scout-export_{source}.csv" if source else "car-scout-export.csv"
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )
+
+@app.get("/export/csv/car-scout/archive")
+def export_car_scout_archive_csv(source: Optional[str] = None, db: Session = Depends(database.get_db)):
+    """Exports ALL historical entries for car-scout, even archived ones."""
+    query = db.query(models.Vehicle)
+    if source:
+        query = query.filter(models.Vehicle.source == source)
+    vehicles = query.all()
+    
+    logger.info(f"Exporting ARCHIVE: {len(vehicles)} vehicles to Car-Scout CSV")
+    
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow([
+        "listing_id", "listing_url", "scraped_at", "make", "model", "version", "vin",
+        "price_pln", "price_display", "omnibus_lowest_30d_pln", "omnibus_text",
+        "production_year", "mileage_km", "fuel_type", "transmission", "engine_power_hp",
+        "registration_number", "first_registration_date", "engine_capacity_cm3", "drive",
+        "body_type", "doors", "seats", "color", "paint_type", "dealer_name",
+        "dealer_address_line1", "dealer_address_line2", "dealer_address_line3",
+        "dealer_google_rating", "dealer_review_count", "dealer_google_link",
+        "contact_phone", "primary_image_url", "image_count", "image_urls",
+        "equipment_audio_multimedia", "equipment_safety", "equipment_comfort_extras",
+        "equipment_other", "additional_info_header", "additional_info_content", "specs_json", "status"
+    ])
+    
+    for v in vehicles:
+        latest = db.query(models.VehicleSnapshot).filter(
+            models.VehicleSnapshot.vehicle_id == v.id
+        ).order_by(models.VehicleSnapshot.scraped_at.desc()).first()
+        
+        if not latest:
+            continue
+            
+        raw_equipment = latest.equipment_json if latest else {}
+        if isinstance(raw_equipment, str):
+            try:
+                equipment = json.loads(raw_equipment)
+            except:
+                equipment = {}
+        elif isinstance(raw_equipment, dict):
+            equipment = raw_equipment
+        else:
+            equipment = {}
+        
+        all_pictures = latest.pictures if latest and latest.pictures else ""
+        picture_list = re.split(r'\s*\|\s*', all_pictures) if all_pictures else []
+        main_image = picture_list[0] if picture_list else ""
+        all_pictures_str = " | ".join(picture_list)
+        
+        price_display = f"{latest.price:,} PLN".replace(",", " ") if latest.price else ""
+        
+        equipment_audio = equipment.get("technologia", [])
+        equipment_safety = equipment.get("bezpieczenstwo", [])
+        equipment_comfort = equipment.get("komfort", [])
+        equipment_other = equipment.get("wyglad", [])
+        
+        add_info_header = equipment.get("additional_info_header", "")
+        add_info_content = equipment.get("additional_info_content", latest.tags if latest else "")
+        
+        audio_str = "|".join(equipment_audio) if isinstance(equipment_audio, list) else str(equipment_audio or "")
+        safety_str = "|".join(equipment_safety) if isinstance(equipment_safety, list) else str(equipment_safety or "")
+        comfort_str = "|".join(equipment_comfort) if isinstance(equipment_comfort, list) else str(equipment_comfort or "")
+        other_str = "|".join(equipment_other) if isinstance(equipment_other, list) else str(equipment_other or "")
+        
+        if latest.equipment:
+            audio_str = latest.equipment
+        if latest.additional_equipment:
+            other_str = latest.additional_equipment
+        
+        scraped_at = latest.scraped_at.isoformat() if latest.scraped_at else ""
+        
+        writer.writerow([
+            v.numer_oferty or (str(v.id) if v.id else ""),
+            v.url or "",
+            scraped_at,
+            v.marka or "",
+            v.model or "",
+            v.wersja or "",
+            v.vin or "",
+            str(latest.price) if latest.price is not None else "",
+            price_display,
+            str(latest.old_price) if latest.old_price is not None else "",
+            "",
+            str(v.rocznik) if v.rocznik is not None else "",
+            str(latest.mileage) if latest.mileage is not None else "",
+            v.typ_silnika or "",
+            v.skrzynia_biegow or "",
+            str(v.moc_km) if v.moc_km is not None else "",
+            "",
+            v.pierwsza_rejestracja or "",
+            str(v.pojemnosc_cm3) if v.pojemnosc_cm3 is not None else "",
+            v.naped or "",
+            v.typ_nadwozia or "",
+            v.ilosc_drzwi or "",
+            "",
+            v.kolor or "",
+            "",
+            v.dealer_name or "",
+            v.dealer_address_line_1 or "",
+            v.dealer_address_line_2 or "",
+            "",
+            "",
+            "",
+            "",
+            v.contact_phone or "",
+            main_image,
+            "",
+            all_pictures_str,
+            audio_str,
+            safety_str,
+            comfort_str,
+            other_str,
+            add_info_header or "",
+            add_info_content or "",
+            "",
+            v.status or "active"
+        ])
+    
+    output.seek(0)
+    filename = f"car-scout-archive_{source}.csv" if source else "car-scout-archive.csv"
     return StreamingResponse(
         iter([output.getvalue()]),
         media_type="text/csv",

@@ -50,8 +50,15 @@ export function ScrapeHistory() {
 
   if (loading) return <div className="animate-pulse h-20 bg-slate-200 dark:bg-slate-800 rounded-2xl" />;
 
-  if (logs.length === 0 && !activeProgress) return null;
-
+  if (logs.length === 0 && !activeProgress) {
+    return (
+      <div className="bg-white dark:bg-slate-900 px-6 py-6 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800 mb-6 flex items-center justify-center min-h-[120px]">
+        <p className="text-slate-500 font-medium tracking-wide">
+          Brak danych w historii scrapowania. Odśwież widok lub uruchom proces.
+        </p>
+      </div>
+    );
+  }
   return (
     <div className="bg-white dark:bg-slate-900 px-6 py-6 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800 mb-6">
       <h2 className="text-xl font-black text-slate-900 dark:text-white tracking-tight mb-4">

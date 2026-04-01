@@ -150,42 +150,44 @@ class FindcarScraper(BaseScraper):
             })
 
             target_url = self.list_url.format(page_number, page_size)
-            try:
-                if p_idx > start_page:
-                    time.sleep(random.uniform(1.5, 3.5))
+            max_retries = 3
+            for attempt in range(max_retries):
+                try:
+                    if p_idx > start_page or attempt > 0:
+                        time.sleep(random.uniform(1.5, 3.5) * (attempt + 1))
 
-                response = self.session.get(target_url, timeout=30)
-                if response.status_code != 200:
-                    self.logger.error(f"  ❌ Błąd HTTP {response.status_code} dla {target_url}")
-                
-                response.raise_for_status()
+                    response = self.session.get(target_url, timeout=30)
+                    if response.status_code != 200:
+                        self.logger.error(f"  ❌ Błąd HTTP {response.status_code} dla {target_url}")
+                    
+                    response.raise_for_status()
 
-                # 1. New robust regex for ID extraction (handles slugs/intermediate chars)
-                # Matches URLs like /oferty-dealerow/some-slug-012345678
-                found_ids_url = re.findall(r'/oferty-dealerow/[^"\']*?-(\d{5,9})(?:\?|#|")', response.text)
-                ids = set(found_ids_url)
+                    # 1. New robust regex for ID extraction (handles slugs/intermediate chars)
+                    # Matches URLs like /oferty-dealerow/some-slug-012345678
+                    found_ids_url = re.findall(r'/oferty-dealerow/[^"\']*?-(\d{5,9})(?:\?|#|")', response.text)
+                    ids = set(found_ids_url)
 
-                # 2. Fallback: Search for publicListingNumber in JSON-like structure
-                json_ids = re.findall(r'"publicListingNumber"\s*:\s*"(\d+)"', response.text)
-                if json_ids:
-                    ids.update(json_ids)
-                    self.logger.debug(f"  ℹ️ Użyto metody JSON fallback dla strony {p_idx}")
+                    # 2. Fallback: Search for publicListingNumber in JSON-like structure
+                    json_ids = re.findall(r'"publicListingNumber"\s*:\s*"(\d+)"', response.text)
+                    if json_ids:
+                        ids.update(json_ids)
+                        if attempt == 0:
+                            self.logger.debug(f"  ℹ️ Użyto metody JSON fallback dla strony {p_idx}")
 
-                if not ids:
-                    self.logger.info(f"  ⚠️ Nie znaleziono ID na stronie {p_idx}. Status: {response.status_code}. Długość body: {len(response.text)}")
-                    if len(response.text) < 1000:
-                        self.logger.debug(f"  Snippet: {response.text[:500]}")
-                    break
+                    if not ids:
+                        self.logger.info(f"  ⚠️ Nie znaleziono ID na stronie {p_idx}. Status: {response.status_code}. Długość body: {len(response.text)}")
+                        # If the page naturally lacks IDs, we shouldn't retry, just break out of retry loop
+                        break
 
-                result = sorted(list(ids))
-                if result:
-                    self.logger.debug(f"  (Debug: Znaleziono przykładowe ID: {result[:3]}...)")
-
-                all_ids.extend(result)
-                self.logger.info(f"  📌 Znaleziono {len(ids)} ofert na stronie.")
-            except Exception as e:
-                self.logger.error(f"Błąd strony {p_idx}: {e}")
-                break
+                    result = sorted(list(ids))
+                    all_ids.extend(result)
+                    self.logger.info(f"  📌 Znaleziono {len(ids)} ofert na stronie.")
+                    
+                    break # Success, break out of retry loop
+                except Exception as e:
+                    self.logger.warning(f"  ⚠️ Błąd pobierania strony {p_idx} (Próba {attempt + 1}/{max_retries}): {e}")
+                    if attempt == max_retries - 1:
+                        self.logger.error(f"  ❌ Pominięto stronę {p_idx} po {max_retries} próbach.")
         
         return [f"{self.base_url}/listings/{lid}" for lid in all_ids]
 

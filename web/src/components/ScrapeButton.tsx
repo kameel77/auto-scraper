@@ -121,15 +121,15 @@ export function ScrapeButton() {
             <div className="animate-spin h-4 w-4 border-2 border-indigo-600 border-t-transparent rounded-full" />
             <span className="text-sm font-bold text-slate-700 dark:text-slate-300">{progress.status}</span>
           </div>
-          {progress.total && progress.total > 0 && (
+          {(progress.total || 0) > 0 && (
             <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
               <div
                 className="bg-indigo-600 h-2 rounded-full transition-all duration-300"
-                style={{ width: `${((progress.current || 0) / progress.total) * 100}%` }}
+                style={{ width: `${((progress.current || 0) / (progress.total || 1)) * 100}%` }}
               />
             </div>
           )}
-          {progress.total && progress.total > 0 && (
+          {(progress.total || 0) > 0 && (
             <p className="text-xs text-slate-500 mt-1 font-medium">
               {progress.current} / {progress.total} ofert
             </p>

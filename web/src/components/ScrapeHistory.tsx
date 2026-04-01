@@ -64,11 +64,11 @@ export function ScrapeHistory() {
             <div className="animate-spin h-4 w-4 border-2 border-indigo-600 border-t-transparent rounded-full" />
             <span className="text-sm font-bold text-indigo-700 dark:text-indigo-300">Aktywne: {activeProgress.message}</span>
           </div>
-          {activeProgress.total && activeProgress.total > 0 && (
+          {activeProgress?.total && activeProgress.total > 0 && (
             <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
               <div
                 className="bg-indigo-600 h-2 rounded-full transition-all duration-300"
-                style={{ width: `${((activeProgress.current || 0) / activeProgress.total) * 100}%` }}
+                style={{ width: `${((activeProgress.current || 0) / (activeProgress.total || 1)) * 100}%` }}
               />
             </div>
           )}

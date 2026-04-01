@@ -3,6 +3,7 @@ import { ScrapeButton } from "@/components/ScrapeButton";
 import { VehicleRow } from "@/components/VehicleRow";
 import { FilterBar } from "@/components/FilterBar";
 import { ExportDropdown } from "@/components/ExportDropdown";
+import { ScrapeHistory } from "@/components/ScrapeHistory";
 import { Suspense } from "react";
 
 export const revalidate = 0;
@@ -70,6 +71,8 @@ export default async function Home({
                         </div>
                     </div>
                 </header>
+
+                <ScrapeHistory />
 
                 <Suspense fallback={<div className="mb-6 h-12 animate-pulse bg-slate-200 dark:bg-slate-800 rounded-xl" />}>
                     <div className="mb-6">

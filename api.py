@@ -99,9 +99,28 @@ class StatsSchema(BaseModel):
     avg_price: float
     unique_brands: int
 
-async def run_scraper_task(marketplace: str = "autopunkt", limit: Optional[int] = None):
+class ScrapeLogSchema(BaseModel):
+    id: int
+    marketplace: Optional[str]
+    start_time: datetime
+    end_time: Optional[datetime]
+    status: str
+    vehicles_scraped: int
+    total_vehicles_in_db: int
+    error_message: Optional[str]
+
+    class Config:
+        from_attributes = True
+
+
+async def run_scraper_task(marketplace: str = "autopunkt", limit: Optional[int] = None, log_id: Optional[int] = None):
     global scrape_progress
     db = database.SessionLocal()
+    
+    scrape_log = None
+    if log_id:
+        scrape_log = db.query(models.ScrapeLog).filter(models.ScrapeLog.id == log_id).first()
+    
     try:
         scrape_progress["status"] = "collecting"
         scrape_progress["message"] = f"Zbieranie URL-i ofert ({marketplace})..."
@@ -239,10 +258,25 @@ async def run_scraper_task(marketplace: str = "autopunkt", limit: Optional[int] 
         scrape_progress["message"] = f"Zakończono! Zebrano {len(urls)} ofert z {marketplace}"
         logger.info(f"Scrape task for {marketplace} finished.")
         
+        if scrape_log:
+            scrape_log.status = "completed"
+            scrape_log.vehicles_scraped = len(urls)
+            scrape_log.end_time = datetime.utcnow()
+            scrape_log.total_vehicles_in_db = db.query(models.Vehicle).count()
+            db.commit()
+        
     except Exception as e:
         scrape_progress["status"] = "error"
         scrape_progress["message"] = f"Błąd: {str(e)}"
         logger.error(f"Scrape task error: {e}")
+        
+        if scrape_log:
+            scrape_log.status = "error"
+            scrape_log.error_message = str(e)
+            scrape_log.end_time = datetime.utcnow()
+            scrape_log.total_vehicles_in_db = db.query(models.Vehicle).count()
+            db.commit()
+            
     finally:
         db.close()
 
@@ -252,11 +286,22 @@ def read_root():
     return {"message": "Auto-Scraper API with Trends is running"}
 
 @app.post("/scrape")
-async def trigger_scrape(background_tasks: BackgroundTasks, marketplace: str = "autopunkt", limit: Optional[int] = None):
+async def trigger_scrape(background_tasks: BackgroundTasks, marketplace: str = "autopunkt", limit: Optional[int] = None, db: Session = Depends(database.get_db)):
     global scrape_progress
-    scrape_progress = {"status": "idle", "current": 0, "total": 0, "message": ""}
-    background_tasks.add_task(run_scraper_task, marketplace=marketplace, limit=limit)
-    return {"message": f"Scrape for {marketplace} started in background" + (f" (limit={limit})" if limit else "") }
+    
+    # Create the log entry first
+    new_log = models.ScrapeLog(
+        marketplace=marketplace,
+        status="running"
+    )
+    db.add(new_log)
+    db.commit()
+    db.refresh(new_log)
+    log_id = new_log.id
+    
+    scrape_progress = {"status": "idle", "current": 0, "total": 0, "message": "", "log_id": log_id, "marketplace": marketplace}
+    background_tasks.add_task(run_scraper_task, marketplace=marketplace, limit=limit, log_id=log_id)
+    return {"message": f"Scrape for {marketplace} started in background", "log_id": log_id}
 
 def generate_progress() -> Generator[str, None, None]:
     global scrape_progress
@@ -266,7 +311,9 @@ def generate_progress() -> Generator[str, None, None]:
             "message": scrape_progress["message"],
             "current": scrape_progress["current"],
             "total": scrape_progress["total"],
-            "collected": scrape_progress.get("collected", scrape_progress["current"])
+            "collected": scrape_progress.get("collected", scrape_progress["current"]),
+            "log_id": scrape_progress.get("log_id"),
+            "marketplace": scrape_progress.get("marketplace")
         })
         yield f"data: {data}\n\n"
         if scrape_progress["status"] in ("complete", "error"):
@@ -276,6 +323,11 @@ def generate_progress() -> Generator[str, None, None]:
 @app.get("/scrape/progress")
 async def scrape_progress_endpoint():
     return StreamingResponse(generate_progress(), media_type="text/event-stream")
+
+@app.get("/scrape/logs", response_model=List[ScrapeLogSchema])
+def get_scrape_logs(skip: int = 0, limit: int = 50, db: Session = Depends(database.get_db)):
+    logs = db.query(models.ScrapeLog).order_by(models.ScrapeLog.start_time.desc()).offset(skip).limit(limit).all()
+    return logs
 
 @app.get("/vehicles", response_model=List[VehicleSchema])
 def get_vehicles(

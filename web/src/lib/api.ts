@@ -32,7 +32,25 @@ export interface Stats {
     unique_brands: number;
 }
 
+export interface ScrapeLog {
+    id: number;
+    marketplace: string;
+    start_time: string;
+    end_time: string | null;
+    status: string;
+    vehicles_scraped: number;
+    total_vehicles_in_db: number;
+    error_message: string | null;
+}
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+
+export async function getScrapeLogs(limit: number = 5): Promise<ScrapeLog[]> {
+    const res = await fetch(`${API_BASE_URL}/scrape/logs?limit=${limit}`, { cache: "no-store" });
+    if (!res.ok) throw new Error("Failed to fetch scrape logs");
+    return res.json();
+}
+
 
 export async function getVehicles(filters: {
     marka?: string;

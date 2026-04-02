@@ -134,8 +134,13 @@ class FindcarScraper(BaseScraper):
         except Exception as e:
             self.logger.warning(f"Problem z rozgrzewaniem sesji: {e}")
 
-        for p_idx in range(start_page, start_page + max_pages):
-            page_number = p_idx + 1
+        consecutive_failures = 0
+
+        for p_idx in range(start_page, max_pages + 1):
+            if consecutive_failures >= 5:
+                break
+                
+            page_number = p_idx
             self.logger.info(f"Pobieranie strony {page_number} (Size: {page_size})...")
             
             if p_idx > start_page:
@@ -151,12 +156,20 @@ class FindcarScraper(BaseScraper):
 
             target_url = self.list_url.format(page_number, page_size)
             max_retries = 3
+            zero_ids_found = False
+
             for attempt in range(max_retries):
                 try:
                     if p_idx > start_page or attempt > 0:
                         time.sleep(random.uniform(1.5, 3.5) * (attempt + 1))
 
                     response = self.session.get(target_url, timeout=30)
+                    
+                    if response.status_code == 404:
+                        self.logger.info(f"  ⚠️ 404 Not Found dla {target_url} - koniec paginacji.")
+                        zero_ids_found = True
+                        break
+
                     if response.status_code != 200:
                         self.logger.error(f"  ❌ Błąd HTTP {response.status_code} dla {target_url}")
                     
@@ -176,18 +189,29 @@ class FindcarScraper(BaseScraper):
 
                     if not ids:
                         self.logger.info(f"  ⚠️ Nie znaleziono ID na stronie {p_idx}. Status: {response.status_code}. Długość body: {len(response.text)}")
-                        # If the page naturally lacks IDs, we shouldn't retry, just break out of retry loop
+                        # If the page naturally lacks IDs, we shouldn't retry, just end the overall pagination
+                        zero_ids_found = True
                         break
 
                     result = sorted(list(ids))
                     all_ids.extend(result)
                     self.logger.info(f"  📌 Znaleziono {len(ids)} ofert na stronie.")
                     
+                    consecutive_failures = 0  # Reset failures on success
                     break # Success, break out of retry loop
                 except Exception as e:
                     self.logger.warning(f"  ⚠️ Błąd pobierania strony {p_idx} (Próba {attempt + 1}/{max_retries}): {e}")
                     if attempt == max_retries - 1:
                         self.logger.error(f"  ❌ Pominięto stronę {p_idx} po {max_retries} próbach.")
+                        consecutive_failures += 1
+
+            if zero_ids_found:
+                self.logger.info("  ⏹️ Brak ofert lub koniec paginacji (404/Empty). Zakończono zbieranie.")
+                break
+                
+            if consecutive_failures >= 5:
+                self.logger.critical("  🚨 Zbyt wiele kolejnych błędów. Przerwano paginację, by uniknąć trwałej blokady.")
+                break
         
         return [f"{self.base_url}/listings/{lid}" for lid in all_ids]
 

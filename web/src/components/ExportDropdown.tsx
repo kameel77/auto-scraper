@@ -33,7 +33,7 @@ export function ExportDropdown({ sources, apiBaseUrl }: ExportDropdownProps) {
         return url.toString();
     };
 
-    const allSources = ["all", ...sources];
+    const allSources = ["all", ...Array.from(new Set(["vehis", ...sources]))];
 
     return (
         <div className="relative" ref={ref}>

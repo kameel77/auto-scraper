@@ -598,7 +598,12 @@ def export_car_scout_csv(source: Optional[str] = None, db: Session = Depends(dat
             continue
             
         # Relaxed check: allow 0 (e.g. for new cars with 0 mileage)
-        has_required = latest.price is not None and v.rocznik is not None and latest.mileage is not None
+        # Vehicles from 'vehis' are exempt from mandatory price/year/mileage validation
+        if v.source == "vehis":
+            has_required = True
+        else:
+            has_required = latest.price is not None and v.rocznik is not None and latest.mileage is not None
+            
         if not has_required:
             continue
             

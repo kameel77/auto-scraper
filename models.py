@@ -29,9 +29,15 @@ class Vehicle(Base):
     
     # Dealer
     dealer_name = Column(String, index=True)
-    dealer_address_line_1 = Column(String)
-    dealer_address_line_2 = Column(String)
+    dealer_street = Column(String)
+    dealer_postcode = Column(String)
+    dealer_city = Column(String)
+    dealer_map_link = Column(String)
     contact_phone = Column(String)
+    dealer_id = Column(String, index=True)
+    
+    # Rodzaj sprzedaży
+    rodzaj_sprzedazy = Column(String, index=True)
     
     source = Column(String, index=True, default="autopunkt.pl")
     status = Column(String, default="active", index=True)
@@ -79,3 +85,15 @@ class ScrapeLog(Base):
     vehicles_scraped = Column(Integer, default=0)
     total_vehicles_in_db = Column(Integer, default=0)
     error_message = Column(Text, nullable=True)
+
+class ScraperConfig(Base):
+    """Konfiguracje dealerów do automatycznego scrapowania."""
+    __tablename__ = "scraper_configs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    marketplace = Column(String, index=True) # np. pewneauto, autopunkt
+    dealer_name = Column(String)
+    base_url = Column(String)
+    is_active = Column(Integer, default=1)
+    created_at = Column(DateTime, default=datetime.utcnow)
+

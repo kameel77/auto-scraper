@@ -543,26 +543,47 @@ def parse_offer(url: str) -> dict:
                     data[key] = html_tech.get(key)
         
         # === LOKALIZACJA I KONTAKT ===
-        data["lokalizacja_nazwa"] = json_location.get("lokalizacja_nazwa")
-        data["lokalizacja_miasto"] = json_location.get("lokalizacja_miasto")
-        data["adres"] = json_location.get("adres")
-        data["telefon"] = json_location.get("telefon")
+        lokalizacja_nazwa = json_location.get("lokalizacja_nazwa")
+        lokalizacja_miasto = json_location.get("lokalizacja_miasto")
+        adres = json_location.get("adres")
+        telefon = json_location.get("telefon")
         
         # Nowe pola dealera
         data["dealer_name"] = json_location.get("dealer_name")
-        data["dealer_address_line_1"] = json_location.get("dealer_address_line_1")
-        data["dealer_address_line_2"] = json_location.get("dealer_address_line_2")
+        dealer_address_line_1 = json_location.get("dealer_address_line_1")
+        dealer_address_line_2 = json_location.get("dealer_address_line_2")
         data["contact_phone"] = json_location.get("contact_phone")
         
+        data["dealer_street"] = None
+        data["dealer_postcode"] = None
+        data["dealer_city"] = lokalizacja_miasto
+        data["dealer_map_link"] = None
+        
+        # Opcjonalne wyciąganie postkodu i ulicy z address_line_2 / adres
+        if dealer_address_line_2:
+            m = re.match(r"(\d{2}-\d{3})\s+(.*)", dealer_address_line_2)
+            if m:
+                data["dealer_postcode"] = m.group(1)
+                data["dealer_city"] = m.group(2)
+        if dealer_address_line_1:
+            data["dealer_street"] = dealer_address_line_1
+        elif adres:
+            data["dealer_street"] = adres
+
         # HTML fallback dla lokalizacji
-        if not data["lokalizacja_nazwa"] or not data["telefon"]:
+        if not lokalizacja_nazwa or not telefon:
             html_location = _extract_location_contact(soup)
-            if not data["lokalizacja_nazwa"]:
-                data["lokalizacja_nazwa"] = html_location.get("lokalizacja_nazwa")
-            if not data["adres"]:
-                data["adres"] = html_location.get("adres")
-            if not data["telefon"]:
-                data["telefon"] = html_location.get("telefon")
+            if not lokalizacja_nazwa:
+                lokalizacja_nazwa = html_location.get("lokalizacja_nazwa")
+            if not adres:
+                adres = html_location.get("adres")
+            if not telefon:
+                telefon = html_location.get("telefon")
+            
+            # Update missing variables from HTML fallback
+            if not data["dealer_name"]: data["dealer_name"] = lokalizacja_nazwa
+            if not data["dealer_street"] and adres: data["dealer_street"] = adres
+            if not data["contact_phone"]: data["contact_phone"] = telefon
         
         # === WYPOSAŻENIE POGRUPOWANE ===
         data["technologia"] = json_equipment.get("technologia")
@@ -608,8 +629,12 @@ def parse_offer(url: str) -> dict:
             # HTML fallback
             data["zdjecia"] = _extract_images(soup, url)
         
-        # === METADANE ===
-        data["scraped_at"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        # === RODZAJ SPRZEDAŻY I DEALER_ID ===
+        data["rodzaj_sprzedazy"] = "vat_marza"
+        if html.find("VAT 23%") != -1 or html.find("Faktura VAT") != -1 or (data.get("tagi_oferty") and "vat 23%" in data["tagi_oferty"].lower()):
+            data["rodzaj_sprzedazy"] = "vat_23"
+            
+        data["dealer_id"] = None
         
         # === METADANE ===
         data["scraped_at"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")

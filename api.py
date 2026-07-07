@@ -1,8 +1,7 @@
-from fastapi import FastAPI, Depends, BackgroundTasks, HTTPException
-from fastapi.responses import StreamingResponse, FileResponse
+from fastapi import FastAPI, BackgroundTasks, Depends, Query, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import func, and_, or_, text, inspect
 from sqlalchemy.orm import Session
+from sqlalchemy import or_, desc, func, text, inspect
 from typing import List, Optional, Generator
 import models, database
 from pydantic import BaseModel
@@ -13,13 +12,55 @@ import logging
 import json
 import os
 import csv
-import json
 import io
-import time
-import re
+from fastapi.responses import StreamingResponse
 
+# Konfiguracja loggera
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+class ScraperConfigCreate(BaseModel):
+    marketplace: str
+    dealer_name: str
+    base_url: str
+    is_active: int = 1
+
+class ScraperConfigSchema(ScraperConfigCreate):
+    id: int
+    created_at: datetime
+    class Config:
+        from_attributes = True
+
+@app.get("/api/dealer-configs", response_model=List[ScraperConfigSchema])
+def get_dealer_configs(db: Session = Depends(database.get_db)):
+    return db.query(models.ScraperConfig).all()
+
+@app.post("/api/dealer-configs", response_model=ScraperConfigSchema)
+def create_dealer_config(config: ScraperConfigCreate, db: Session = Depends(database.get_db)):
+    db_config = models.ScraperConfig(**config.dict())
+    db.add(db_config)
+    db.commit()
+    db.refresh(db_config)
+    return db_config
+
+@app.delete("/api/dealer-configs/{config_id}")
+def delete_dealer_config(config_id: int, db: Session = Depends(database.get_db)):
+    config = db.query(models.ScraperConfig).filter(models.ScraperConfig.id == config_id).first()
+    if config:
+        db.delete(config)
+        db.commit()
+        return {"status": "deleted"}
+    raise HTTPException(status_code=404, detail="Not found")
 
 models.Base.metadata.create_all(bind=database.engine)
 
@@ -128,26 +169,32 @@ async def run_scraper_task(marketplace: str = "autopunkt", limit: Optional[int] 
         scrape_progress["total"] = 0
         
         logger.info(f"Starting background scrape task for {marketplace}...")
-        scraper = get_scraper(marketplace)
         
-        if marketplace == "autopunkt":
-            urls = await scraper.collect_urls(limit=limit)
-        elif marketplace == "findcar":
-            # Calculate max_pages based on limit:
-            # - If limit is None/0, go deep (1000 pages)
-            # - If limit is set, calculate pages needed (45 results per page)
-            if limit:
-                max_pages = (limit // 50) + 1
+        session = None
+        if marketplace == "pewneauto":
+            import scraper_pewneauto as scraper
+            import requests
+            session = requests.Session()
+            urls = []
+            configs = db.query(models.ScraperConfig).filter(models.ScraperConfig.marketplace == "pewneauto", models.ScraperConfig.is_active == 1).all()
+            
+            # Default configuration if none found
+            if not configs:
+                urls = list(scraper.collect_offer_links(session, max_pages=10 if limit else 1000, base_url="https://pewneauto.pl"))
             else:
-                max_pages = 1000
-                
-            urls = await scraper.collect_urls(max_pages=max_pages)
-        else:  # vehis
-            if limit:
-                max_pages = (limit // 50) + 1
-            else:
-                max_pages = 1000
-            urls = await scraper.collect_urls(max_pages=max_pages, page_size=50)
+                for conf in configs:
+                    conf_urls = scraper.collect_offer_links(session, max_pages=10 if limit else 1000, base_url=conf.base_url)
+                    urls.extend(list(conf_urls))
+        else:
+            scraper = get_scraper(marketplace)
+            if marketplace == "autopunkt":
+                urls = await scraper.collect_urls(limit=limit)
+            elif marketplace == "findcar":
+                max_pages = (limit // 50) + 1 if limit else 1000
+                urls = await scraper.collect_urls(max_pages=max_pages)
+            else:  # vehis
+                max_pages = (limit // 50) + 1 if limit else 1000
+                urls = await scraper.collect_urls(max_pages=max_pages, page_size=50)
         
         if limit and limit < len(urls):
             logger.info(f"Ograniczam do {limit} ofert")
@@ -161,7 +208,13 @@ async def run_scraper_task(marketplace: str = "autopunkt", limit: Optional[int] 
                 scrape_progress["current"] = i + 1
                 scrape_progress["message"] = f"Parsowanie oferty {i + 1} z {len(urls)}"
                 
-                data = scraper.parse_offer(url)
+                if marketplace == "pewneauto":
+                    data = scraper.scrape_offer(session, url)
+                    if not data:
+                        continue
+                else:
+                    data = scraper.parse_offer(url)
+                    
                 vehicle = db.query(models.Vehicle).filter(models.Vehicle.url == url).first()
                 if not vehicle:
                     model_keys = models.Vehicle.__table__.columns.keys()
@@ -176,7 +229,7 @@ async def run_scraper_task(marketplace: str = "autopunkt", limit: Optional[int] 
                         vehicle.numer_oferty = data.get("numer_oferty")
                 
                 # Normalize equipment for snapshots
-                if marketplace == "autopunkt":
+                if marketplace == "autopunkt" or marketplace == "pewneauto":
                     equipment_json = {
                         "technologia": data.get("technologia"),
                         "komfort": data.get("komfort"),
@@ -846,3 +899,48 @@ def _reset_db_task(db: Session):
         db.rollback()
     finally:
         db.close()
+
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+
+@app.get("/api/public/vehicles")
+def get_public_vehicles(source: Optional[str] = None, dealer_id: Optional[str] = None, db: Session = Depends(database.get_db)):
+    query = db.query(models.Vehicle).filter(or_(models.Vehicle.status == 'active', models.Vehicle.status.is_(None)))
+    if source:
+        query = query.filter(models.Vehicle.source == source)
+    if dealer_id:
+        query = query.filter(models.Vehicle.dealer_id == dealer_id)
+        
+    vehicles = query.all()
+    results = []
+    for v in vehicles:
+        latest = db.query(models.VehicleSnapshot).filter(models.VehicleSnapshot.vehicle_id == v.id).order_by(desc(models.VehicleSnapshot.scraped_at)).first()
+        results.append({
+            "id": v.id,
+            "url": v.url,
+            "marka": v.marka,
+            "model": v.model,
+            "rocznik": v.rocznik,
+            "dealer_name": v.dealer_name,
+            "dealer_id": v.dealer_id,
+            "rodzaj_sprzedazy": v.rodzaj_sprzedazy,
+            "price": latest.price if latest else None,
+            "mileage": latest.mileage if latest else None,
+            "pictures": latest.pictures.split(" | ") if latest and latest.pictures else []
+        })
+    return results
+
+scheduler = AsyncIOScheduler()
+
+@scheduler.scheduled_job("cron", hour=6, minute=0)
+async def scheduled_daily_scrape():
+    logger.info("Running scheduled daily scrape for pewneauto...")
+    await run_scraper_task(marketplace="pewneauto")
+
+@app.on_event("startup")
+async def startup_event():
+    logger.info("Starting APScheduler...")
+    scheduler.start()
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    scheduler.shutdown()

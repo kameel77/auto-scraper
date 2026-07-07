@@ -9,6 +9,7 @@ interface ExportDropdownProps {
 
 export function ExportDropdown({ sources, apiBaseUrl }: ExportDropdownProps) {
     const [open, setOpen] = useState(false);
+    const [dealerGroups, setDealerGroups] = useState<string[]>([]);
     const ref = useRef<HTMLDivElement>(null);
 
     // Close dropdown on outside click
@@ -22,14 +23,36 @@ export function ExportDropdown({ sources, apiBaseUrl }: ExportDropdownProps) {
         return () => document.removeEventListener("mousedown", handleClick);
     }, []);
 
-    const buildUrl = (format: "csv" | "car-scout" | "car-scout-archive", source?: string) => {
+    useEffect(() => {
+        async function fetchDealerGroups() {
+            try {
+                const res = await fetch(`${apiBaseUrl}/api/dealer-configs`);
+                const data = await res.json();
+                setDealerGroups(
+                    Array.from(
+                        new Set(
+                            data
+                                .filter((c: any) => c.marketplace === "pewneauto")
+                                .map((c: any) => c.dealer_name)
+                        )
+                    )
+                );
+            } catch (e) {
+                console.error(e);
+            }
+        }
+        fetchDealerGroups();
+    }, [apiBaseUrl]);
+
+    const buildUrl = (format: "csv" | "car-scout" | "car-scout-archive", source?: string, dealerGroup?: string) => {
         let path = "";
         if (format === "csv") path = "/export/csv";
         else if (format === "car-scout") path = "/export/csv/car-scout";
         else if (format === "car-scout-archive") path = "/export/csv/car-scout/archive";
-        
+
         const url = new URL(`${apiBaseUrl}${path}`);
         if (source) url.searchParams.append("source", source);
+        if (dealerGroup) url.searchParams.append("dealer_group", dealerGroup);
         return url.toString();
     };
 
@@ -82,46 +105,90 @@ export function ExportDropdown({ sources, apiBaseUrl }: ExportDropdownProps) {
                             const label = source === "all" ? "🌐 Wszystkie źródła" : source;
                             const sourceParam = source === "all" ? undefined : source;
                             return (
-                                <div
-                                    key={source}
-                                    className="px-4 py-3 border-b border-slate-100 dark:border-slate-800 last:border-b-0 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
-                                >
-                                    <p className="text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
-                                        {label}
-                                    </p>
-                                    <div className="flex flex-col gap-2">
-                                        <div className="flex gap-2">
+                                <div key={source}>
+                                    <div
+                                        className="px-4 py-3 border-b border-slate-100 dark:border-slate-800 last:border-b-0 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
+                                    >
+                                        <p className="text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
+                                            {label}
+                                        </p>
+                                        <div className="flex flex-col gap-2">
+                                            <div className="flex gap-2">
+                                                <a
+                                                    href={buildUrl("car-scout", sourceParam)}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    onClick={() => setOpen(false)}
+                                                    title="Tylko aktualne oferty z ostatniego pobrania"
+                                                    className="flex-1 text-center px-3 py-1.5 bg-indigo-50 dark:bg-indigo-900/30 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 text-[10px] font-black rounded-lg transition-colors leading-tight flex items-center justify-center"
+                                                >
+                                                    Car Scout CSV
+                                                </a>
+                                                <a
+                                                    href={buildUrl("csv", sourceParam)}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    onClick={() => setOpen(false)}
+                                                    className="flex-1 text-center px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 text-[10px] font-black rounded-lg transition-colors leading-tight flex items-center justify-center"
+                                                >
+                                                    Zwykły CSV
+                                                </a>
+                                            </div>
                                             <a
-                                                href={buildUrl("car-scout", sourceParam)}
+                                                href={buildUrl("car-scout-archive", sourceParam)}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 onClick={() => setOpen(false)}
-                                                title="Tylko aktualne oferty z ostatniego pobrania"
-                                                className="flex-1 text-center px-3 py-1.5 bg-indigo-50 dark:bg-indigo-900/30 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 text-[10px] font-black rounded-lg transition-colors leading-tight flex items-center justify-center"
+                                                title="Wszystkie historyczne i aktualne oferty"
+                                                className="w-full text-center px-3 py-1.5 bg-amber-50 dark:bg-amber-900/20 hover:bg-amber-100 dark:hover:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-[10px] font-black rounded-lg transition-colors border border-amber-100 dark:border-amber-900/30"
                                             >
-                                                Car Scout CSV
-                                            </a>
-                                            <a
-                                                href={buildUrl("csv", sourceParam)}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                onClick={() => setOpen(false)}
-                                                className="flex-1 text-center px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 text-[10px] font-black rounded-lg transition-colors leading-tight flex items-center justify-center"
-                                            >
-                                                Zwykły CSV
+                                                Archiwum Car Scout CSV
                                             </a>
                                         </div>
-                                        <a
-                                            href={buildUrl("car-scout-archive", sourceParam)}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            onClick={() => setOpen(false)}
-                                            title="Wszystkie historyczne i aktualne oferty"
-                                            className="w-full text-center px-3 py-1.5 bg-amber-50 dark:bg-amber-900/20 hover:bg-amber-100 dark:hover:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-[10px] font-black rounded-lg transition-colors border border-amber-100 dark:border-amber-900/30"
-                                        >
-                                            Archiwum Car Scout CSV
-                                        </a>
                                     </div>
+                                    {source === "pewneauto.pl" && dealerGroups.length > 0 && dealerGroups.map((group) => (
+                                        <div
+                                            key={`${source}-${group}`}
+                                            className="pl-8 pr-4 py-3 border-b border-slate-100 dark:border-slate-800 last:border-b-0 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
+                                        >
+                                            <p className="text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
+                                                ↳ {group}
+                                            </p>
+                                            <div className="flex flex-col gap-2">
+                                                <div className="flex gap-2">
+                                                    <a
+                                                        href={buildUrl("car-scout", sourceParam, group)}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        onClick={() => setOpen(false)}
+                                                        title="Tylko aktualne oferty z ostatniego pobrania"
+                                                        className="flex-1 text-center px-3 py-1.5 bg-indigo-50 dark:bg-indigo-900/30 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 text-[10px] font-black rounded-lg transition-colors leading-tight flex items-center justify-center"
+                                                    >
+                                                        Car Scout CSV
+                                                    </a>
+                                                    <a
+                                                        href={buildUrl("csv", sourceParam, group)}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        onClick={() => setOpen(false)}
+                                                        className="flex-1 text-center px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 text-[10px] font-black rounded-lg transition-colors leading-tight flex items-center justify-center"
+                                                    >
+                                                        Zwykły CSV
+                                                    </a>
+                                                </div>
+                                                <a
+                                                    href={buildUrl("car-scout-archive", sourceParam, group)}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    onClick={() => setOpen(false)}
+                                                    title="Wszystkie historyczne i aktualne oferty"
+                                                    className="w-full text-center px-3 py-1.5 bg-amber-50 dark:bg-amber-900/20 hover:bg-amber-100 dark:hover:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-[10px] font-black rounded-lg transition-colors border border-amber-100 dark:border-amber-900/30"
+                                                >
+                                                    Archiwum Car Scout CSV
+                                                </a>
+                                            </div>
+                                        </div>
+                                    ))}
                                 </div>
                             );
                         })}

@@ -1,7 +1,7 @@
 import re
 import time
 from datetime import datetime
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlparse
 
 import requests
 from bs4 import BeautifulSoup
@@ -27,11 +27,17 @@ def get_soup(url, session, sleep_time=0.5):
         return None
 
 def collect_offer_links(session, max_pages=5, base_url="https://pewneauto.pl"):
+    parsed = urlparse(base_url)
+    if parsed.scheme and parsed.netloc:
+        base_url = f"{parsed.scheme}://{parsed.netloc}"
+    else:
+        base_url = base_url.rstrip('/')
+
     offer_urls = set()
     page = 1
 
     while page <= max_pages:
-        url = f"{base_url.rstrip('/')}/oferty/_sort/new?strona={page}"
+        url = f"{base_url}/oferty/_sort/new?strona={page}"
         print(f"Przeszukuję listing: {url}")
         soup = get_soup(url, session)
 

@@ -52,8 +52,43 @@ def get_dealer_configs(db: Session = Depends(database.get_db)):
 
 @app.post("/api/dealer-configs", response_model=ScraperConfigSchema)
 def create_dealer_config(config: ScraperConfigCreate, db: Session = Depends(database.get_db)):
+    existing = db.query(models.ScraperConfig).filter(
+        models.ScraperConfig.marketplace == config.marketplace,
+        or_(
+            func.lower(models.ScraperConfig.dealer_name) == config.dealer_name.lower(),
+            models.ScraperConfig.base_url == config.base_url
+        )
+    ).first()
+    if existing:
+        raise HTTPException(status_code=409, detail="Dealer o tej nazwie lub adresie URL już istnieje")
+
     db_config = models.ScraperConfig(**config.dict())
     db.add(db_config)
+    db.commit()
+    db.refresh(db_config)
+    return db_config
+
+@app.put("/api/dealer-configs/{config_id}", response_model=ScraperConfigSchema)
+def update_dealer_config(config_id: int, config: ScraperConfigCreate, db: Session = Depends(database.get_db)):
+    db_config = db.query(models.ScraperConfig).filter(models.ScraperConfig.id == config_id).first()
+    if not db_config:
+        raise HTTPException(status_code=404, detail="Not found")
+
+    existing = db.query(models.ScraperConfig).filter(
+        models.ScraperConfig.id != config_id,
+        models.ScraperConfig.marketplace == config.marketplace,
+        or_(
+            func.lower(models.ScraperConfig.dealer_name) == config.dealer_name.lower(),
+            models.ScraperConfig.base_url == config.base_url
+        )
+    ).first()
+    if existing:
+        raise HTTPException(status_code=409, detail="Dealer o tej nazwie lub adresie URL już istnieje")
+
+    db_config.marketplace = config.marketplace
+    db_config.dealer_name = config.dealer_name
+    db_config.base_url = config.base_url
+    db_config.is_active = config.is_active
     db.commit()
     db.refresh(db_config)
     return db_config
@@ -109,6 +144,9 @@ def apply_migrations():
                 if 'rodzaj_sprzedazy' not in columns:
                     logger.info("Dodawanie kolumny 'rodzaj_sprzedazy' do vehicles")
                     conn.execute(text("ALTER TABLE vehicles ADD COLUMN rodzaj_sprzedazy VARCHAR"))
+                if 'dealer_group' not in columns:
+                    logger.info("Dodawanie kolumny 'dealer_group' do vehicles")
+                    conn.execute(text("ALTER TABLE vehicles ADD COLUMN dealer_group VARCHAR"))
                 conn.commit()
     except Exception as e:
         logger.error(f"Błąd podczas migracji: {e}")
@@ -188,8 +226,9 @@ async def run_scraper_task(marketplace: str = "autopunkt", limit: Optional[int] 
             import requests
             session = requests.Session()
             urls = []
+            url_to_group = {}
             configs = db.query(models.ScraperConfig).filter(models.ScraperConfig.marketplace == "pewneauto", models.ScraperConfig.is_active == 1).all()
-            
+
             # Default configuration if none found
             if not configs:
                 conf_urls = await asyncio.to_thread(scraper.collect_offer_links, session, max_pages=10 if limit else 1000, base_url="https://pewneauto.pl")
@@ -197,6 +236,8 @@ async def run_scraper_task(marketplace: str = "autopunkt", limit: Optional[int] 
             else:
                 for conf in configs:
                     conf_urls = await asyncio.to_thread(scraper.collect_offer_links, session, max_pages=10 if limit else 1000, base_url=conf.base_url)
+                    for u in conf_urls:
+                        url_to_group.setdefault(u, conf.dealer_name)
                     urls.extend(list(conf_urls))
         else:
             scraper = get_scraper(marketplace)
@@ -225,9 +266,10 @@ async def run_scraper_task(marketplace: str = "autopunkt", limit: Optional[int] 
                     data = await asyncio.to_thread(scraper.scrape_offer, session, url)
                     if not data:
                         continue
+                    data["dealer_group"] = url_to_group.get(url)
                 else:
                     data = scraper.parse_offer(url)
-                    
+
                 vehicle = db.query(models.Vehicle).filter(models.Vehicle.url == url).first()
                 if not vehicle:
                     model_keys = models.Vehicle.__table__.columns.keys()
@@ -240,6 +282,8 @@ async def run_scraper_task(marketplace: str = "autopunkt", limit: Optional[int] 
                     vehicle.status = "active"
                     if data.get("numer_oferty"):
                         vehicle.numer_oferty = data.get("numer_oferty")
+                    if data.get("dealer_group"):
+                        vehicle.dealer_group = data["dealer_group"]
                 
                 # Normalize equipment for snapshots
                 if marketplace == "autopunkt" or marketplace == "pewneauto":
@@ -518,12 +562,14 @@ def get_latest_scrape_timestamp(db: Session, source: Optional[str] = None):
     return query.scalar()
 
 @app.get("/export/csv")
-def export_csv(source: Optional[str] = None, db: Session = Depends(database.get_db)):
+def export_csv(source: Optional[str] = None, dealer_group: Optional[str] = None, db: Session = Depends(database.get_db)):
     query = db.query(models.Vehicle).filter(
         or_(models.Vehicle.status == 'active', models.Vehicle.status.is_(None))
     )
     if source:
         query = query.filter(models.Vehicle.source == source)
+    if dealer_group:
+        query = query.filter(models.Vehicle.dealer_group == dealer_group)
     vehicles = query.all()
     
     logger.info(f"Exporting {len(vehicles)} vehicles to CSV")
@@ -587,7 +633,12 @@ def export_csv(source: Optional[str] = None, db: Session = Depends(database.get_
         ])
     
     output.seek(0)
-    filename = f"vehicles_{source}.csv" if source else "vehicles.csv"
+    if source and dealer_group:
+        filename = f"vehicles_{source}_{dealer_group.replace(' ', '-')}.csv"
+    elif source:
+        filename = f"vehicles_{source}.csv"
+    else:
+        filename = "vehicles.csv"
     return StreamingResponse(
         iter([output.getvalue()]),
         media_type="text/csv",
@@ -595,12 +646,15 @@ def export_csv(source: Optional[str] = None, db: Session = Depends(database.get_
     )
 
 @app.get("/export/csv/car-scout")
-def export_car_scout_csv(source: Optional[str] = None, db: Session = Depends(database.get_db)):
+def export_car_scout_csv(source: Optional[str] = None, dealer_group: Optional[str] = None, db: Session = Depends(database.get_db)):
     # Find latest scrape timestamp for this source
     latest_ts = get_latest_scrape_timestamp(db, source)
-    
+
     query = db.query(models.Vehicle)
-    
+
+    if dealer_group:
+        query = query.filter(models.Vehicle.dealer_group == dealer_group)
+
     if latest_ts:
         # We take everything from the last 12 hours of the max timestamp to be safe 
         # (in case a scrape took a few hours)
@@ -752,7 +806,12 @@ def export_car_scout_csv(source: Optional[str] = None, db: Session = Depends(dat
         ])
     
     output.seek(0)
-    filename = f"car-scout-export_{source}.csv" if source else "car-scout-export.csv"
+    if source and dealer_group:
+        filename = f"car-scout-export_{source}_{dealer_group.replace(' ', '-')}.csv"
+    elif source:
+        filename = f"car-scout-export_{source}.csv"
+    else:
+        filename = "car-scout-export.csv"
     return StreamingResponse(
         iter([output.getvalue()]),
         media_type="text/csv",
@@ -760,11 +819,13 @@ def export_car_scout_csv(source: Optional[str] = None, db: Session = Depends(dat
     )
 
 @app.get("/export/csv/car-scout/archive")
-def export_car_scout_archive_csv(source: Optional[str] = None, db: Session = Depends(database.get_db)):
+def export_car_scout_archive_csv(source: Optional[str] = None, dealer_group: Optional[str] = None, db: Session = Depends(database.get_db)):
     """Exports ALL historical entries for car-scout, even archived ones."""
     query = db.query(models.Vehicle)
     if source:
         query = query.filter(models.Vehicle.source == source)
+    if dealer_group:
+        query = query.filter(models.Vehicle.dealer_group == dealer_group)
     vehicles = query.all()
     
     logger.info(f"Exporting ARCHIVE: {len(vehicles)} vehicles to Car-Scout CSV")
@@ -878,7 +939,12 @@ def export_car_scout_archive_csv(source: Optional[str] = None, db: Session = Dep
         ])
     
     output.seek(0)
-    filename = f"car-scout-archive_{source}.csv" if source else "car-scout-archive.csv"
+    if source and dealer_group:
+        filename = f"car-scout-archive_{source}_{dealer_group.replace(' ', '-')}.csv"
+    elif source:
+        filename = f"car-scout-archive_{source}.csv"
+    else:
+        filename = "car-scout-archive.csv"
     return StreamingResponse(
         iter([output.getvalue()]),
         media_type="text/csv",
@@ -905,13 +971,15 @@ def _reset_db_task(db: Session):
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 @app.get("/api/public/vehicles")
-def get_public_vehicles(source: Optional[str] = None, dealer_id: Optional[str] = None, db: Session = Depends(database.get_db)):
+def get_public_vehicles(source: Optional[str] = None, dealer_id: Optional[str] = None, dealer_group: Optional[str] = None, db: Session = Depends(database.get_db)):
     query = db.query(models.Vehicle).filter(or_(models.Vehicle.status == 'active', models.Vehicle.status.is_(None)))
     if source:
         query = query.filter(models.Vehicle.source == source)
     if dealer_id:
         query = query.filter(models.Vehicle.dealer_id == dealer_id)
-        
+    if dealer_group:
+        query = query.filter(models.Vehicle.dealer_group == dealer_group)
+
     vehicles = query.all()
     results = []
     for v in vehicles:
@@ -924,6 +992,7 @@ def get_public_vehicles(source: Optional[str] = None, dealer_id: Optional[str] =
             "rocznik": v.rocznik,
             "dealer_name": v.dealer_name,
             "dealer_id": v.dealer_id,
+            "dealer_group": v.dealer_group,
             "rodzaj_sprzedazy": v.rodzaj_sprzedazy,
             "price": latest.price if latest else None,
             "mileage": latest.mileage if latest else None,

@@ -35,6 +35,7 @@ class Vehicle(Base):
     dealer_map_link = Column(String)
     contact_phone = Column(String)
     dealer_id = Column(String, index=True)
+    dealer_group = Column(String, index=True)  # nazwa grupy z ScraperConfig
     
     # Rodzaj sprzedaży
     rodzaj_sprzedazy = Column(String, index=True)

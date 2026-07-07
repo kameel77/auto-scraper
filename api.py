@@ -13,6 +13,8 @@ import json
 import os
 import csv
 import io
+import time
+import re
 from fastapi.responses import StreamingResponse
 
 # Konfiguracja loggera

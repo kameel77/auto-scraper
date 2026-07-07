@@ -270,20 +270,20 @@ async def run_scraper_task(marketplace: str = "autopunkt", limit: Optional[int] 
                 else:
                     data = scraper.parse_offer(url)
 
+                model_keys = models.Vehicle.__table__.columns.keys()
+                vehicle_data = {k: v for k, v in data.items() if k in model_keys}
+
                 vehicle = db.query(models.Vehicle).filter(models.Vehicle.url == url).first()
                 if not vehicle:
-                    model_keys = models.Vehicle.__table__.columns.keys()
-                    vehicle_data = {k: v for k, v in data.items() if k in model_keys}
                     vehicle_data["status"] = "active"
                     vehicle = models.Vehicle(**vehicle_data)
                     db.add(vehicle)
                     db.flush()
                 else:
                     vehicle.status = "active"
-                    if data.get("numer_oferty"):
-                        vehicle.numer_oferty = data.get("numer_oferty")
-                    if data.get("dealer_group"):
-                        vehicle.dealer_group = data["dealer_group"]
+                    for k, v in vehicle_data.items():
+                        if v is not None and k not in ("id", "url", "created_at", "status"):
+                            setattr(vehicle, k, v)
                 
                 # Normalize equipment for snapshots
                 if marketplace == "autopunkt" or marketplace == "pewneauto":

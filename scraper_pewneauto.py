@@ -86,6 +86,19 @@ def extract_tech_specs(soup):
                 val = li.get_text(strip=True).replace(key, "").strip()
                 if val:
                     data[key] = " ".join(val.split())
+
+    if not data:
+        # Fallback dla szablonu subdomen dilerskich (np. uzywane.toyota-stalowawola.pl)
+        spec_ul = soup.find("ul", class_="vdp__spec")
+        if spec_ul:
+            for li in spec_ul.find_all("li", class_="vdp__spec__element"):
+                small = li.find("small")
+                span = li.find("span")
+                if small and span:
+                    key = small.get_text(strip=True)
+                    val = " ".join(span.get_text(strip=True).split())
+                    if key and val:
+                        data[key] = val
     return data
 
 def extract_equipment_groups(soup):
@@ -97,6 +110,11 @@ def extract_equipment_groups(soup):
     
     eq_section = soup.find("section", class_="vdp-eq")
     if not eq_section:
+        # Fallback dla szablonu subdomen dilerskich - płaska lista bez nagłówków grup
+        eq_div = soup.find(class_="vdp__eq")
+        if eq_div:
+            for li in eq_div.find_all("li"):
+                eq["inne"].append(li.get_text(strip=True))
         return eq
 
     # Pewneauto dzieli wyposażenie wg sekcji (h3) w akordeonie
@@ -124,7 +142,9 @@ def scrape_offer(session, url):
     if not soup: return None
     
     # 1. Tytuł, marka, model, wersja
-    title_tag = soup.find("h1")
+    title_tag = soup.find(class_="vdp__name__title")
+    if not title_tag:
+        title_tag = soup.find("h1")
     tytul = title_tag.get_text(strip=True) if title_tag else None
     
     marka, model = None, None
@@ -133,6 +153,7 @@ def scrape_offer(session, url):
         if len(parts) > 0: marka = parts[0]
         if len(parts) > 1: model = parts[1]
 
+    subtitle_tag_text = None
     header_title_div = soup.find("div", class_="vdp-header__title")
     if header_title_div:
         strong_tag = header_title_div.find("strong")
@@ -140,7 +161,13 @@ def scrape_offer(session, url):
     else:
         # Fallback
         trim_tag = soup.find(class_=re.compile("subtitle|variant|version", re.I))
-        wersja = trim_tag.get_text(strip=True) if trim_tag else None
+        if trim_tag and "vdp__name__subtitle" in trim_tag.get("class", []):
+            # Szablon subdomen dilerskich: to nie jest wersja/trim, tylko wolny tekst
+            # (np. "Gwarancja Pewne Auto/Serwisowany/..."), więc trafia do tagów oferty
+            wersja = None
+            subtitle_tag_text = trim_tag.get_text(strip=True)
+        else:
+            wersja = trim_tag.get_text(strip=True) if trim_tag else None
 
     # Numer oferty z headera
     numer_oferty = None
@@ -151,6 +178,12 @@ def scrape_offer(session, url):
                 strong = span.find("strong")
                 if strong:
                     numer_oferty = strong.get_text(strip=True)
+
+    if not numer_oferty:
+        # Fallback dla szablonu subdomen dilerskich: numer jest w URL-u oferty
+        m = re.search(r"/oferta/[^/]+/(\d+)", url)
+        if m:
+            numer_oferty = m.group(1)
 
     # Diler (Lokalizacja)
     dealer_name = None
@@ -177,7 +210,32 @@ def scrape_offer(session, url):
                     dealer_city = m.group(2)
                 else:
                     dealer_city = city_line
-                    
+    else:
+        # Fallback dla szablonu subdomen dilerskich
+        address_tag = soup.find("address", class_="vdp__dealer__info__address")
+        if address_tag:
+            strong = address_tag.find("strong")
+            if strong:
+                dealer_name = strong.get_text(strip=True)
+            span = address_tag.find("span")
+            if span:
+                addr_line = span.get_text(strip=True)  # np. "Przemysłowa 5, 37-450 Stalowa Wola"
+                if "," in addr_line:
+                    left, right = addr_line.split(",", 1)
+                    dealer_street = left.strip()
+                    right = right.strip()
+                    m = re.match(r"(\d{2}-\d{3})\s+(.*)", right)
+                    if m:
+                        dealer_postcode = m.group(1)
+                        dealer_city = m.group(2)
+                    else:
+                        dealer_city = right
+                else:
+                    m = re.search(r"(\d{2}-\d{3})\s+(.*)", addr_line)
+                    if m:
+                        dealer_postcode = m.group(1)
+                        dealer_city = m.group(2)
+
     map_div = soup.find("div", class_="vdp-dealer__map")
     if map_div:
         map_link = map_div.find("a", href=True)
@@ -197,8 +255,15 @@ def scrape_offer(session, url):
     price_tag = soup.find(class_=re.compile("retail-price", re.I))
     if price_tag:
         cena_brutto_pln = _to_int_pl(price_tag.get_text())
-    elif soup.find(class_=re.compile("price|amount", re.I)):
-        cena_brutto_pln = _to_int_pl(soup.find(class_=re.compile("price|amount", re.I)).get_text())
+    else:
+        # js--priceGrossFormatted bywa pustym placeholderem wypelnianym JS-em
+        gross_tag = soup.find(class_="js--priceGrossFormatted")
+        if gross_tag:
+            cena_brutto_pln = _to_int_pl(gross_tag.get_text())
+        if cena_brutto_pln is None:
+            fallback_tag = soup.find(class_=re.compile("price|amount", re.I))
+            if fallback_tag:
+                cena_brutto_pln = _to_int_pl(fallback_tag.get_text())
 
     installment_tag = soup.find(class_=re.compile("installment-price", re.I))
     if installment_tag:
@@ -229,18 +294,30 @@ def scrape_offer(session, url):
         for img in gallery.find_all("img"):
             src = img.get("data-img-src") or img.get("src")
             if src:
-                zdjecia_urls.append(src)
+                zdjecia_urls.append(urljoin(url, src))
+    else:
+        # Fallback dla szablonu subdomen dilerskich (ścieżki względne w src)
+        gallery = soup.find(class_="vdp__gallery")
+        if gallery:
+            for img in gallery.find_all("img"):
+                src = img.get("data-img-src") or img.get("src")
+                if src:
+                    zdjecia_urls.append(urljoin(url, src))
+    zdjecia_urls = list(dict.fromkeys(zdjecia_urls))
 
     # Tagi (np. Kraj pochodzenia)
     tagi_oferty = []
     kraj = tech_specs.get("Kraj pochodzenia")
     if kraj:
         tagi_oferty.append(f"Kraj pochodzenia: {kraj}")
+    if subtitle_tag_text:
+        tagi_oferty.append(subtitle_tag_text)
 
     # Rodzaj sprzedaży (VAT 23% vs VAT marża)
     rodzaj_sprzedazy = "vat_marza"
     tags_div = soup.find("div", class_="vdp-header__title__tags")
-    if tags_div and "VAT 23%" in tags_div.get_text():
+    price_tags_div = soup.find(class_="vdp__offer__price__tags")
+    if (tags_div and "VAT 23%" in tags_div.get_text()) or (price_tags_div and "VAT 23%" in price_tags_div.get_text()):
         rodzaj_sprzedazy = "vat_23"
 
     # Dealer ID (z linku do salonu lub ścieżek obrazków)

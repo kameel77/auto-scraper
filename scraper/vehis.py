@@ -176,7 +176,7 @@ class VehisScraper(BaseScraper):
             "seats": self._safe_int(data.get("number_of_seats")),
             "kolor": data.get("color"),
             "dealer_name": data.get("dealer_name"),
-            "dealer_address_line_1": data.get("location"),
+            "dealer_city": data.get("location"),
             "primary_image_url": images[0] if images else None,
             "image_count": len(images),
             "zdjecia": "|".join(images),

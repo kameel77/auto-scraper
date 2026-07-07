@@ -64,6 +64,7 @@ class FindcarScraper(BaseScraper):
         image_urls = [m.get("url") for m in media if m.get("type") == "image" and m.get("url")]
         dealer = detail.get("dealer") or {}
         addr = dealer.get("address") or {}
+        postcode_match = re.match(r"(\d{2}-\d{3})\s+(.*)", addr.get("line2") or "")
 
         price_pln100 = pricing.get("offerPricePln100")
         price_pln = (price_pln100 / 100) if isinstance(price_pln100, int) else None
@@ -103,9 +104,9 @@ class FindcarScraper(BaseScraper):
             "kolor": specs.get("Kolor"),
             "paint_type": specs.get("Rodzaj lakieru"),
             "dealer_name": dealer.get("name"),
-            "dealer_address_line_1": addr.get("line1"),
-            "dealer_address_line_2": addr.get("line2"),
-            "dealer_address_line_3": addr.get("line3"),
+            "dealer_street": addr.get("line1"),
+            "dealer_postcode": postcode_match.group(1) if postcode_match else None,
+            "dealer_city": postcode_match.group(2) if postcode_match else addr.get("line2"),
             "dealer_google_rating": dealer.get("googleRating"),
             "dealer_review_count": self._safe_int(dealer.get("reviewCount")),
             "dealer_google_link": dealer.get("googleLink"),

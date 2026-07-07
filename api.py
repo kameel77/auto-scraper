@@ -1,7 +1,7 @@
 from fastapi import FastAPI, BackgroundTasks, Depends, Query, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
-from sqlalchemy import or_, desc, func, text, inspect
+from sqlalchemy import and_, or_, desc, func, text, inspect
 from typing import List, Optional, Generator
 import models, database
 from pydantic import BaseModel
@@ -21,11 +21,14 @@ from fastapi.responses import StreamingResponse
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-app = FastAPI()
+app = FastAPI(title="Auto-Scraper API")
+
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[FRONTEND_URL],
+    allow_origin_regex=r"https?://.*\.sslip\.io",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -80,30 +83,37 @@ def apply_migrations():
                 if 'additional_equipment' not in columns:
                     logger.info("Dodawanie kolumny 'additional_equipment' do vehicle_snapshots")
                     conn.execute(text("ALTER TABLE vehicle_snapshots ADD COLUMN additional_equipment TEXT"))
-            
+                conn.commit()
+
         if 'vehicles' in tables:
             columns = [c['name'] for c in inspector.get_columns('vehicles')]
             with database.engine.connect() as conn:
                 if 'status' not in columns:
                     logger.info("Dodawanie kolumny 'status' do vehicles")
                     conn.execute(text("ALTER TABLE vehicles ADD COLUMN status VARCHAR DEFAULT 'active'"))
+                if 'dealer_street' not in columns:
+                    logger.info("Dodawanie kolumny 'dealer_street' do vehicles")
+                    conn.execute(text("ALTER TABLE vehicles ADD COLUMN dealer_street VARCHAR"))
+                if 'dealer_postcode' not in columns:
+                    logger.info("Dodawanie kolumny 'dealer_postcode' do vehicles")
+                    conn.execute(text("ALTER TABLE vehicles ADD COLUMN dealer_postcode VARCHAR"))
+                if 'dealer_city' not in columns:
+                    logger.info("Dodawanie kolumny 'dealer_city' do vehicles")
+                    conn.execute(text("ALTER TABLE vehicles ADD COLUMN dealer_city VARCHAR"))
+                if 'dealer_map_link' not in columns:
+                    logger.info("Dodawanie kolumny 'dealer_map_link' do vehicles")
+                    conn.execute(text("ALTER TABLE vehicles ADD COLUMN dealer_map_link VARCHAR"))
+                if 'dealer_id' not in columns:
+                    logger.info("Dodawanie kolumny 'dealer_id' do vehicles")
+                    conn.execute(text("ALTER TABLE vehicles ADD COLUMN dealer_id VARCHAR"))
+                if 'rodzaj_sprzedazy' not in columns:
+                    logger.info("Dodawanie kolumny 'rodzaj_sprzedazy' do vehicles")
+                    conn.execute(text("ALTER TABLE vehicles ADD COLUMN rodzaj_sprzedazy VARCHAR"))
                 conn.commit()
     except Exception as e:
         logger.error(f"Błąd podczas migracji: {e}")
 
 apply_migrations()
-
-app = FastAPI(title="Auto-Scraper API")
-
-FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[FRONTEND_URL, "http://*.sslip.io", "https://*.sslip.io"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 scrape_progress = {
     "status": "idle",
@@ -182,10 +192,11 @@ async def run_scraper_task(marketplace: str = "autopunkt", limit: Optional[int] 
             
             # Default configuration if none found
             if not configs:
-                urls = list(scraper.collect_offer_links(session, max_pages=10 if limit else 1000, base_url="https://pewneauto.pl"))
+                conf_urls = await asyncio.to_thread(scraper.collect_offer_links, session, max_pages=10 if limit else 1000, base_url="https://pewneauto.pl")
+                urls = list(conf_urls)
             else:
                 for conf in configs:
-                    conf_urls = scraper.collect_offer_links(session, max_pages=10 if limit else 1000, base_url=conf.base_url)
+                    conf_urls = await asyncio.to_thread(scraper.collect_offer_links, session, max_pages=10 if limit else 1000, base_url=conf.base_url)
                     urls.extend(list(conf_urls))
         else:
             scraper = get_scraper(marketplace)
@@ -211,7 +222,7 @@ async def run_scraper_task(marketplace: str = "autopunkt", limit: Optional[int] 
                 scrape_progress["message"] = f"Parsowanie oferty {i + 1} z {len(urls)}"
                 
                 if marketplace == "pewneauto":
-                    data = scraper.scrape_offer(session, url)
+                    data = await asyncio.to_thread(scraper.scrape_offer, session, url)
                     if not data:
                         continue
                 else:
@@ -236,7 +247,7 @@ async def run_scraper_task(marketplace: str = "autopunkt", limit: Optional[int] 
                         "technologia": data.get("technologia"),
                         "komfort": data.get("komfort"),
                         "bezpieczenstwo": data.get("bezpieczenstwo"),
-                        "wyglad": data.get("wyglad"),
+                        "wyglad": data.get("wyglad") or data.get("wyposazenie_inne"),
                     }
                 elif marketplace == "findcar":
                     equipment_json = {
@@ -429,7 +440,7 @@ def get_vehicles(
     if cena_max:
         query = query.filter(latest_snapshots.c.price <= cena_max)
     if miasto:
-        query = query.filter(models.Vehicle.dealer_address_line_2.ilike(f"%{miasto}%"))
+        query = query.filter(models.Vehicle.dealer_city.ilike(f"%{miasto}%"))
     
     vehicles = query.offset(skip).limit(limit).all()
     
@@ -447,7 +458,7 @@ def get_vehicles(
             "wersja": v.wersja,
             "rocznik": v.rocznik,
             "typ_nadwozia": v.typ_nadwozia,
-            "lokalizacja_miasto": v.dealer_address_line_2.split()[-1] if v.dealer_address_line_2 else None,
+            "lokalizacja_miasto": v.dealer_city,
             "latest_price": latest.price if latest else None,
             "latest_mileage": latest.mileage if latest else None,
             "latest_image": re.split(r'\s*\|\s*', latest.pictures)[0] if latest and latest.pictures else None,
@@ -490,19 +501,8 @@ def get_models(marka: Optional[str] = None, db: Session = Depends(database.get_d
 
 @app.get("/cities", response_model=List[str])
 def get_cities(db: Session = Depends(database.get_db)):
-    # Extract cities from dealer_address_line_2
-    # This is a bit tricky with SQLite, so we'll do it in Python if needed or just use the column directly
-    cities_raw = db.query(models.Vehicle.dealer_address_line_2).distinct().filter(models.Vehicle.dealer_address_line_2.isnot(None)).all()
-    
-    cities = set()
-    for row in cities_raw:
-        addr = row[0]
-        if addr:
-            parts = addr.split()
-            if parts:
-                cities.add(parts[-1])
-    
-    return sorted(list(cities))
+    cities_raw = db.query(models.Vehicle.dealer_city).distinct().filter(models.Vehicle.dealer_city.isnot(None)).all()
+    return sorted([row[0] for row in cities_raw])
 
 @app.get("/sources", response_model=List[str])
 def get_sources(db: Session = Depends(database.get_db)):
@@ -578,7 +578,7 @@ def export_csv(source: Optional[str] = None, db: Session = Depends(database.get_
             latest.mileage if latest else "",
             main_image,
             other_images,
-            v.dealer_address_line_2.split()[-1] if v.dealer_address_line_2 else "",
+            v.dealer_city or "",
             v.url,
             equipment.get("technologia", "") if equipment else "",
             equipment.get("komfort", "") if equipment else "",
@@ -732,8 +732,8 @@ def export_car_scout_csv(source: Optional[str] = None, db: Session = Depends(dat
             v.kolor or "",
             "",
             v.dealer_name or "",
-            v.dealer_address_line_1 or "",
-            v.dealer_address_line_2 or "",
+            v.dealer_street or "",
+            " ".join(filter(None, [v.dealer_postcode, v.dealer_city])),
             "",
             "",
             "",
@@ -857,8 +857,8 @@ def export_car_scout_archive_csv(source: Optional[str] = None, db: Session = Dep
             v.kolor or "",
             "",
             v.dealer_name or "",
-            v.dealer_address_line_1 or "",
-            v.dealer_address_line_2 or "",
+            v.dealer_street or "",
+            " ".join(filter(None, [v.dealer_postcode, v.dealer_city])),
             "",
             "",
             "",
@@ -931,7 +931,7 @@ def get_public_vehicles(source: Optional[str] = None, dealer_id: Optional[str] =
         })
     return results
 
-scheduler = AsyncIOScheduler()
+scheduler = AsyncIOScheduler(timezone="Europe/Warsaw")
 
 @scheduler.scheduled_job("cron", hour=6, minute=0)
 async def scheduled_daily_scrape():

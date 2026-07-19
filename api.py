@@ -227,18 +227,26 @@ async def run_scraper_task(marketplace: str = "autopunkt", limit: Optional[int] 
             session = requests.Session()
             urls = []
             url_to_group = {}
-            configs = db.query(models.ScraperConfig).filter(models.ScraperConfig.marketplace == "pewneauto", models.ScraperConfig.is_active == 1).all()
+            configs = db.query(models.ScraperConfig).filter(models.ScraperConfig.marketplace == "pewneauto").all()
+            configs = [c for c in configs if c.is_active]
 
             # Default configuration if none found
             if not configs:
-                conf_urls = await asyncio.to_thread(scraper.collect_offer_links, session, max_pages=10 if limit else 1000, base_url="https://pewneauto.pl")
-                urls = list(conf_urls)
-            else:
-                for conf in configs:
-                    conf_urls = await asyncio.to_thread(scraper.collect_offer_links, session, max_pages=10 if limit else 1000, base_url=conf.base_url)
-                    for u in conf_urls:
-                        url_to_group.setdefault(u, conf.dealer_name)
-                    urls.extend(list(conf_urls))
+                logger.warning("No active configs found for pewneauto. Skipping scrape.")
+                scrape_progress["status"] = "complete"
+                scrape_progress["message"] = "Brak aktywnych konfiguracji dla Pewne Auto."
+                if scrape_log:
+                    scrape_log.status = "completed"
+                    scrape_log.end_time = datetime.utcnow()
+                    db.commit()
+                return
+
+            for conf in configs:
+                logger.info(f"Scraping config: {conf.dealer_name} ({conf.base_url})")
+                conf_urls = await asyncio.to_thread(scraper.collect_offer_links, session, max_pages=10 if limit else 1000, base_url=conf.base_url)
+                for u in conf_urls:
+                    url_to_group.setdefault(u, conf.dealer_name)
+                urls.extend(list(conf_urls))
         else:
             scraper = get_scraper(marketplace)
             if marketplace == "autopunkt":

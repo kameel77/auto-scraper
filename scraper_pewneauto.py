@@ -27,17 +27,25 @@ def get_soup(url, session, sleep_time=0.5):
         return None
 
 def collect_offer_links(session, max_pages=5, base_url="https://pewneauto.pl"):
+    if base_url and not base_url.startswith("http://") and not base_url.startswith("https://"):
+        base_url = "https://" + base_url
+
     parsed = urlparse(base_url)
-    if parsed.scheme and parsed.netloc:
-        base_url = f"{parsed.scheme}://{parsed.netloc}"
-    else:
-        base_url = base_url.rstrip('/')
+    domain_base = f"{parsed.scheme}://{parsed.netloc}"
+    
+    path = parsed.path
+    if not path or path == "/":
+        path = "/oferty/_sort/new"
+        
+    query_part = f"?{parsed.query}" if parsed.query else ""
+    target_base = f"{domain_base}{path}{query_part}"
 
     offer_urls = set()
     page = 1
 
     while page <= max_pages:
-        url = f"{base_url}/oferty/_sort/new?strona={page}"
+        sep = "&" if parsed.query else "?"
+        url = f"{target_base}{sep}strona={page}"
         print(f"Przeszukuję listing: {url}")
         soup = get_soup(url, session)
 
@@ -46,7 +54,7 @@ def collect_offer_links(session, max_pages=5, base_url="https://pewneauto.pl"):
             break
 
         anchors = soup.find_all("a", href=True)
-        page_links = {urljoin(base_url, a['href']) for a in anchors if "/oferta/" in a['href']}
+        page_links = {urljoin(domain_base, a['href']) for a in anchors if "/oferta/" in a['href']}
 
         if not page_links:
             break

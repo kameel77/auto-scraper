@@ -254,6 +254,8 @@ async def run_scraper_task(marketplace: str = "autopunkt", limit: Optional[int] 
             elif marketplace == "findcar":
                 max_pages = (limit // 50) + 1 if limit else 1000
                 urls = await scraper.collect_urls(max_pages=max_pages)
+            elif marketplace in ["fiat_pgd", "pgd", "fiat"]:
+                urls = await scraper.collect_urls(limit=limit)
             else:  # vehis
                 max_pages = (limit // 50) + 1 if limit else 1000
                 urls = await scraper.collect_urls(max_pages=max_pages, page_size=50)
@@ -301,7 +303,7 @@ async def run_scraper_task(marketplace: str = "autopunkt", limit: Optional[int] 
                         "bezpieczenstwo": data.get("bezpieczenstwo"),
                         "wyglad": data.get("wyglad") or data.get("wyposazenie_inne"),
                     }
-                elif marketplace == "findcar":
+                elif marketplace in ["findcar", "fiat_pgd", "pgd", "fiat"]:
                     equipment_json = {
                         "technologia": data.get("equipment_audio_multimedia"),
                         "komfort": data.get("equipment_comfort_extras"),
@@ -321,7 +323,7 @@ async def run_scraper_task(marketplace: str = "autopunkt", limit: Optional[int] 
                 
                 snapshot = models.VehicleSnapshot(
                     vehicle_id=vehicle.id,
-                    price=data.get("cena_brutto_pln"),
+                    price=data.get("cena_brutto_pln") or data.get("cena_netto_pln"),
                     old_price=data.get("stara_cena_pln") or data.get("omnibus_lowest_30d_pln"),
                     mileage=data.get("przebieg_km"),
                     equipment_json=equipment_json,
@@ -351,8 +353,11 @@ async def run_scraper_task(marketplace: str = "autopunkt", limit: Optional[int] 
         if is_full_scrape and urls:
             try:
                 # Find current active vehicles for this marketplace
-                # Scraper sets source as "autopunkt.pl", "findcar.pl", "vehis.pl", but marketplace param is just "autopunkt"
-                source_domain = f"{marketplace}.pl" if not marketplace.endswith('.pl') else marketplace
+                # Scraper sets source as "autopunkt.pl", "findcar.pl", "vehis.pl", "fiat.pgd.pl"
+                if marketplace in ["fiat_pgd", "pgd", "fiat"]:
+                    source_domain = "fiat.pgd.pl"
+                else:
+                    source_domain = f"{marketplace}.pl" if not marketplace.endswith('.pl') else marketplace
                 active_urls = set(urls)
                 db_vehicles = db.query(models.Vehicle.id, models.Vehicle.url).filter(
                     models.Vehicle.source == source_domain, 
@@ -715,8 +720,8 @@ def export_car_scout_csv(source: Optional[str] = None, dealer_group: Optional[st
             continue
             
         # Relaxed check: allow 0 (e.g. for new cars with 0 mileage)
-        # Vehicles from 'vehis' are exempt from mandatory price/year/mileage validation
-        if v.source == "vehis":
+        # Vehicles from 'vehis' and 'fiat.pgd.pl' are exempt from strict mileage validation
+        if v.source in ["vehis", "fiat.pgd.pl"]:
             has_required = True
         else:
             has_required = latest.price is not None and v.rocznik is not None and latest.mileage is not None

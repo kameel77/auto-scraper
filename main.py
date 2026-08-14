@@ -35,7 +35,7 @@ async def main():
     )
     parser.add_argument(
         '--marketplace', '-m',
-        choices=['autopunkt', 'findcar', 'vehis'],
+        choices=['autopunkt', 'findcar', 'vehis', 'fiat_pgd', 'pgd', 'fiat'],
         default='autopunkt',
         help='Marketplace do skrejpowania (default: autopunkt)'
     )
@@ -53,7 +53,7 @@ async def main():
         '--max-pages',
         type=int,
         default=10,
-        help='Maksymalna liczba stron dla findcar (default: 10)'
+        help='Maksymalna liczba stron dla findcar / fiat_pgd (default: 10)'
     )
     parser.add_argument(
         '--scroll-pause',
@@ -143,7 +143,13 @@ async def main():
                 start_page=0,
                 scroll_pause=args.scroll_pause
             )
-
+        elif args.marketplace in ["fiat_pgd", "pgd", "fiat"]:
+            max_pages = args.max_pages if args.max_pages != 10 else 100
+            offer_urls = await scraper.collect_urls(
+                limit=args.limit,
+                base_url=args.url,
+                max_pages=max_pages
+            )
         else:  # vehis
             max_pages = args.max_pages
             if args.limit and args.max_pages == 10:

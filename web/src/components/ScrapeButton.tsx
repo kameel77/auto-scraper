@@ -84,6 +84,7 @@ export function ScrapeButton() {
             <option value="autopunkt">Autopunkt</option>
             <option value="findcar">Findcar.pl</option>
             <option value="vehis">Vehis.pl</option>
+            <option value="fiat_pgd">Fiat PGD (Ciężarowe)</option>
             <option value="pewneauto">Pewne Auto / Dealerzy</option>
           </select>
         </div>
